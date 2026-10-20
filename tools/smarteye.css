@@ -1,0 +1,110 @@
+/* SmartEye System brand layer — night blue (dark navy + electric blue).
+   Loaded after the template CSS; delete the <link> to css/smarteye.css to go back to the template green. */
+:root {
+    --primary: #1E6BFF;
+    --primary-dark: #1553CC;
+    --dark: #0B1530;
+    --bs-primary: #1E6BFF;
+}
+
+body { font-family: 'Noto Sans Armenian', 'Open Sans', sans-serif; }
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6,
+.navbar .navbar-nav .nav-link, .btn { font-family: 'Noto Sans Armenian', 'Roboto', sans-serif; }
+
+a { color: var(--primary); }
+.btn-link, .link-primary, .text-primary { color: var(--primary) !important; }
+.footer .btn-square.btn-outline-secondary { color: #AAB4CC; }
+a:hover { color: var(--primary-dark); }
+.footer a.text-secondary, .bg-dark a.text-secondary, .footer .btn-link { color: #AAB4CC !important; }
+.footer .btn-link:hover, .bg-dark a.text-secondary:hover { color: #FFFFFF !important; }
+.copyright a { color: #FFFFFF !important; }
+
+.bg-primary { background-color: var(--primary) !important; }
+.bg-dark { background-color: var(--dark) !important; }
+.border-primary { border-color: var(--primary) !important; }
+
+.btn-primary, .btn.btn-primary,
+.btn-primary:disabled, .btn-primary.disabled {
+    color: #FFFFFF !important;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+}
+.btn-outline-primary { color: var(--primary) !important; border-color: var(--primary) !important; }
+.btn-outline-primary:hover { color: #FFFFFF !important; background-color: var(--primary) !important; }
+.btn-light, .btn-light:hover { color: var(--dark) !important; }
+.btn-outline-light, .btn-outline-light:hover { color: #FFFFFF !important; }
+.btn-outline-light:hover { background: rgba(255, 255, 255, .15) !important; }
+.btn-square.btn-outline-secondary:hover { background: var(--primary) !important; border-color: var(--primary) !important; color: #FFFFFF !important; }
+.btn-square.bg-light.text-primary:hover { background: var(--primary) !important; color: #FFFFFF !important; }
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link.active { color: var(--primary) !important; }
+.navbar .navbar-nav .nav-link { color: var(--dark) !important; }
+
+.form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+.form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 .2rem rgba(30, 107, 255, .2); }
+
+.header-carousel .carousel-inner,
+.portfolio-inner .portfolio-text { background: rgba(11, 21, 48, .72); }
+.page-header {
+    background: linear-gradient(rgba(11, 21, 48, .78), rgba(11, 21, 48, .78)), url(../img/carousel-1.jpg) center center no-repeat;
+    background-size: cover;
+}
+.header-carousel .owl-nav .owl-prev:hover,
+.header-carousel .owl-nav .owl-next:hover { background: var(--primary); border-color: var(--primary); }
+
+/* Facts boxes: the big numbers are decorative, keep them subtle on dark navy */
+.fact-num { color: rgba(255, 255, 255, .08); font-weight: 900; line-height: 1; }
+
+/* Service cards */
+.service-item h4 { font-size: 1.25rem; }
+.service-cta .btn { white-space: nowrap; }
+
+/* Armenian words are long — keep big headings from overflowing on phones */
+.display-3, .display-5 { overflow-wrap: anywhere; }
+@media (max-width: 576px) {
+    .display-3 { font-size: 2rem; }
+    .display-5 { font-size: 1.75rem; }
+}
+
+/* Template icons are green PNGs — shift them to the brand blue */
+img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
+
+/* The template styles every .btn inside a service card as a 38px round "read more" button */
+.service-cta .btn {
+    width: auto;
+    height: auto;
+    padding: .55rem 1.1rem;
+    border-radius: 2rem;
+    display: inline-block;
+}
+.service-cta .btn.btn-light { background: #FFFFFF !important; }
+.service-cta .btn.btn-outline-light { background: transparent !important; border: 1px solid #FFFFFF; }
+
+/* Armenian has no title case — the template's capitalize makes footer links look wrong */
+.footer .btn.btn-link { text-transform: none; }
+
+/* "Why us" items: long Armenian words need room */
+.feature-text h5 { font-size: 1rem; overflow-wrap: anywhere; }
+.feature-text p.small { line-height: 1.35; }
+
+/* Social section */
+.social-card { border-radius: 12px; box-shadow: 0 0 30px rgba(11, 21, 48, .08); transition: transform .2s, box-shadow .2s; text-decoration: none; }
+.social-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(11, 21, 48, .15); }
+.social-icon { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+.social-card .btn { pointer-events: none; }
+
+/* Floating call button on phones; lift back-to-top above it */
+.call-float { position: fixed; left: 16px; bottom: 20px; z-index: 99; padding: .7rem 1.3rem; }
+@media (max-width: 991.98px) { .back-to-top { right: 16px; bottom: 20px; } }
+
+/* Real work gallery */
+.work-tile { border-radius: 10px; }
+.work-tile img { transition: transform .4s; aspect-ratio: 1 / 1; object-fit: cover; }
+.work-tile:hover img { transform: scale(1.05); }
+.work-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.5rem .8rem .6rem; color: #fff; font-size: .85rem;
+    background: linear-gradient(transparent, rgba(11, 21, 48, .85)); }
