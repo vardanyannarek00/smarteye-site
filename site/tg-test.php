@@ -33,3 +33,19 @@ if ($res === false) {
 }
 $j = json_decode($res, true);
 echo "5. Telegram-ի պատասխան: HTTP $code — " . (!empty($j['ok']) ? "ՈՒՂԱՐԿՎԵՑ" : ($j['description'] ?? $res)) . "\n";
+
+function tg($method) {
+    $r = @file_get_contents('https://api.telegram.org/bot' . TG_TOKEN . '/' . $method);
+    return $r ? json_decode($r, true) : null;
+}
+$me = tg('getMe');
+echo "\n6. Բոտը, որին պատկանում է token-ը: @" . ($me['result']['username'] ?? '?') . "\n";
+$up = tg('getUpdates');
+$seen = [];
+foreach (($up['result'] ?? []) as $u) {
+    $c = $u['message']['chat'] ?? $u['my_chat_member']['chat'] ?? null;
+    if ($c) $seen[$c['id']] = trim(($c['first_name'] ?? '') . ' @' . ($c['username'] ?? ''));
+}
+echo "7. Ովքեր են գրել այս բոտին վերջերս:\n";
+if (!$seen) echo "   ոչ ոք (Start-ը սեղմվել է ուրիշ բոտում)\n";
+foreach ($seen as $id => $n) echo "   ID $id — $n" . ($id == TG_CHAT ? "  ← համընկնում է" : "") . "\n";
