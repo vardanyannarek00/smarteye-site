@@ -425,7 +425,9 @@ def quote_form(heading_tag="h2"):
                         <div class="bg-primary mb-3" style="width: 60px; height: 2px;"></div>
                         <{heading_tag} class="display-5 mb-4">Անվճար առաջարկ</{heading_tag}>
                         <p class="mb-4 pb-2">Լրացրեք ձևը կամ զանգահարեք <a href="tel:{PHONE}">{PHONE_TXT}</a>։ Կկապվենք ձեզ հետ, կզննենք օբյեկտը և կառաջարկենք լուծում՝ անվճար։</p>
-                        <form class="js-quote-form">
+                        <form id="form" class="js-quote-form" method="post" action="send.php">
+                            <input type="hidden" name="form" value="quote">
+                            <div class="hp-field" aria-hidden="true"><input name="website" type="text" tabindex="-1" autocomplete="off"></div>
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
                                     <input name="name" type="text" class="form-control border-0" placeholder="Ձեր անունը" style="height: 55px;" required>
@@ -458,17 +460,19 @@ def quote_form(heading_tag="h2"):
 
 # The template's forms have no server behind them. This opens the visitor's mail app
 # with the request filled in, so a request is never silently lost.
-FORM_JS = f"""
+FORM_JS = """
     <script>
-    document.querySelectorAll('.js-quote-form, .js-contact-form').forEach(function (form) {{
-        form.addEventListener('submit', function (e) {{
-            e.preventDefault();
-            var d = new FormData(form), lines = [];
-            d.forEach(function (v, k) {{ if (v) lines.push(v); }});
-            var subject = form.classList.contains('js-quote-form') ? 'Հայտ կայքից — ' + (d.get('service') || '') : (d.get('subject') || 'Նամակ կայքից');
-            window.location.href = 'mailto:{EMAIL}?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\\n'));
-        }});
-    }});
+    (function () {
+        var m = location.search.match(/[?&]sent=(ok|err)/);
+        if (!m) return;
+        var ok = m[1] === 'ok';
+        var box = document.createElement('div');
+        box.className = 'form-notice ' + (ok ? 'ok' : 'err');
+        box.textContent = ok ? 'Շնորհակալություն, հայտը ստացանք։ Շուտով կկապվենք ձեզ հետ։'
+                             : 'Ներողություն, հայտը չուղարկվեց։ Խնդրում ենք զանգահարել +374 43 535 332։';
+        var form = document.querySelector('.js-quote-form, .js-contact-form');
+        if (form) { form.parentNode.insertBefore(box, form); box.scrollIntoView({block: 'center'}); }
+    })();
     </script>"""
 
 
@@ -480,6 +484,7 @@ def build():
         shutil.copytree(os.path.join(SRC, d), os.path.join(OUT, d), dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns("*.doc", "*.docx", "*.pdf", "*.txt"))
     shutil.copytree("/home/claude/media/web", os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
+    shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
     site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
@@ -590,7 +595,9 @@ def build():
                         <p class="mb-2"><i class="fa fa-phone-alt text-primary me-3"></i><a href="tel:{PHONE}">{PHONE_TXT}</a></p>
                         <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i><a href="mailto:{EMAIL}">{EMAIL}</a></p>
                         <p class="mb-4"><i class="fa fa-map-marker-alt text-primary me-3"></i>Երևան</p>
-                        <form class="js-contact-form">
+                        <form id="form" class="js-contact-form" method="post" action="send.php">
+                            <input type="hidden" name="form" value="contact">
+                            <div class="hp-field" aria-hidden="true"><input name="website" type="text" tabindex="-1" autocomplete="off"></div>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">

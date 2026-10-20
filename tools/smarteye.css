@@ -108,3 +108,9 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 .work-tile:hover img { transform: scale(1.05); }
 .work-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.5rem .8rem .6rem; color: #fff; font-size: .85rem;
     background: linear-gradient(transparent, rgba(11, 21, 48, .85)); }
+
+/* Form: spam trap + result notice */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-notice { padding: 1rem 1.2rem; border-radius: 8px; margin-bottom: 1rem; font-weight: 500; }
+.form-notice.ok { background: #E6F4EA; color: #1E7B34; }
+.form-notice.err { background: #FDECEA; color: #A52A1E; }
