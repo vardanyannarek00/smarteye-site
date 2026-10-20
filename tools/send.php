@@ -6,6 +6,33 @@ const TO_EMAIL   = 'info@smarteye.am';
 const FROM_EMAIL = 'info@smarteye.am';   // same domain, so the mail is not flagged as spoofed
 date_default_timezone_set('Asia/Yerevan');
 
+// Telegram settings live OUTSIDE the website folder and outside GitHub (the repo is public):
+// /home/smarteye/smarteye-config.php defining TG_TOKEN and TG_CHAT.
+$cfg = __DIR__ . '/../smarteye-config.php';
+if (is_file($cfg)) {
+    require $cfg;
+}
+
+function telegram($text) {
+    if (!defined('TG_TOKEN') || !defined('TG_CHAT') || TG_TOKEN === '' || TG_CHAT === '') {
+        return false;
+    }
+    $url  = 'https://api.telegram.org/bot' . TG_TOKEN . '/sendMessage';
+    $data = http_build_query(['chat_id' => TG_CHAT, 'text' => $text, 'disable_web_page_preview' => 1]);
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $data,
+                                CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
+        $res  = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return $res !== false && $code === 200;
+    }
+    $ctx = stream_context_create(['http' => ['method' => 'POST', 'timeout' => 10,
+        'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => $data]]);
+    return @file_get_contents($url, false, $ctx) !== false;
+}
+
 function back($status) {
     $ref = $_SERVER['HTTP_REFERER'] ?? '';
     $page = 'quote.html';
@@ -68,6 +95,8 @@ $headers = [
     'Content-Transfer-Encoding: 8bit',
 ];
 
+$tg = telegram("🔔 " . $title . "\n\n" . implode("\n", $lines));
+
 $sent = mail(
     TO_EMAIL,
     '=?UTF-8?B?' . base64_encode($title) . '?=',
@@ -76,4 +105,4 @@ $sent = mail(
     '-f' . FROM_EMAIL
 );
 
-back($sent ? 'ok' : 'err');
+back(($sent || $tg) ? 'ok' : 'err');
