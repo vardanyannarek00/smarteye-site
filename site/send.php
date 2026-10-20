@@ -2,7 +2,7 @@
 // SmartEye System — website form handler.
 // Receives the "Անվճար առաջարկ" and "Կապ" forms and emails them to the business mailbox.
 
-const TO_EMAIL   = 'info@smarteye.am';
+const TO_EMAIL   = 'narekservice@gmail.com, info@smarteye.am';   // Gmail first: requests land where Narek already reads mail
 const FROM_EMAIL = 'info@smarteye.am';   // same domain, so the mail is not flagged as spoofed
 date_default_timezone_set('Asia/Yerevan');
 
