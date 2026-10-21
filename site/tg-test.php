@@ -40,7 +40,10 @@ function tg($method) {
 }
 $me = tg('getMe');
 echo "\n6. Բոտը, որին պատկանում է token-ը: @" . ($me['result']['username'] ?? '?') . "\n";
+$wh = tg('getWebhookInfo');
+echo "   webhook: " . (!empty($wh['result']['url']) ? "ԿԱ — " . parse_url($wh['result']['url'], PHP_URL_HOST) . " (այն «ուտում» է հաղորդագրությունները)" : "չկա") . "\n";
 $up = tg('getUpdates');
+echo "   getUpdates: " . ($up === null ? "պատասխան չկա" : (!empty($up['ok']) ? "ok, " . count($up['result']) . " հաղորդագրություն" : ($up['description'] ?? '?'))) . "\n";
 $seen = [];
 foreach (($up['result'] ?? []) as $u) {
     $c = $u['message']['chat'] ?? $u['my_chat_member']['chat'] ?? null;
