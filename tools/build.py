@@ -343,6 +343,23 @@ def work_gallery(limit=None):
                 </div>""" for n, t in items)
 
 
+WORK_VIDEOS = [  # self-hosted short clips (compressed, metadata stripped) in img/video/
+    ("video-1", "Տեսախցիկների տեղադրում շենքի վրա"),
+    ("video-2", "Dahua գմբեթավոր տեսախցիկ և դիտում էկրանին"),
+    ("video-3", "Hikvision սարքավորումներ"),
+]
+
+
+def work_videos():
+    return "".join(f"""
+                <div class="col-md-4 col-sm-6">
+                    <div class="work-video">
+                        <video src="img/video/{n}.mp4" poster="img/video/{n}.jpg" controls muted playsinline preload="none"></video>
+                        <p class="small text-center mt-2 mb-0">{t}</p>
+                    </div>
+                </div>""" for n, t in WORK_VIDEOS)
+
+
 TIKTOK_VIDEOS = [  # most-viewed SmartEye TikToks; swap IDs here to feature newer ones
     "7665792168635682068",
     "7665790815272307989",
@@ -397,7 +414,10 @@ def our_work_cta(with_facebook=False):
             </div>
             <div class="row g-4 mb-5">{card_html}
             </div>
-            <h3 class="text-center mb-4">Վերջին տեսանյութերը</h3>
+            <h3 class="text-center mb-4">Տեսանյութեր</h3>
+            <div class="row g-4 justify-content-center mb-5">{work_videos()}
+            </div>
+            <h3 class="text-center mb-4">TikTok-ում</h3>
             <div class="row g-4 justify-content-center">{vids}
             </div>
             <div class="text-center mt-4">
@@ -486,6 +506,7 @@ def build():
         shutil.copytree(os.path.join(SRC, d), os.path.join(OUT, d), dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns("*.doc", "*.docx", "*.pdf", "*.txt"))
     shutil.copytree("/home/claude/media/web", os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
+    shutil.copytree("/home/claude/media/webvid", os.path.join(OUT, "img", "video"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
