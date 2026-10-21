@@ -1,54 +1,45 @@
 <?php
-// Temporary diagnostic for the Telegram notification. Shows no secrets. Delete after setup.
+// Telegram setup page. Shows no secrets. Finds who messaged the bot, saves that chat, sends a test.
 header('Content-Type: text/plain; charset=UTF-8');
 
 $cfg = __DIR__ . '/../smarteye-config.php';
-echo "1. Ֆայլը (" . realpath(__DIR__ . '/..') . "/smarteye-config.php): " . (is_file($cfg) ? "ԿԱ" : "ՉԿԱ") . "\n";
-if (!is_file($cfg)) {
-    echo "\nՖայլը չի գտնվել։ Համոզվիր, որ այն /home/smarteye թղթապանակում է և կոչվում է ճիշտ smarteye-config.php\n";
-    $near = glob(__DIR__ . '/../*config*') ?: [];
-    if ($near) echo "Կողքի նման ֆայլեր: " . implode(', ', array_map('basename', $near)) . "\n";
-    exit;
-}
-
+if (!is_file($cfg)) { echo "✗ /home/smarteye/smarteye-config.php ֆայլը չկա\n"; exit; }
 require $cfg;
-$hasTok  = defined('TG_TOKEN') && TG_TOKEN !== '';
-$hasChat = defined('TG_CHAT') && TG_CHAT !== '';
-echo "2. TG_TOKEN: " . ($hasTok ? "լրացված (" . strlen(TG_TOKEN) . " նիշ, ձևաչափը " . (preg_match('/^\d+:[\w-]{30,}$/', TG_TOKEN) ? "ճիշտ" : "ՍԽԱԼ") . ")" : "ՉԿԱ") . "\n";
-echo "3. TG_CHAT: " . ($hasChat ? TG_CHAT : "ՉԿԱ") . "\n";
-echo "4. curl: " . (function_exists('curl_init') ? "կա" : "չկա") . "\n";
-if (!$hasTok || !$hasChat) exit;
+if (!defined('TG_TOKEN') || !preg_match('/^\d+:[\w-]{30,}$/', TG_TOKEN)) { echo "✗ TG_TOKEN-ը սխալ է կամ դատարկ\n"; exit; }
 
-$ch = curl_init('https://api.telegram.org/bot' . TG_TOKEN . '/sendMessage');
-curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15,
-    CURLOPT_POSTFIELDS => http_build_query(['chat_id' => TG_CHAT, 'text' => '✅ SmartEye կայքի թեստ'])]);
-$res = curl_exec($ch);
-$err = curl_error($ch);
-$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($res === false) {
-    echo "5. Կապ Telegram-ի հետ: ՉԿԱ — $err\n   (հոստինգը փակում է դեպի api.telegram.org կապը, պետք է գրել name.am-ին)\n";
-    exit;
+function tg($method, $params = []) {
+    $ch = curl_init('https://api.telegram.org/bot' . TG_TOKEN . '/' . $method);
+    curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => http_build_query($params),
+                            CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15]);
+    $r = curl_exec($ch); curl_close($ch);
+    return $r ? json_decode($r, true) : ['ok' => false, 'description' => 'կապ չկա api.telegram.org-ի հետ'];
 }
-$j = json_decode($res, true);
-echo "5. Telegram-ի պատասխան: HTTP $code — " . (!empty($j['ok']) ? "ՈՒՂԱՐԿՎԵՑ" : ($j['description'] ?? $res)) . "\n";
 
-function tg($method) {
-    $r = @file_get_contents('https://api.telegram.org/bot' . TG_TOKEN . '/' . $method);
-    return $r ? json_decode($r, true) : null;
-}
 $me = tg('getMe');
-echo "\n6. Բոտը, որին պատկանում է token-ը: @" . ($me['result']['username'] ?? '?') . "\n";
+if (empty($me['ok'])) { echo "✗ Token-ը չի աշխատում: " . ($me['description'] ?? '') . "\n"; exit; }
+echo "✓ Բոտը: @" . $me['result']['username'] . "\n";
+
 $wh = tg('getWebhookInfo');
-echo "   webhook: " . (!empty($wh['result']['url']) ? "ԿԱ — " . parse_url($wh['result']['url'], PHP_URL_HOST) . " (այն «ուտում» է հաղորդագրությունները)" : "չկա") . "\n";
+if (!empty($wh['result']['url'])) { tg('deleteWebhook'); echo "✓ Հին webhook-ը անջատվեց\n"; }
+
 $up = tg('getUpdates');
-echo "   getUpdates: " . ($up === null ? "պատասխան չկա" : (!empty($up['ok']) ? "ok, " . count($up['result']) . " հաղորդագրություն" : ($up['description'] ?? '?'))) . "\n";
-$seen = [];
+$chats = [];
 foreach (($up['result'] ?? []) as $u) {
     $c = $u['message']['chat'] ?? $u['my_chat_member']['chat'] ?? null;
-    if ($c) $seen[$c['id']] = trim(($c['first_name'] ?? '') . ' @' . ($c['username'] ?? ''));
+    if ($c) $chats[$c['id']] = trim(($c['first_name'] ?? $c['title'] ?? '') . ' @' . ($c['username'] ?? ''));
 }
-echo "7. Ովքեր են գրել այս բոտին վերջերս:\n";
-if (!$seen) echo "   ոչ ոք (Start-ը սեղմվել է ուրիշ բոտում)\n";
-foreach ($seen as $id => $n) echo "   ID $id — $n" . ($id == TG_CHAT ? "  ← համընկնում է" : "") . "\n";
+$save = __DIR__ . '/../smarteye-tgchat.txt';
+if ($chats) {
+    $id = array_key_last($chats);
+    file_put_contents($save, $id);
+    echo "✓ Բոտին գրել է: " . $chats[$id] . " (ID $id) — պահպանվեց\n";
+} elseif (is_file($save)) {
+    $id = trim(file_get_contents($save));
+    echo "✓ Պահպանված ID: $id\n";
+} else {
+    echo "✗ Բոտին դեռ ոչ ոք չի գրել։ Telegram-ում բացիր @" . $me['result']['username'] . ", գրիր «բարև», հետո թարմացրու այս էջը\n";
+    exit;
+}
+
+$r = tg('sendMessage', ['chat_id' => $id, 'text' => '✅ SmartEye կայքի թեստ — կայքի հայտերը կգան այստեղ']);
+echo !empty($r['ok']) ? "✓ Թեստային հաղորդագրությունը ՈՒՂԱՐԿՎԵՑ\n" : "✗ Չուղարկվեց: " . ($r['description'] ?? '') . "\n";

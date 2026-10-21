@@ -13,12 +13,19 @@ if (is_file($cfg)) {
     require $cfg;
 }
 
+function tg_chat() {
+    if (defined('TG_CHAT') && TG_CHAT !== '' && TG_CHAT !== 'auto') return TG_CHAT;
+    $f = __DIR__ . '/../smarteye-tgchat.txt';   // written by tg-test.php after you message the bot
+    return is_file($f) ? trim(file_get_contents($f)) : '';
+}
+
 function telegram($text) {
-    if (!defined('TG_TOKEN') || !defined('TG_CHAT') || TG_TOKEN === '' || TG_CHAT === '') {
+    $chat = tg_chat();
+    if (!defined('TG_TOKEN') || TG_TOKEN === '' || $chat === '') {
         return false;
     }
     $url  = 'https://api.telegram.org/bot' . TG_TOKEN . '/sendMessage';
-    $data = http_build_query(['chat_id' => TG_CHAT, 'text' => $text, 'disable_web_page_preview' => 1]);
+    $data = http_build_query(['chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 1]);
     if (function_exists('curl_init')) {
         $ch = curl_init($url);
         curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $data,
