@@ -320,12 +320,14 @@ def why_us():
 """
 
 
-WORK_PHOTOS = [  # real SmartEye installations (EXIF/GPS stripped)
+WORK_PHOTOS = [  # real SmartEye installations (EXIF/GPS stripped); first 4 appear on the homepage
     ("work-1", "Hikvision տեսախցիկ այգու մուտքի մոտ"),
     ("work-2", "Պտտվող տեսախցիկ տան անկյունում"),
     ("work-3", "Երկու տեսախցիկ՝ այգու երկու ուղղությամբ"),
     ("work-4", "Տեսախցիկ տան ճակատին"),
     ("work-5", "Այսպես է երևում տեսախցիկից"),
+    ("work-6", "Hikvision տեսախցիկ՝ այգու հսկողություն"),
+    ("work-7", "Տեսահսկվող օբյեկտ"),
 ]
 
 
