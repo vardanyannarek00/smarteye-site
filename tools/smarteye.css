@@ -259,3 +259,23 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 .use-card > i { display: inline-flex; width: 52px; height: 52px; border-radius: 14px; align-items: center; justify-content: center; flex-shrink: 0;
     background: rgba(30, 107, 255, .1); color: var(--primary); font-size: 1.3rem; }
 .use-card p { color: #4A5568; line-height: 1.6; }
+
+/* ===== Alarm page / service links ===== */
+.more-link { display: inline-block; margin-top: 1rem; font-weight: 500; font-size: .92rem; }
+.dev-card { background: #fff; border-radius: 14px; padding: 1.3rem; box-shadow: 0 8px 28px rgba(11, 21, 48, .06); }
+.dev-card i { color: var(--primary); font-size: 1.4rem; margin-bottom: .8rem; display: block; }
+.dev-card h6 { font-size: .98rem; margin-bottom: .35rem; }
+.dev-card p { font-size: .86rem; color: #5A6680; line-height: 1.5; }
+
+/* Comparison tables stack on phones instead of scrolling sideways */
+.sys-table .cell-h { display: none; }
+@media (max-width: 575.98px) {
+    .sys-table-wrap { overflow: visible; padding: .25rem .75rem; }
+    .sys-table thead { display: none; }
+    .sys-table, .sys-table tbody, .sys-table tr, .sys-table th, .sys-table td { display: block; width: 100% !important; }
+    .sys-table tr { padding: .75rem 0; border-bottom: 1px solid #EEF1F6; }
+    .sys-table tr:last-child { border-bottom: 0; }
+    .sys-table th, .sys-table td { border: 0; padding: .2rem 0; }
+    .sys-table tbody th { color: var(--primary); }
+    .sys-table .cell-h { display: inline; font-weight: 500; color: var(--dark); }
+}

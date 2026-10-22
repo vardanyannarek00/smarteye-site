@@ -187,6 +187,7 @@ def footer(extra_js=""):
                     <h5 class="text-light mb-4">Արագ հղումներ</h5>
                     <a class="btn btn-link" href="about.html">Մեր մասին</a>
                     <a class="btn btn-link" href="smart.html">Խելացի տեսախցիկներ</a>
+                    <a class="btn btn-link" href="alarm.html">Ազդանշանային համակարգեր</a>
                     <a class="btn btn-link" href="project.html">Աշխատանքներ</a>
                     <a class="btn btn-link" href="quote.html">Անվճար խորհրդատվություն</a>
                     <a class="btn btn-link" href="contact.html">Կապ</a>
@@ -236,6 +237,17 @@ def page(fname, active, title, desc, body, extra_js=""):
 
 # ---------- reusable sections ----------
 
+MORE_LINKS = {"Տեսախցիկների տեղադրում": ("smart.html", "Խելացի տեսախցիկներ"),
+              "Ազդանշանային և հակահրդեհային համակարգեր": ("alarm.html", "Մանրամասն")}
+
+
+def more_link(name):
+    if name not in MORE_LINKS:
+        return ""
+    href, label = MORE_LINKS[name]
+    return f'\n                        <a class="more-link" href="{href}">{label} <i class="fa fa-arrow-right ms-1"></i></a>'
+
+
 def services_grid(with_cta=True):
     delays = ["0.1s", "0.3s", "0.5s"]
     cards = []
@@ -245,7 +257,7 @@ def services_grid(with_cta=True):
                     <div class="service-item border h-100 p-5">
                         <i class="fa {icon} step-icon"></i>
                         <h4 class="mb-3">{name}</h4>
-                        <p class="mb-0">{text}</p>
+                        <p class="mb-0">{text}</p>{more_link(name)}
                     </div>
                 </div>""")
     if with_cta:
@@ -528,7 +540,7 @@ def smart_page_body():
         ("Գոտիներ և գծեր", "Սահմանափակ", "Մուտք գոտի, գծի հատում, ներխուժում"),
         ("Գին", "Ավելի մատչելի", "Մի փոքր ավելի թանկ"),
     ]
-    cmp_html = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>" for a, b, c in cmp_rows)
+    cmp_html = "".join(f"<tr><th>{a}</th><td><span class=\"cell-h\">Սովորական՝ </span>{b}</td><td><span class=\"cell-h\">Խելացի՝ </span>{c}</td></tr>" for a, b, c in cmp_rows)
     faq = [
         ("Գիշերը աշխատու՞մ է։", "Այո։ Գիշերային տեսողությամբ և ColorVu տեսախցիկներով ճանաչումը աշխատում է նաև մթության մեջ։"),
         ("Ինտերնետ պե՞տք է։", "Ճանաչումն աշխատում է տեսախցիկի կամ ձայնագրիչի մեջ, ինտերնետ պետք չէ։ Ինտերնետը պետք է միայն ահազանգը հեռախոսին ստանալու և հեռվից դիտելու համար։"),
@@ -597,6 +609,144 @@ def smart_page_body():
 """
 
 
+def alarm_page_body():
+    flow = [("fa-door-open", "Դուռը բացվում է կամ սենսորը շարժում է տեսնում"), ("fa-satellite-dish", "Սենսորը ազդանշանն ուղարկում է կառավարման վահանակին"),
+            ("fa-volume-up", "Սիրենան միանում է"), ("fa-mobile-alt", "Ահազանգը նկարով կամ տեսանյութով գալիս է ձեր հեռախոսին")]
+    flow_html = "".join(f"""
+                <div class="col-6 col-lg-3">
+                    <div class="step h-100">
+                        <span class="step-num">{i + 1}</span>
+                        <i class="fa {ic} step-icon"></i>
+                        <p class="mb-0">{t}</p>
+                    </div>
+                </div>""" for i, (ic, t) in enumerate(flow))
+    devices = [
+        ("fa-walking", "Շարժման սենսոր", "Տեսնում է մարդուն սենյակում։ Կան մոդելներ, որոնք անտեսում են կենդանիներին։"),
+        ("fa-door-closed", "Դռան և պատուհանի սենսոր", "Ահազանգում է դուռը կամ պատուհանը բացելիս։"),
+        ("fa-camera", "Սենսոր տեսախցիկով", "Շարժման դեպքում նկարում է, և ահազանգը գալիս է նկարով։"),
+        ("fa-glass-martini-alt", "Ապակու կոտրման սենսոր", "Լսում է ապակու կոտրվելու ձայնը։"),
+        ("fa-fire", "Ծխի և հրդեհի սենսոր", "Վաղ նախազգուշացում հրդեհի մասին։"),
+        ("fa-tint", "Ջրի արտահոսքի սենսոր", "Խողովակի վթարի դեպքում անմիջապես տեղեկացնում է։"),
+        ("fa-volume-up", "Սիրենա", "Ներսի և դրսի, ձայնով և լույսով։"),
+        ("fa-key", "Վահանակ և հեռակառավարման բանալի", "Միացնել/անջատել առանց հեռախոսի։"),
+    ]
+    dev_html = "".join(f"""
+                <div class="col-6 col-lg-3">
+                    <div class="dev-card h-100">
+                        <i class="fa {ic}"></i>
+                        <h6>{t}</h6>
+                        <p class="mb-0">{d}</p>
+                    </div>
+                </div>""" for ic, t, d in devices)
+    rows = [
+        ("Լարեր", "Չկան. սենսորները աշխատում են մարտկոցով", "Սենսորները միանում են մալուխով"),
+        ("Տեղադրում", "Արագ, առանց պատերը փորելու և վերանորոգումը փչացնելու", "Ավելի երկար, լավ է անել վերանորոգման ժամանակ"),
+        ("Սպասարկում", "Ժամանակ առ ժամանակ փոխել սենսորների մարտկոցները", "Մարտկոց փոխել պետք չէ"),
+        ("Հարմար է", "Բնակարան, պատրաստի վերանորոգված տուն, գրասենյակ, վարձով տարածք", "Նոր շինություն, մեծ տարածք, պահեստ, արտադրություն"),
+        ("Համադրում", "Կարելի է ավելացնել նաև լարային սենսորներ (Hybrid)", "Կարելի է ավելացնել նաև անլար սենսորներ"),
+    ]
+    trs = "".join(f"<tr><th>{a}</th><td><span class=\"cell-h\">Անլար՝ </span>{b}</td><td><span class=\"cell-h\">Լարային՝ </span>{c}</td></tr>" for a, b, c in rows)
+    faq = [
+        ("Եթե հոսանքն անջատվի, ալարմը կաշխատի՞։", "Այո։ Կառավարման վահանակն ունի պահուստային մարտկոց և շարունակում է աշխատել հոսանքի անջատման ժամանակ։"),
+        ("Եթե ինտերնետը չլինի՞։", "Ալարմը և սիրենան աշխատում են առանց ինտերնետի։ Հեռախոսին ահազանգ ստանալու համար վահանակը կարող է կապ պահել Wi-Fi-ով, LAN-ով կամ SIM քարտով (4G), նաև մի քանի ճանապարհով միաժամանակ։"),
+        ("Անլար ալարմը հուսալի՞ է։", "Hikvision AX PRO-ն օգտագործում է Tri-X անլար տեխնոլոգիա՝ կոդավորված կապով և խցանման դեմ պաշտպանությամբ։ Վահանակը նաև հետևում է, որ յուրաքանչյուր սենսոր կապի մեջ լինի։"),
+        ("Տանը կենդանի ունեմ, անընդհատ կահազանգի՞։", "Կան շարժման սենսորներ, որոնք անտեսում են փոքր կենդանիներին։ Զննման ժամանակ կընտրենք ճիշտ մոդելը և տեղը։"),
+        ("Կարելի՞ է միացնել տեսախցիկների հետ։", "Այո։ Ալարմը և Hikvision տեսախցիկները կառավարվում են նույն Hik-Connect հավելվածով, և ահազանգի պահին կարող եք անմիջապես տեսնել տեսախցիկը։"),
+    ]
+    faq_html = "".join(f"""
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="ah{i}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ac{i}" aria-expanded="false" aria-controls="ac{i}">{q}</button>
+                    </h3>
+                    <div id="ac{i}" class="accordion-collapse collapse" aria-labelledby="ah{i}" data-bs-parent="#faq">
+                        <div class="accordion-body">{a}</div>
+                    </div>
+                </div>""" for i, (q, a) in enumerate(faq))
+
+    def head(t, sub=""):
+        return f"""
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-{'3' if sub else '0'}">{t}</h2>
+                {f'<p class="mx-auto mb-0" style="max-width: 660px;">{sub}</p>' if sub else ''}
+            </div>"""
+
+    return f"""
+    <div class="container-xxl py-5">
+        <div class="container">{head("Ինչպես է աշխատում", "Hikvision-ի ազդանշանային համակարգը պաշտպանում է տունը կամ բիզնեսը ներխուժումից, հրդեհից և ջրի արտահոսքից, իսկ ահազանգը գալիս է անմիջապես ձեր հեռախոսին։")}
+            <div class="row g-4">{flow_html}
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">{head("Երկու տարբերակ", "Ընտրում ենք ձեր տարածքին համապատասխան. անլար, լարային կամ երկուսի համադրություն։")}
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag">Առանց լարերի</span>
+                        <i class="fa fa-wifi step-icon"></i>
+                        <h4>Անլար՝ Hikvision AX PRO</h4>
+                        <p>Սենսորները աշխատում են մարտկոցով և կապվում են վահանակի հետ ռադիոալիքով։ Պատերը փորել պետք չէ, տեղադրումը արագ է և մաքուր։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> բնակարան, վերանորոգված տուն, գրասենյակ, խանութ, վարձով տարածք։</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag sys-tag-muted">Լարային + անլար</span>
+                        <i class="fa fa-network-wired step-icon"></i>
+                        <h4>Լարային՝ Hikvision AX Hybrid PRO</h4>
+                        <p>Սենսորները միանում են մալուխով, մարտկոց փոխել պետք չէ։ Անհրաժեշտության դեպքում կարելի է ավելացնել նաև անլար սենսորներ։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> նոր կառուցվող տուն, մեծ տարածք, պահեստ, արտադրություն։</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive sys-table-wrap">
+                <table class="table sys-table mb-0">
+                    <thead><tr><th></th><th>Անլար (AX PRO)</th><th>Լարային (AX Hybrid PRO)</th></tr></thead>
+                    <tbody>{trs}</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">{head("Ինչից է բաղկացած", "Համակարգը հավաքում ենք ըստ ձեր տարածքի. միայն այն, ինչ իսկապես պետք է։")}
+            <div class="row g-3">{dev_html}
+            </div>
+        </div>
+    </div>
+
+    <section class="ai-section">
+        <div class="container">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-6">
+                    <span class="hero-kicker"><i class="fa fa-mobile-alt me-2"></i>Hik-Connect հավելված</span>
+                    <h2 class="display-5 text-white mb-3">Ալարմ և տեսախցիկներ՝ մեկ հավելվածում</h2>
+                    <p class="mb-0">Միացրեք կամ անջատեք ալարմը հեռախոսից, տեսեք որ սենսորն է աշխատել, և ահազանգի պահին անմիջապես նայեք տեսախցիկին։ Ահազանգի հետ կարող է գալ նաև նկար կամ կարճ տեսանյութ, որ տեսնեք՝ իսկապես վտանգ կա՞, թե ոչ։</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-6"><div class="ai-feat h-100"><i class="fa fa-lock"></i><h5>Միացնել/անջատել</h5><p class="mb-0">Հեռախոսից, վահանակից կամ բանալիով</p></div></div>
+                        <div class="col-6"><div class="ai-feat h-100"><i class="fa fa-image"></i><h5>Ահազանգ նկարով</h5><p class="mb-0">Տեսնում եք, թե ինչ է կատարվում</p></div></div>
+                        <div class="col-6"><div class="ai-feat h-100"><i class="fa fa-battery-half"></i><h5>Պահուստային սնուցում</h5><p class="mb-0">Աշխատում է հոսանքի անջատման ժամանակ</p></div></div>
+                        <div class="col-6"><div class="ai-feat h-100"><i class="fa fa-sim-card"></i><h5>Wi-Fi, LAN, 4G</h5><p class="mb-0">Կապը չի կտրվում, եթե մեկը չաշխատի</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container-xxl py-5">
+        <div class="container" style="max-width: 860px;">{head("Հարցեր")}
+            <div class="accordion" id="faq">{faq_html}
+            </div>
+        </div>
+    </div>
+{calc_cta()}
+"""
+
+
 def ip_vs_analog():
     rows = [
         ("Ինչպես է միանում", "Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)", "Կոաքսիալ մալուխով + առանձին սնուցում"),
@@ -606,7 +756,7 @@ def ip_vs_analog():
         ("Ընդլայնում", "Հեշտ է ավելացնել տեսախցիկներ, կարելի է օգտագործել առկա ցանցը", "Ավելացնելը սահմանափակ է ձայնագրիչի մուտքերով"),
         ("Գին", "Ավելի թանկ", "Ավելի մատչելի"),
     ]
-    trs = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>" for a, b, c in rows)
+    trs = "".join(f"<tr><th>{a}</th><td><span class=\"cell-h\">IP՝ </span>{b}</td><td><span class=\"cell-h\">Անալոգ՝ </span>{c}</td></tr>" for a, b, c in rows)
     return f"""
     <!-- IP vs Analog Start -->
     <div class="container-xxl py-5" id="ipvsanalog">
@@ -876,6 +1026,11 @@ def build():
          "SmartEye System-ի կատարած տեսախցիկների տեղադրումների լուսանկարներ և տեսանյութեր։",
          page_header("Աշխատանքներ") + our_work_cta(with_facebook=True) + calc_cta())
 
+    # alarm
+    page("alarm.html", "", "Ազդանշանային համակարգեր Hikvision | SmartEye System",
+         "Hikvision ալարմ՝ անլար (AX PRO) և լարային (AX Hybrid PRO)։ Շարժման, դռան, ծխի և ջրի սենսորներ, ահազանգ հեռախոսին։ Տեղադրում Երևանում և Արագածոտնում։",
+         page_header("Ազդանշանային համակարգեր") + alarm_page_body())
+
     # smart cameras
     page("smart.html", "", "Խելացի (AI) տեսախցիկներ | SmartEye System",
          "Hikvision AcuSense և Dahua WizSense խելացի տեսախցիկներ. մարդու և մեքենայի ճանաչում, ավելի քիչ կեղծ ահազանգ։ Տեղադրում Երևանում և Արագածոտնում։",
@@ -1012,7 +1167,7 @@ def about_block(more_link):
 
 
 def seo_files():
-    pages = ["index.html", "service.html", "smart.html", "project.html", "about.html", "quote.html", "contact.html"]
+    pages = ["index.html", "service.html", "smart.html", "alarm.html", "project.html", "about.html", "quote.html", "contact.html"]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for pg in pages:
