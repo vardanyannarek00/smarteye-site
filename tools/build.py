@@ -433,6 +433,47 @@ def our_work_cta(with_facebook=False):
 """
 
 
+def smart_ai():
+    feats = [
+        ("fa-user", "Մարդու և մեքենայի ճանաչում", "Տեսախցիկը տարբերում է մարդուն և մեքենան ծառերից, կենդանիներից, ստվերներից ու անձրևից։"),
+        ("fa-bell-slash", "Ավելի քիչ կեղծ ահազանգ", "Ծանուցումը գալիս է հեռախոսին միայն այն ժամանակ, երբ իսկապես մարդ կամ մեքենա կա։"),
+        ("fa-draw-polygon", "Գոտիներ և սահմանագծեր", "Նշում ենք դարպասը, պատը կամ մուտքը, և տեսախցիկը ահազանգում է, երբ մեկը հատում է այդ գիծը։"),
+        ("fa-search", "Արագ որոնում", "Ձայնագրության մեջ կարելի է գտնել միայն մարդկանց կամ մեքենաների հայտնվելու պահերը՝ առանց ժամերով դիտելու։"),
+        ("fa-lightbulb", "Ակտիվ վախեցում", "Որոշ մոդելներ վառում են լույս և ձայնային ազդանշան տալիս, երբ անծանոթը մոտենում է։"),
+        ("fa-mobile-alt", "Ամեն ինչ հեռախոսում", "Ահազանգը, նկարն ու տեսանյութը անմիջապես հեռախոսում են՝ Hik-Connect կամ DMSS հավելվածով։"),
+    ]
+    cards = "".join(f"""
+                <div class="col-md-6 col-lg-4">
+                    <div class="ai-feat h-100">
+                        <i class="fa {ic}"></i>
+                        <h5>{t}</h5>
+                        <p class="mb-0">{d}</p>
+                    </div>
+                </div>""" for ic, t, d in feats)
+    return f"""
+    <!-- Smart AI Start -->
+    <section class="ai-section" id="ai">
+        <div class="container">
+            <div class="row align-items-end g-4 mb-5">
+                <div class="col-lg-7">
+                    <span class="hero-kicker"><i class="fa fa-microchip me-2"></i>Արհեստական բանականություն</span>
+                    <h2 class="display-5 text-white mb-0">Խելացի տեսախցիկներ, որոնք հասկանում են, թե ինչ են տեսնում</h2>
+                </div>
+                <div class="col-lg-5">
+                    <p class="mb-0">Hikvision AcuSense և Dahua WizSense տեխնոլոգիաները տեսախցիկը դարձնում են պահակ, ոչ թե պարզապես ձայնագրող սարք։</p>
+                </div>
+            </div>
+            <div class="row g-4">{cards}
+            </div>
+            <div class="text-center mt-5">
+                <a href="quote.html#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր քո խելացի համակարգը</a>
+            </div>
+        </div>
+    </section>
+    <!-- Smart AI End -->
+"""
+
+
 def ip_vs_analog():
     rows = [
         ("Ինչպես է միանում", "Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)", "Կոաքսիալ մալուխով + առանձին սնուցում"),
@@ -617,6 +658,8 @@ def build():
          "Hikvision և Dahua՝ տեսահսկման ոլորտում աշխարհում ամենատարածված բրենդները։ Ընտրում ենք մոդելը ձեր օբյեկտին և բյուջեին համապատասխան։"),
         ("Ո՞րն է տարբերությունը IP և անալոգ տեսախցիկների միջև։",
          "IP տեսախցիկները թվային են. ավելի բարձր որակ և խելացի ֆունկցիաներ (մարդու և մեքենայի ճանաչում)։ Անալոգները (HD) ավելի մատչելի են և հարմար են հին լարերով։ Մանրամասն՝ <a href=\"service.html#ipvsanalog\">այստեղ</a>։"),
+        ("Ի՞նչ են «խելացի» (AI) տեսախցիկները։",
+         "Hikvision AcuSense և Dahua WizSense տեսախցիկները ճանաչում են մարդուն և մեքենային, անտեսում են ծառերն ու կենդանիներին, ուստի ահազանգը գալիս է միայն իրական վտանգի դեպքում։ Մանրամասն՝ <a href=\"index.html#ai\">այստեղ</a>։"),
         ("Տեսախցիկները գիշերը տեսնու՞մ են։",
          "Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Իսկ ColorVu մոդելները (2, 4 և 5 ՄՊ) գիշերն էլ գունավոր պատկեր են տալիս։"),
         ("Որտե՞ղ եք աշխատում։",
@@ -673,6 +716,7 @@ def build():
     </div>
     <!-- Steps End -->
 {services_grid()}
+{smart_ai()}
 {our_work_cta()}
 {why_us()}
 
@@ -702,7 +746,7 @@ def build():
     # services
     page("service.html", "service.html",
          "Ծառայություններ | SmartEye System — տեսահսկում, ազդանշանային համակարգեր, ցանցեր",
-         site_desc, page_header("Ծառայություններ") + services_grid() + ip_vs_analog() + calc_cta())
+         site_desc, page_header("Ծառայություններ") + services_grid() + smart_ai() + ip_vs_analog() + calc_cta())
 
     # projects / work
     page("project.html", "project.html", "Աշխատանքներ | SmartEye System",

@@ -237,3 +237,14 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 .sys-table td { color: #4A5568; }
 .sys-table tr:last-child th, .sys-table tr:last-child td { border-bottom: 0; }
 .calc-help { font-size: .8rem; font-weight: 400; margin-left: auto; }
+
+/* ===== Smart AI section ===== */
+.ai-section { padding: 5.5rem 0; margin: 3rem 0; color: #C3CFEA;
+    background: radial-gradient(800px 400px at 0% 0%, rgba(30, 107, 255, .3), transparent 60%),
+                radial-gradient(600px 400px at 100% 100%, rgba(111, 160, 255, .18), transparent 60%), var(--dark); }
+.ai-feat { padding: 1.75rem; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); transition: .2s; }
+.ai-feat:hover { background: rgba(255,255,255,.07); border-color: rgba(111,160,255,.35); }
+.ai-feat i { display: inline-flex; width: 48px; height: 48px; border-radius: 12px; align-items: center; justify-content: center;
+    background: rgba(30, 107, 255, .2); color: #8FB4FF; font-size: 1.2rem; margin-bottom: 1rem; }
+.ai-feat h5 { color: #fff; font-size: 1.05rem; }
+.ai-feat p { font-size: .93rem; color: #A9B7D6; line-height: 1.6; }
