@@ -339,6 +339,9 @@ WORK_PHOTOS = [  # real SmartEye installations (EXIF/GPS stripped); first 4 appe
     ("work-5", "Այսպես է երևում տեսախցիկից"),
     ("work-6", "Hikvision տեսախցիկ՝ այգու հսկողություն"),
     ("work-7", "Տեսահսկվող օբյեկտ"),
+    ("alarm-1", "Hikvision AX Hybrid PRO ալարմ և AcuSense NVR"),
+    ("alarm-2", "Լարային շարժման սենսորի միացում"),
+    ("alarm-3", "Ծխի սենսորի տեղադրում"),
 ]
 
 
@@ -706,6 +709,19 @@ def alarm_page_body():
                     <thead><tr><th></th><th>Անլար (AX PRO)</th><th>Լարային (AX Hybrid PRO)</th></tr></thead>
                     <tbody>{trs}</tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">{head("Մեր տեղադրումներից", "Hikvision AX Hybrid PRO ալարմ՝ լարային սենսորներով, AcuSense NVR-ով և տեսախցիկներով, մեկ օբյեկտում։")}
+            <div class="row g-3">{''.join(f"""
+                <div class="col-md-4">
+                    <a class="work-tile d-block position-relative overflow-hidden" href="img/work/{n}.jpg" data-lightbox="alarm" data-title="{t}">
+                        <img class="img-fluid w-100" src="img/work/{n}-sq.jpg" alt="{t}" loading="lazy">
+                        <span class="work-cap">{t}</span>
+                    </a>
+                </div>""" for n, t in [w for w in WORK_PHOTOS if w[0].startswith("alarm")])}
             </div>
         </div>
     </div>
