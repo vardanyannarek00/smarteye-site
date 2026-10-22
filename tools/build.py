@@ -55,9 +55,12 @@ def head(title, desc):
     <meta property="og:description" content="{desc}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://smarteye.am/">
-    <meta property="og:image" content="https://smarteye.am/img/carousel-1.jpg">
+    <meta property="og:image" content="https://smarteye.am/img/work/work-1.jpg">
 
-    <link href="img/favicon.ico" rel="icon">
+    <link href="img/favicon.svg" rel="icon" type="image/svg+xml">
+    <link href="img/favicon.png" rel="icon" type="image/png">
+    <link href="img/favicon.png" rel="apple-touch-icon">
+    <script type="application/ld+json">{{"@context":"https://schema.org","@type":"LocalBusiness","name":"SmartEye System","url":"https://smarteye.am/","telephone":"+37443535332","email":"info@smarteye.am","image":"https://smarteye.am/img/work/work-1.jpg","address":{{"@type":"PostalAddress","addressLocality":"Yerevan","addressCountry":"AM"}},"areaServed":["Yerevan","Aragatsotn"],"sameAs":["https://www.instagram.com/smarteye_system/","https://www.facebook.com/1385826704616620","https://www.tiktok.com/@smarteye.am"]}}</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -760,6 +763,25 @@ def about_block(more_link):
 """
 
 
+def seo_files():
+    pages = ["index.html", "service.html", "project.html", "about.html", "quote.html", "contact.html"]
+    with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+        for pg in pages:
+            loc = "https://smarteye.am/" + ("" if pg == "index.html" else pg)
+            f.write(f"  <url><loc>{loc}</loc></url>\n")
+        f.write("</urlset>\n")
+    with open(os.path.join(OUT, "robots.txt"), "w") as f:
+        f.write("User-agent: *\nDisallow: /send.php\nDisallow: /tg-test.php\nSitemap: https://smarteye.am/sitemap.xml\n")
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0B1530"/>'
+           '<path d="M8 32 C18 16, 46 16, 56 32 C46 48, 18 48, 8 32 Z" fill="none" stroke="#1E6BFF" stroke-width="4"/>'
+           '<circle cx="32" cy="32" r="9" fill="#1E6BFF"/><circle cx="35" cy="29" r="3" fill="#fff"/></svg>')
+    with open(os.path.join(OUT, "img", "favicon.svg"), "w") as f:
+        f.write(svg)
+    shutil.copy(os.path.join(os.path.dirname(__file__), "favicon.png"), os.path.join(OUT, "img", "favicon.png"))
+
+
 if __name__ == "__main__":
     build()
+    seo_files()
     print("built", sorted(f for f in os.listdir(OUT) if f.endswith(".html")))
