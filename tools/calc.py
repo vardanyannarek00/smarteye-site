@@ -13,9 +13,8 @@ OBJECTS = [
 ]
 
 QUALITY = [
-    ("2", "Ստանդարտ", "2 ՄՊ, Full HD"),
-    ("4", "Բարձր", "4 ՄՊ, ավելի մանրամասն"),
-    ("color", "Գիշերը գունավոր", "4 ՄՊ, գիշերն էլ գունավոր"),
+    ("4", "4 ՄՊ", "Բարձր որակ, գիշերը՝ սև-սպիտակ"),
+    ("5c", "5 ՄՊ ColorVu", "Գիշերն էլ գունավոր պատկեր"),
 ]
 
 SYSTEMS = [
@@ -159,8 +158,8 @@ def calculator(phone, phone_txt):
                     : sys.value === 'ip' ? 'ձայնագրիչ (NVR)' : 'ձայնագրիչ (DVR)';
             var q = val('q'), days = +(val('days') || {{ value: 14 }}).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
-            // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP cameras
-            var perDay = q && q.value === '2' ? 10 : 20;
+            // H.265, continuous recording: ~20 GB/day for 4 MP, ~25 GB/day for 5 MP cameras
+            var perDay = q && q.value === '5c' ? 25 : 20;
             var tb = total * perDay * days / 1000;
             var disks = [1, 2, 4, 6, 8, 10, 12, 16];
             var disk = disks.find(function (d) {{ return d >= tb; }}) || Math.ceil(tb);
@@ -169,7 +168,7 @@ def calculator(phone, phone_txt):
             var lines = [];
             lines.push(['fa-video', total + ' տեսախցիկ' + (total ? ' (' + n.in + ' ներսում, ' + n.out + ' դրսում)' : '')]);
             lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
-            lines.push(['fa-image', (q ? q.dataset.label : '') + ' որակ']);
+            lines.push(['fa-image', 'Որակ՝ ' + (q ? q.dataset.label : '')]);
             lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
