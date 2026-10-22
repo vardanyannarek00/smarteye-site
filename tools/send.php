@@ -40,6 +40,26 @@ function telegram($text) {
     return @file_get_contents($url, false, $ctx) !== false;
 }
 
+function telegram_photos($caption) {
+    $chat = tg_chat();
+    if (!defined('TG_TOKEN') || TG_TOKEN === '' || $chat === '' || empty($_FILES['photos']['tmp_name'])) {
+        return 0;
+    }
+    $sent = 0;
+    foreach (array_slice((array)$_FILES['photos']['tmp_name'], 0, 5) as $i => $tmp) {
+        if (!is_uploaded_file($tmp) || filesize($tmp) > 10 * 1024 * 1024 || !@getimagesize($tmp)) {
+            continue;
+        }
+        $ch = curl_init('https://api.telegram.org/bot' . TG_TOKEN . '/sendPhoto');
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30,
+            CURLOPT_POSTFIELDS => ['chat_id' => $chat, 'caption' => $i === 0 ? $caption : '',
+                                   'photo' => new CURLFile($tmp, 'image/jpeg', 'photo.jpg')]]);
+        if (curl_exec($ch) !== false && curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200) $sent++;
+        curl_close($ch);
+    }
+    return $sent;
+}
+
 function back($status) {
     $ref = $_SERVER['HTTP_REFERER'] ?? '';
     $page = 'quote.html';
@@ -93,6 +113,14 @@ if ($form === 'quote') {
     $lines[] = "\nՀաղորդագրություն:\n" . $message;
     $title = 'Նոր նամակ կայքից' . ($subject !== '' ? ' — ' . $subject : '');
 }
+$loc = field('loc', 200);
+if ($loc !== '' && preg_match('~^https://maps\.google\.com/\?q=-?\d+(\.\d+)?,-?\d+(\.\d+)?$~', $loc)) {
+    $lines[] = "\n📍 Տեղադրություն: " . $loc;
+}
+$nPhotos = empty($_FILES['photos']['tmp_name']) ? 0 : count(array_filter((array)$_FILES['photos']['tmp_name']));
+if ($nPhotos) {
+    $lines[] = "📷 Կցված նկարներ: " . min($nPhotos, 5) . " (ուղարկված են Telegram-ով)";
+}
 $lines[] = "\n—\nՈւղարկվել է smarteye.am-ից, " . date('Y-m-d H:i');
 
 $headers = [
@@ -103,6 +131,9 @@ $headers = [
 ];
 
 $tg = telegram("🔔 " . $title . "\n\n" . implode("\n", $lines));
+if ($tg) {
+    telegram_photos('📷 ' . $name . ', ' . $phone);
+}
 
 $sent = mail(
     TO_EMAIL,

@@ -283,3 +283,18 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 .calc-alarm { margin-top: 1rem; padding: 1rem; border-radius: 12px; background: rgba(30, 107, 255, .05); border: 1px dashed rgba(30, 107, 255, .3); }
 .calc-alarm .calc-step { background: #fff; }
 .calc-alarm .calc-step-label { font-size: .88rem; }
+
+/* ===== Calculator: need picker, groups, attachments ===== */
+.calc-q h5 span:empty::before { content: counter(calcq); }
+.calc-card { counter-reset: calcq; }
+.calc-card .calc-q:not([hidden]) { counter-increment: calcq; }
+.calc-card .calc-group[hidden] .calc-q { counter-increment: none; }
+.calc-opt-big span { padding: .8rem 1.2rem; font-size: 1rem; font-weight: 500; }
+.calc-group { border-top: 1px solid #EEF1F6; padding-top: 1.25rem; margin-top: .25rem; margin-bottom: 1.5rem; }
+.calc-group-title { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--primary); margin-bottom: 1rem; }
+.calc-attach { display: grid; gap: .5rem; }
+.calc-attach-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: .7rem 1rem; border-radius: 10px; cursor: pointer;
+    background: rgba(255,255,255,.08); border: 1px dashed rgba(255,255,255,.3); color: #DCE4F5; font-size: .92rem; transition: .15s; }
+.calc-attach-btn:hover { background: rgba(255,255,255,.14); }
+.calc-attach-btn.done { border-style: solid; border-color: #4ADE80; color: #BBF7D0; }
+.calc-attach-note { font-size: .78rem; color: #93A3C7; }
