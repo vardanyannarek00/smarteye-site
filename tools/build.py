@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate the SmartEye System site pages from one shared layout.
 
-Usage: python3 build.py <template_dir> <out_dir>
+Usage: python3 tools/build.py site /tmp/new-site   (then replace site/ with /tmp/new-site)
+Photos/videos are read from tools/work-photos and tools/work-videos.
 Copies css/js/lib/img from the template (skipping non-web files) and writes all pages.
 """
 import os, shutil, sys
@@ -911,8 +912,8 @@ def build():
     for d in ("css", "js", "lib", "img"):
         shutil.copytree(os.path.join(SRC, d), os.path.join(OUT, d), dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns("*.doc", "*.docx", "*.pdf", "*.txt"))
-    shutil.copytree("/home/claude/media/web", os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
-    shutil.copytree("/home/claude/media/webvid", os.path.join(OUT, "img", "video"), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-photos"), os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-videos"), os.path.join(OUT, "img", "video"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
