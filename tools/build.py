@@ -5,6 +5,8 @@ Usage: python3 tools/build.py site /tmp/new-site   (then replace site/ with /tmp
 Photos/videos are read from tools/work-photos and tools/work-videos.
 Copies css/js/lib/img from the template (skipping non-web files) and writes all pages.
 """
+import json, re
+import datetime
 import os, shutil, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from calc import calculator
@@ -46,7 +48,31 @@ SERVICES = [
 SERVICE_OPTIONS = [s[1] for s in SERVICES] + ["Այլ / չգիտեմ, խորհրդատվություն է պետք"]
 
 
-def head(title, desc):
+LD_BUSINESS = json.dumps({
+    "@context": "https://schema.org", "@type": "LocalBusiness", "@id": "https://smarteye.am/#business",
+    "name": "SmartEye System", "alternateName": ["SmartEye", "Սմարթ Այ"],
+    "description": "Տեսախցիկների, ազդանշանային համակարգերի (ալարմ) և ցանցերի տեղադրում Երևանում և Արագածոտնի մարզում։ Установка видеонаблюдения и сигнализации в Ереване. CCTV and alarm installation in Yerevan, Armenia.",
+    "url": "https://smarteye.am/", "telephone": "+37443535332", "email": "info@smarteye.am",
+    "image": "https://smarteye.am/img/work/work-10-hero.jpg", "logo": "https://smarteye.am/img/favicon.png",
+    "address": {"@type": "PostalAddress", "addressLocality": "Yerevan", "addressRegion": "Yerevan", "addressCountry": "AM"},
+    "areaServed": [{"@type": "City", "name": "Yerevan"}, {"@type": "AdministrativeArea", "name": "Aragatsotn"}],
+    "knowsAbout": ["CCTV installation", "IP cameras", "Hikvision", "Dahua", "alarm systems", "Hikvision AX PRO", "LAN networks", "Fluke cable certification"],
+    "makesOffer": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": n}} for n in
+                   ["Տեսախցիկների տեղադրում", "Ազդանշանային համակարգերի տեղադրում", "Լոկալ ցանցերի և Wi-Fi-ի կառուցում", "Մալուխի ստուգում Fluke-ով", "Խանութի կշեռքների տեղադրում"]],
+    "sameAs": ["https://www.instagram.com/smarteye_system/", "https://www.facebook.com/1385826704616620", "https://www.tiktok.com/@smarteye.am"],
+}, ensure_ascii=False)
+
+
+def faq_ld(items):
+    return '\n            <script type="application/ld+json">' + json.dumps({
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}} for q, a in items]},
+        ensure_ascii=False) + "</script>"
+
+
+def head(title, desc, fname="index.html"):
+    url = "https://smarteye.am/" + ("" if fname == "index.html" else fname)
+    robots = '\n    <meta name="robots" content="noindex">' if fname == "404.html" else f'\n    <link rel="canonical" href="{url}">'
     return f"""<!DOCTYPE html>
 <html lang="hy">
 
@@ -55,17 +81,19 @@ def head(title, desc):
     <title>{title}</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="տեսախցիկների տեղադրում, տեսահսկում Երևան, ազդանշանային համակարգ, ալարմ, լոկալ ցանց, LAN, Hikvision, Dahua, խանութի կշեռք, SmartEye" name="keywords">
-    <meta content="{desc}" name="description">
+    <meta content="{desc}" name="description">{robots}
     <meta property="og:title" content="{title}">
     <meta property="og:description" content="{desc}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://smarteye.am/">
-    <meta property="og:image" content="https://smarteye.am/img/work/work-1.jpg">
+    <meta property="og:url" content="{url}">
+    <meta property="og:locale" content="hy_AM">
+    <meta property="og:site_name" content="SmartEye System">
+    <meta property="og:image" content="https://smarteye.am/img/work/work-10-hero.jpg">
 
     <link href="img/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="img/favicon.png" rel="icon" type="image/png">
     <link href="img/favicon.png" rel="apple-touch-icon">
-    <script type="application/ld+json">{{"@context":"https://schema.org","@type":"LocalBusiness","name":"SmartEye System","url":"https://smarteye.am/","telephone":"+37443535332","email":"info@smarteye.am","image":"https://smarteye.am/img/work/work-1.jpg","address":{{"@type":"PostalAddress","addressLocality":"Yerevan","addressCountry":"AM"}},"areaServed":["Yerevan","Aragatsotn"],"sameAs":["https://www.instagram.com/smarteye_system/","https://www.facebook.com/1385826704616620","https://www.tiktok.com/@smarteye.am"]}}</script>
+    <script type="application/ld+json">{LD_BUSINESS}</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -207,7 +235,7 @@ def footer(extra_js=""):
             <div class="copyright border-top border-secondary py-4">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; {YEAR} <a class="border-bottom" href="index.html">SmartEye System</a>։ Բոլոր իրավունքները պաշտպանված են։
+                        &copy; {YEAR} <a class="border-bottom" href="index.html">SmartEye System</a>։ Բոլոր իրավունքները պաշտպանված են։<br><span class="small opacity-75">Установка видеонаблюдения и сигнализации в Ереване и Арагацотне • CCTV, alarm &amp; network installation in Yerevan, Armenia</span>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
                         <!-- Required by the free HTML Codex template license (CC BY 4.0). Keep this credit unless a Credit Removal License is bought. -->
@@ -239,7 +267,7 @@ def footer(extra_js=""):
 
 
 def page(fname, active, title, desc, body, extra_js=""):
-    html = head(title, desc) + topbar_nav(active) + body + footer(extra_js)
+    html = head(title, desc, fname) + topbar_nav(active) + body + footer(extra_js)
     with open(os.path.join(OUT, fname), "w", encoding="utf-8") as f:
         f.write(html)
 
@@ -583,6 +611,7 @@ def smart_page_body():
                         <div class="accordion-body">{a}</div>
                     </div>
                 </div>""" for i, (q, a) in enumerate(faq))
+    faq_html += faq_ld(faq)
     return f"""
     <div class="container-xxl py-5">
         <div class="container">
@@ -689,6 +718,7 @@ def alarm_page_body():
                         <div class="accordion-body">{a}</div>
                     </div>
                 </div>""" for i, (q, a) in enumerate(faq))
+    faq_html += faq_ld(faq)
 
     def head(t, sub=""):
         return f"""
@@ -990,6 +1020,7 @@ def build():
                         <div class="accordion-body">{a}</div>
                     </div>
                 </div>""" for i, (q, a) in enumerate(faq))
+    faq_html += faq_ld(faq)
 
     body = f"""
     <!-- Hero Start -->
@@ -997,8 +1028,8 @@ def build():
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
-                    <span class="hero-kicker">Տեսահսկում • Ալարմ • Ցանցեր</span>
-                    <h1 class="hero-title">Ձեր տունն ու բիզնեսը՝ միշտ ձեր աչքի առաջ</h1>
+                    <h1 class="hero-kicker">Տեսախցիկների, ալարմի և ցանցերի տեղադրում Երևանում</h1>
+                    <p class="hero-title">Ձեր տունն ու բիզնեսը՝ միշտ ձեր աչքի առաջ</p>
                     <p class="hero-lead">Տեղադրում ենք տեսախցիկներ, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։ Ամեն ինչ կարգավորում ենք այնպես, որ ձեր օբյեկտը տեսնեք հեռախոսից՝ ցանկացած պահի։</p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
                         <a href="#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
@@ -1226,7 +1257,7 @@ def seo_files():
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for pg in pages:
             loc = "https://smarteye.am/" + ("" if pg == "index.html" else pg)
-            f.write(f"  <url><loc>{loc}</loc></url>\n")
+            f.write(f"  <url><loc>{loc}</loc><lastmod>{datetime.date.today().isoformat()}</lastmod></url>\n")
         f.write("</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
         f.write("User-agent: *\nDisallow: /send.php\nDisallow: /tg-test.php\nSitemap: https://smarteye.am/sitemap.xml\n")
