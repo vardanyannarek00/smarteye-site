@@ -77,11 +77,6 @@ def head(title, desc):
 </head>
 
 <body>
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Բեռնվում է...</span>
-        </div>
-    </div>
 """
 
 
@@ -122,7 +117,11 @@ def topbar_nav(active):
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 px-4 px-lg-5">
         <a href="index.html" class="navbar-brand d-flex align-items-center">
-            <h2 class="m-0 text-primary">SmartEye System</h2>
+            <svg class="logo-mark me-2" viewBox="0 0 48 32" width="44" height="30" aria-hidden="true">
+                <path d="M2 16 C10 3, 38 3, 46 16 C38 29, 10 29, 2 16 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                <circle cx="24" cy="16" r="7.5" fill="currentColor"/><circle cx="26.5" cy="13.5" r="2.4" fill="#fff"/>
+            </svg>
+            <span class="logo-text"><span class="logo-main">SmartEye</span><span class="logo-sub">System</span></span>
         </a>
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Մենյու">
             <span class="navbar-toggler-icon"></span>
@@ -513,71 +512,103 @@ def build():
     site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
 
     # index
-    slides = [
-        ("carousel-1.jpg", "Տեսահսկում և անվտանգություն՝ ձեր տան և բիզնեսի համար",
-         "Տեսախցիկներ, ազդանշանային համակարգեր և ցանցեր՝ Hikvision և Dahua սարքավորումներով։"),
-        ("carousel-2.jpg", "Տեսեք ձեր օբյեկտը հեռախոսից՝ ցանկացած պահի",
-         "Տեղադրում ենք, կարգավորում ենք հեռակա դիտումը և սովորեցնում ենք օգտվել։"),
-        ("carousel-3.jpg", "Անվճար խորհրդատվություն և առաջարկ",
-         "Կգանք, կզննենք օբյեկտը և կառաջարկենք լուծում՝ ձեր բյուջեին համապատասխան։"),
-    ]
-    car = "".join(f"""
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="img/{img}" alt="">
-                <div class="carousel-inner">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-lg-8 text-center">
-                                <{"h1" if i == 0 else "h2"} class="display-3 text-white animated slideInDown mb-4">{h}</{"h1" if i == 0 else "h2"}>
-                                <p class="fs-5 text-white mb-4 pb-2">{p}</p>
-                                <a href="quote.html" class="btn btn-primary rounded-pill py-md-3 px-md-5 me-3 animated slideInLeft">Անվճար առաջարկ</a>
-                                <a href="tel:{PHONE}" class="btn btn-light rounded-pill py-md-3 px-md-5 animated slideInRight"><i class="fa fa-phone-alt me-2"></i>Զանգել</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>""" for i, (img, h, p) in enumerate(slides))
+    trust = [("fa-shield-alt", "Hikvision և Dahua"), ("fa-mobile-alt", "Դիտում հեռախոսից"), ("fa-handshake", "Անվճար խորհրդատվություն")]
+    trust_html = "".join(f'<span class="hero-chip"><i class="fa {i} me-2"></i>{t}</span>' for i, t in trust)
 
-    facts = [
-        ("icon-3.png", "01", "Տեսահսկում", "Տեսախցիկների և ձայնագրիչների տեղադրում, հեռախոսից դիտման կարգավորում։"),
-        ("icon-4.png", "02", "Ցանցերի կառուցում", "Լոկալ և կորպորատիվ ցանցերի նախագծում, մոնտաժ և սպասարկում։"),
-        ("icon-2.png", "03", "Տեխնիկական աջակցություն", "Արագ արձագանք և խնդիրների օպերատիվ լուծում տեղադրումից հետո։"),
+    steps = [
+        ("fa-phone-alt", "Զանգ կամ հայտ", "Զանգահարեք կամ թողեք հայտ կայքում"),
+        ("fa-search-location", "Անվճար զննում", "Գալիս ենք, նայում ենք օբյեկտը և առաջարկում լուծում"),
+        ("fa-tools", "Տեղադրում", "Կոկիկ մոնտաժ, լարերը թաքցված, ամեն ինչ կարգավորված"),
+        ("fa-mobile-alt", "Դիտում հեռախոսից", "Միացնում ենք հավելվածը և սովորեցնում օգտվել"),
     ]
-    facts_html = "".join(f"""
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="{0.1 + 0.2 * i:.1f}s">
-                    <div class="h-100 bg-dark p-4 p-xl-5">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <div class="btn-square rounded-circle bg-primary" style="width: 64px; height: 64px;">
-                                <img class="img-fluid" src="img/icon/{ic}" alt="">
-                            </div>
-                            <span class="display-1 mb-0 fact-num">{n}</span>
-                        </div>
-                        <h5 class="text-white">{t}</h5>
-                        <hr class="w-25">
-                        <span>{d}</span>
+    steps_html = "".join(f"""
+                <div class="col-6 col-lg-3">
+                    <div class="step h-100">
+                        <span class="step-num">{i + 1}</span>
+                        <i class="fa {ic} step-icon"></i>
+                        <h5 class="mb-2">{t}</h5>
+                        <p class="mb-0 small">{d}</p>
                     </div>
-                </div>""" for i, (ic, n, t, d) in enumerate(facts))
+                </div>""" for i, (ic, t, d) in enumerate(steps))
+
+    faq = [
+        ("Կարո՞ղ եմ տեսախցիկները դիտել հեռախոսից։",
+         "Այո։ Տեղադրելուց հետո միացնում ենք Hik-Connect (Hikvision) կամ DMSS (Dahua) հավելվածը, և ձեր օբյեկտը կտեսնեք ցանկացած վայրից՝ ինտերնետի առկայության դեպքում։"),
+        ("Խորհրդատվությունն իսկապե՞ս անվճար է։",
+         "Այո։ Գալիս ենք, զննում ենք օբյեկտը, որոշում ենք տեսախցիկների քանակն ու տեղերը և ներկայացնում ենք առաջարկ՝ առանց որևէ պարտավորության։"),
+        ("Ո՞ր բրենդներով եք աշխատում։",
+         "Hikvision և Dahua՝ տեսահսկման ոլորտում աշխարհում ամենատարածված բրենդները։ Ընտրում ենք մոդելը ձեր օբյեկտին և բյուջեին համապատասխան։"),
+        ("Տեսախցիկները գիշերը տեսնու՞մ են։",
+         "Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Կան նաև մոդելներ, որոնք գիշերն էլ գունավոր պատկեր են տալիս։"),
+        ("Որտե՞ղ եք աշխատում։",
+         "Երևանում և Արագածոտնի մարզում։ Այլ վայրերի համար զանգահարեք, կքննարկենք։"),
+        ("Բացի տեսախցիկներից ի՞նչ եք անում։",
+         "Ազդանշանային և հակահրդեհային համակարգեր, լոկալ ցանցեր և Wi-Fi, խանութի կշեռքներ, համակարգիչների սպասարկում։"),
+    ]
+    faq_html = "".join(f"""
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="fh{i}">
+                        <button class="accordion-button{'' if i == 0 else ' collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#fc{i}" aria-expanded="{'true' if i == 0 else 'false'}" aria-controls="fc{i}">{q}</button>
+                    </h3>
+                    <div id="fc{i}" class="accordion-collapse collapse{' show' if i == 0 else ''}" aria-labelledby="fh{i}" data-bs-parent="#faq">
+                        <div class="accordion-body">{a}</div>
+                    </div>
+                </div>""" for i, (q, a) in enumerate(faq))
 
     body = f"""
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 pb-5">
-        <div class="owl-carousel header-carousel position-relative">{car}
+    <!-- Hero Start -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="hero-kicker">Տեսահսկում • Ալարմ • Ցանցեր</span>
+                    <h1 class="hero-title">Ձեր տունն ու բիզնեսը՝ միշտ ձեր աչքի առաջ</h1>
+                    <p class="hero-lead">Տեղադրում ենք տեսախցիկներ, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։ Ամեն ինչ կարգավորում ենք այնպես, որ ձեր օբյեկտը տեսնեք հեռախոսից՝ ցանկացած պահի։</p>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <a href="quote.html" class="btn btn-primary btn-lg rounded-pill px-4">Անվճար առաջարկ</a>
+                        <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>{PHONE_TXT}</a>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">{trust_html}</div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-media">
+                        <img src="img/work/work-1.jpg" alt="SmartEye-ի տեղադրած Hikvision տեսախցիկ" class="hero-img">
+                        <div class="hero-badge"><i class="fa fa-video me-2"></i>Մեր իրական աշխատանքը</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <!-- Carousel End -->
+    </section>
+    <!-- Hero End -->
 
-    <!-- Facts Start -->
+    <!-- Steps Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="row g-4">{facts_html}
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-0">Ինչպես ենք աշխատում</h2>
+            </div>
+            <div class="row g-4">{steps_html}
             </div>
         </div>
     </div>
-    <!-- Facts End -->
-{about_block(more_link=True)}
+    <!-- Steps End -->
 {services_grid()}
-{why_us()}
 {our_work_cta()}
+{why_us()}
+
+    <!-- FAQ Start -->
+    <div class="container-xxl py-5">
+        <div class="container" style="max-width: 860px;">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-0">Հաճախ տրվող հարցեր</h2>
+            </div>
+            <div class="accordion" id="faq">{faq_html}
+            </div>
+        </div>
+    </div>
+    <!-- FAQ End -->
 {quote_form()}
 """
     page("index.html", "index.html",

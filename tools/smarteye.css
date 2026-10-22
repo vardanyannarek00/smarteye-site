@@ -117,3 +117,59 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 
 /* Self-hosted work videos */
 .work-video video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; background: #0B1530; border-radius: 10px; }
+
+/* ===== Redesign: logo, hero, steps, FAQ ===== */
+.navbar-brand { color: var(--primary); }
+.logo-mark { color: var(--primary); flex-shrink: 0; }
+.logo-text { display: flex; flex-direction: column; line-height: 1; }
+.logo-main { font-weight: 900; font-size: 1.55rem; color: var(--dark); letter-spacing: -.02em; }
+.logo-sub { font-weight: 500; font-size: .72rem; color: var(--primary); letter-spacing: .32em; text-transform: uppercase; margin-top: 3px; }
+
+.hero {
+    position: relative;
+    padding: 5.5rem 0 6rem;
+    color: #DCE4F5;
+    background:
+        radial-gradient(900px 500px at 85% 20%, rgba(30, 107, 255, .35), transparent 60%),
+        radial-gradient(700px 400px at 0% 100%, rgba(30, 107, 255, .18), transparent 60%),
+        var(--dark);
+    overflow: hidden;
+}
+.hero::after { /* subtle grid */
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero-kicker { display: inline-block; font-size: .85rem; font-weight: 500; color: #8FB4FF; letter-spacing: .04em; margin-bottom: 1rem; }
+.hero-title { color: #fff; font-weight: 900; font-size: clamp(2rem, 4.2vw, 3.4rem); line-height: 1.12; margin-bottom: 1.25rem; }
+.hero-lead { font-size: 1.1rem; line-height: 1.65; max-width: 34rem; margin-bottom: 2rem; color: #C3CFEA; }
+.hero-chip { display: inline-flex; align-items: center; font-size: .85rem; padding: .45rem .9rem; border-radius: 2rem;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #DCE4F5; }
+.hero-chip i { color: #6FA0FF; }
+.hero-media { position: relative; }
+.hero-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; box-shadow: 0 30px 80px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.08); }
+.hero-badge { position: absolute; left: -14px; bottom: 24px; background: #fff; color: var(--dark); font-weight: 500; font-size: .9rem;
+    padding: .7rem 1.1rem; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+.hero-badge i { color: var(--primary); }
+.hero .btn-outline-light { border-color: rgba(255,255,255,.35) !important; }
+@media (max-width: 991.98px) {
+    .hero { padding: 3.5rem 0 4rem; }
+    .hero-badge { left: 12px; bottom: 12px; }
+}
+
+.step { position: relative; background: #fff; border-radius: 16px; padding: 1.75rem 1.4rem; box-shadow: 0 10px 35px rgba(11, 21, 48, .07); }
+.step-num { position: absolute; top: 1rem; right: 1.2rem; font-weight: 900; font-size: 2.4rem; line-height: 1; color: rgba(30, 107, 255, .12); }
+.step-icon { display: inline-flex; width: 52px; height: 52px; align-items: center; justify-content: center; border-radius: 14px;
+    background: rgba(30, 107, 255, .1); color: var(--primary); font-size: 1.3rem; margin-bottom: 1rem; }
+.step h5 { font-size: 1.05rem; }
+
+#faq .accordion-item { border: 0; border-radius: 12px !important; margin-bottom: .75rem; overflow: hidden; box-shadow: 0 6px 24px rgba(11, 21, 48, .06); }
+#faq .accordion-button { font-weight: 500; font-size: 1.02rem; color: var(--dark); padding: 1.1rem 1.25rem; }
+#faq .accordion-button:not(.collapsed) { background: rgba(30, 107, 255, .07); color: var(--primary); box-shadow: none; }
+#faq .accordion-button:focus { box-shadow: none; }
+#faq .accordion-body { color: #4A5568; line-height: 1.65; }
+
+/* Template's page header gets the same navy look */
+.page-header { background: radial-gradient(700px 300px at 85% 0%, rgba(30, 107, 255, .35), transparent 60%), var(--dark) !important; }

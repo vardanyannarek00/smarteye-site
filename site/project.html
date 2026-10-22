@@ -33,11 +33,6 @@
 </head>
 
 <body>
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Բեռնվում է...</span>
-        </div>
-    </div>
 
     <!-- Topbar Start -->
     <div class="container-fluid bg-dark px-5">
@@ -65,7 +60,11 @@
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 px-4 px-lg-5">
         <a href="index.html" class="navbar-brand d-flex align-items-center">
-            <h2 class="m-0 text-primary">SmartEye System</h2>
+            <svg class="logo-mark me-2" viewBox="0 0 48 32" width="44" height="30" aria-hidden="true">
+                <path d="M2 16 C10 3, 38 3, 46 16 C38 29, 10 29, 2 16 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                <circle cx="24" cy="16" r="7.5" fill="currentColor"/><circle cx="26.5" cy="13.5" r="2.4" fill="#fff"/>
+            </svg>
+            <span class="logo-text"><span class="logo-main">SmartEye</span><span class="logo-sub">System</span></span>
         </a>
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Մենյու">
             <span class="navbar-toggler-icon"></span>
