@@ -174,7 +174,12 @@ def footer(extra_js=""):
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="text-light mb-4">Կապ</h5>
+                    <div class="footer-brand mb-3">
+                        <svg viewBox="0 0 48 32" width="40" height="27" aria-hidden="true"><path d="M2 16 C10 3, 38 3, 46 16 C38 29, 10 29, 2 16 Z" fill="none" stroke="#1E6BFF" stroke-width="3"/><circle cx="24" cy="16" r="7.5" fill="#1E6BFF"/><circle cx="26.5" cy="13.5" r="2.4" fill="#fff"/></svg>
+                        <span>SmartEye <small>System</small></span>
+                    </div>
+                    <p class="footer-about">Տեսահսկում, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։</p>
+                    <h5 class="text-light mb-3 mt-4">Կապ</h5>
                     <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Երևան</p>
                     <p class="mb-2"><i class="fa fa-phone-alt me-3"></i><a class="text-secondary" href="tel:{PHONE}">{PHONE_TXT}</a></p>
                     <p class="mb-2"><i class="fa fa-envelope me-3"></i><a class="text-secondary" href="mailto:{EMAIL}">{EMAIL}</a></p>
@@ -420,6 +425,13 @@ def our_work_cta(with_facebook=False):
                         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                 </div>
             </div>""" if with_facebook else ""
+    videos_block = f"""
+            <h3 class="text-center mb-4">Տեսանյութեր</h3>
+            <div class="row g-4 justify-content-center mb-5">{work_videos()}
+            </div>""" if with_facebook else f"""
+            <div class="text-center">
+                <a class="btn btn-outline-primary rounded-pill px-4" href="project.html">Բոլոր աշխատանքները <i class="fa fa-arrow-right ms-2"></i></a>
+            </div>"""
     tiktok_block = f"""
             <h3 class="text-center mb-4">TikTok-ում</h3>
             <div class="row g-4 justify-content-center">{vids}
@@ -438,11 +450,9 @@ def our_work_cta(with_facebook=False):
             </div>
             <div class="row g-4 mb-5">{card_html}
             </div>
-            <h3 class="text-center mb-4">Տեսանյութեր</h3>
-            <div class="row g-4 justify-content-center mb-5">{work_videos()}
-            </div>
+{videos_block}
 {tiktok_block}
-            <div class="text-center mt-4">
+            <div class="text-center mt-4"{'' if with_facebook else ' hidden'}>
                 <a class="btn btn-primary rounded-pill py-3 px-5" href="{TT}" target="_blank" rel="noopener"><i class="fab fa-tiktok me-2"></i>Բոլոր տեսանյութերը</a>
             </div>{fb}
         </div>
@@ -932,7 +942,7 @@ def build():
         ("fa-mobile-alt", "Դիտում հեռախոսից", "Միացնում ենք հավելվածը և սովորեցնում օգտվել"),
     ]
     steps_html = "".join(f"""
-                <div class="col-6 col-lg-3">
+                <div class="col-sm-6 col-lg-3">
                     <div class="step h-100">
                         <span class="step-num">{i + 1}</span>
                         <i class="fa {ic} step-icon"></i>
@@ -982,7 +992,7 @@ def build():
                         <a href="#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
                         <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>{PHONE_TXT}</a>
                     </div>
-                    <div class="d-flex flex-wrap gap-2">{trust_html}</div>
+
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-media">
@@ -994,6 +1004,18 @@ def build():
         </div>
     </section>
     <!-- Hero End -->
+
+    <!-- Trust strip -->
+    <div class="trust-strip">
+        <div class="container">
+            <div class="row g-3 text-center text-md-start">
+                <div class="col-6 col-md-3"><div class="trust-item"><i class="fa fa-shield-alt"></i><span><b>Hikvision և Dahua</b>պաշտոնական երաշխիքով</span></div></div>
+                <div class="col-6 col-md-3"><div class="trust-item"><i class="fa fa-handshake"></i><span><b>Անվճար</b>զննում և խորհրդատվություն</span></div></div>
+                <div class="col-6 col-md-3"><div class="trust-item"><i class="fa fa-mobile-alt"></i><span><b>Դիտում հեռախոսից</b>կարգավորում ենք մենք</span></div></div>
+                <div class="col-6 col-md-3"><div class="trust-item"><i class="fa fa-tools"></i><span><b>Կոկիկ մոնտաժ</b>և սպասարկում</span></div></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Steps Start -->
     <div class="container-xxl py-5">
@@ -1010,7 +1032,6 @@ def build():
 {services_grid()}
 {smart_teaser()}
 {our_work_cta()}
-{why_us()}
 
     <!-- FAQ Start -->
     <div class="container-xxl py-5">
