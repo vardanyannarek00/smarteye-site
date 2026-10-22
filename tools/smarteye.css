@@ -420,3 +420,7 @@ h2.display-5, h1.display-5 { font-weight: 700; font-size: clamp(1.75rem, 3vw, 2.
     .calc-opts.calc-grid:has(input[name="q"]) { grid-template-columns: 1fr; }
     .calc-grid .calc-opt span { overflow-wrap: normal; }
 }
+
+/* hero: presentation link */
+.hero-pdf { display: inline-flex; align-items: center; color: #8FB4FF; font-weight: 500; text-decoration: none; border-bottom: 1px dashed rgba(143,180,255,.5); padding-bottom: 2px; }
+.hero-pdf:hover { color: #fff; border-bottom-color: #fff; }

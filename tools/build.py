@@ -199,6 +199,7 @@ def footer(extra_js=""):
                     <a class="btn btn-link" href="project.html">Աշխատանքներ</a>
                     <a class="btn btn-link" href="quote.html">Անվճար խորհրդատվություն</a>
                     <a class="btn btn-link" href="contact.html">Կապ</a>
+                    <a class="btn btn-link" href="smarteye-presentation.pdf" target="_blank" rel="noopener">Ներկայացում (PDF)</a>
                 </div>
             </div>
         </div>
@@ -937,6 +938,7 @@ def build():
     shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-photos"), os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
     shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-videos"), os.path.join(OUT, "img", "video"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
+    shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye-presentation.pdf"), os.path.join(OUT, "smarteye-presentation.pdf"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
     site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում և Արագածոտնի մարզում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
@@ -1002,6 +1004,7 @@ def build():
                         <a href="#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
                         <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>{PHONE_TXT}</a>
                     </div>
+                    <a href="smarteye-presentation.pdf" target="_blank" rel="noopener" class="hero-pdf"><i class="fa fa-file-pdf me-2"></i>Դիտեք մեր ներկայացումը (PDF)</a>
 
                 </div>
                 <div class="col-lg-6">
@@ -1186,6 +1189,7 @@ def build():
 def about_block(more_link):
     more = '<a href="about.html" class="btn btn-primary rounded-pill py-3 px-5">Ավելին</a>' if more_link else \
         '<a href="quote.html#calc" class="btn btn-primary rounded-pill py-3 px-5"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>'
+    more += ' <a href="smarteye-presentation.pdf" target="_blank" rel="noopener" class="btn btn-outline-primary rounded-pill py-3 px-4 ms-sm-2 mt-2 mt-sm-0"><i class="fa fa-file-pdf me-2"></i>Մեր ներկայացումը (PDF)</a>'
     return f"""
     <!-- About Start -->
     <div class="container-fluid bg-light overflow-hidden my-5 px-lg-0">
