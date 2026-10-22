@@ -183,6 +183,10 @@
                             <h5><span>4</span>Պատկերի որակ</h5>
                             <div class="calc-opts">
                             <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="q" value="2" data-label="2 ՄՊ">
+                                <span><b>2 ՄՊ</b><small>Full HD, մատչելի տարբերակ</small></span>
+                            </label>
+                            <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="q" value="4" data-label="4 ՄՊ" checked>
                                 <span><b>4 ՄՊ</b><small>Բարձր որակ, գիշերը՝ սև-սպիտակ</small></span>
                             </label>
@@ -269,8 +273,8 @@
                     : sys.value === 'ip' ? 'ձայնագրիչ (NVR)' : 'ձայնագրիչ (DVR)';
             var q = val('q'), days = +(val('days') || { value: 14 }).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
-            // H.265, continuous recording: ~20 GB/day for 4 MP, ~25 GB/day for 5 MP cameras
-            var perDay = q && q.value === '5c' ? 25 : 20;
+            // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP, ~25 GB/day for 5 MP cameras
+            var perDay = !q ? 20 : q.value === '2' ? 10 : q.value === '5c' ? 25 : 20;
             var tb = total * perDay * days / 1000;
             var disks = [1, 2, 4, 6, 8, 10, 12, 16];
             var disk = disks.find(function (d) { return d >= tb; }) || Math.ceil(tb);
@@ -341,7 +345,7 @@
             <div class="table-responsive sys-table-wrap">
                 <table class="table sys-table mb-0">
                     <thead><tr><th></th><th>IP</th><th>Անալոգ (HD)</th></tr></thead>
-                    <tbody><tr><th>Ինչպես է միանում</th><td>Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)</td><td>Կոաքսիալ մալուխով + առանձին սնուցում</td></tr><tr><th>Պատկերի որակ</th><td>4 ՄՊ և ավելի, 5 ՄՊ ColorVu՝ գիշերն էլ գունավոր. պարզ են դեմքերն ու մեքենայի համարները</td><td>4–5 ՄՊ, կա նաև ColorVu՝ գիշերն էլ գունավոր</td></tr><tr><th>Խելացի ֆունկցիաներ</th><td>Մարդու և մեքենայի ճանաչում, ձայն, ավելի քիչ կեղծ ահազանգ</td><td>Հիմնական շարժման ճանաչում</td></tr><tr><th>Ձայնագրիչ</th><td>NVR</td><td>DVR</td></tr><tr><th>Ընդլայնում</th><td>Հեշտ է ավելացնել տեսախցիկներ, կարելի է օգտագործել առկա ցանցը</td><td>Ավելացնելը սահմանափակ է ձայնագրիչի մուտքերով</td></tr><tr><th>Գին</th><td>Ավելի թանկ</td><td>Ավելի մատչելի</td></tr></tbody>
+                    <tbody><tr><th>Ինչպես է միանում</th><td>Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)</td><td>Կոաքսիալ մալուխով + առանձին սնուցում</td></tr><tr><th>Պատկերի որակ</th><td>2 ՄՊ-ից սկսած, 5 ՄՊ ColorVu՝ գիշերն էլ գունավոր. պարզ են դեմքերն ու մեքենայի համարները</td><td>2–5 ՄՊ, կա նաև ColorVu՝ գիշերն էլ գունավոր</td></tr><tr><th>Խելացի ֆունկցիաներ</th><td>Մարդու և մեքենայի ճանաչում, ձայն, ավելի քիչ կեղծ ահազանգ</td><td>Հիմնական շարժման ճանաչում</td></tr><tr><th>Ձայնագրիչ</th><td>NVR</td><td>DVR</td></tr><tr><th>Ընդլայնում</th><td>Հեշտ է ավելացնել տեսախցիկներ, կարելի է օգտագործել առկա ցանցը</td><td>Ավելացնելը սահմանափակ է ձայնագրիչի մուտքերով</td></tr><tr><th>Գին</th><td>Ավելի թանկ</td><td>Ավելի մատչելի</td></tr></tbody>
                 </table>
             </div>
             <p class="text-center mt-4 mb-0">Չգիտե՞ք որն ընտրել. զննման ժամանակ կնայենք օբյեկտը և կառաջարկենք ձեզ ճիշտ տարբերակը՝ <a href="quote.html#calc">անվճար</a>։</p>
