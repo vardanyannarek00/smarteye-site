@@ -1,6 +1,6 @@
 <?php
 // SmartEye System — website form handler.
-// Receives the "Անվճար առաջարկ" and "Կապ" forms and emails them to the business mailbox.
+// Receives the "Անվճար խորհրդատվություն" and "Կապ" forms and emails them to the business mailbox.
 
 const TO_EMAIL   = 'info@smarteye.am';
 const FROM_EMAIL = 'info@smarteye.am';   // same domain, so the mail is not flagged as spoofed
@@ -87,7 +87,7 @@ $lines = [
 if ($form === 'quote') {
     $lines[] = 'Ծառայություն: ' . $service;
     if ($note !== '') $lines[] = "\nՄանրամասներ:\n" . $note;
-    $title = 'Նոր հայտ կայքից — ' . ($service !== '' ? $service : 'Անվճար առաջարկ');
+    $title = 'Նոր հայտ կայքից — ' . ($service !== '' ? $service : 'Անվճար խորհրդատվություն');
 } else {
     if ($subject !== '') $lines[] = 'Թեմա: ' . $subject;
     $lines[] = "\nՀաղորդագրություն:\n" . $message;

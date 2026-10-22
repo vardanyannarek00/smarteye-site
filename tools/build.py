@@ -21,7 +21,7 @@ NAV = [
     ("about.html", "Մեր մասին"),
     ("service.html", "Ծառայություններ"),
     ("project.html", "Աշխատանքներ"),
-    ("quote.html", "Անվճար առաջարկ"),
+    ("quote.html", "Անվճար խորհրդատվություն"),
     ("contact.html", "Կապ"),
 ]
 
@@ -182,7 +182,7 @@ def footer(extra_js=""):
                     <h5 class="text-light mb-4">Արագ հղումներ</h5>
                     <a class="btn btn-link" href="about.html">Մեր մասին</a>
                     <a class="btn btn-link" href="project.html">Աշխատանքներ</a>
-                    <a class="btn btn-link" href="quote.html">Անվճար առաջարկ</a>
+                    <a class="btn btn-link" href="quote.html">Անվճար խորհրդատվություն</a>
                     <a class="btn btn-link" href="contact.html">Կապ</a>
                 </div>
             </div>
@@ -444,7 +444,7 @@ def quote_form(heading_tag="h2"):
                 <div class="col-lg-6 quote-text py-5 wow fadeIn" data-wow-delay="0.3s">
                     <div class="p-lg-5 pe-lg-0">
                         <div class="bg-primary mb-3" style="width: 60px; height: 2px;"></div>
-                        <{heading_tag} class="display-5 mb-4">Անվճար առաջարկ</{heading_tag}>
+                        <{heading_tag} class="display-5 mb-4">Անվճար խորհրդատվություն</{heading_tag}>
                         <p class="mb-4 pb-2">Լրացրեք ձևը կամ զանգահարեք <a href="tel:{PHONE}">{PHONE_TXT}</a>։ Կկապվենք ձեզ հետ, կզննենք օբյեկտը և կառաջարկենք լուծում՝ անվճար։</p>
                         <form id="form" class="js-quote-form" method="post" action="send.php">
                             <input type="hidden" name="form" value="quote">
@@ -512,7 +512,7 @@ def build():
     site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
 
     # index
-    trust = [("fa-shield-alt", "Hikvision և Dahua"), ("fa-mobile-alt", "Դիտում հեռախոսից"), ("fa-handshake", "Անվճար խորհրդատվություն")]
+    trust = [("fa-shield-alt", "Hikvision և Dahua"), ("fa-mobile-alt", "Դիտում հեռախոսից"), ("fa-map-marker-alt", "Երևան և Արագածոտն")]
     trust_html = "".join(f'<span class="hero-chip"><i class="fa {i} me-2"></i>{t}</span>' for i, t in trust)
 
     steps = [
@@ -565,7 +565,7 @@ def build():
                     <h1 class="hero-title">Ձեր տունն ու բիզնեսը՝ միշտ ձեր աչքի առաջ</h1>
                     <p class="hero-lead">Տեղադրում ենք տեսախցիկներ, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։ Ամեն ինչ կարգավորում ենք այնպես, որ ձեր օբյեկտը տեսնեք հեռախոսից՝ ցանկացած պահի։</p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
-                        <a href="quote.html" class="btn btn-primary btn-lg rounded-pill px-4">Անվճար առաջարկ</a>
+                        <a href="quote.html" class="btn btn-primary btn-lg rounded-pill px-4">Անվճար խորհրդատվություն</a>
                         <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>{PHONE_TXT}</a>
                     </div>
                     <div class="d-flex flex-wrap gap-2">{trust_html}</div>
@@ -631,9 +631,9 @@ def build():
          page_header("Աշխատանքներ") + our_work_cta(with_facebook=True))
 
     # quote
-    page("quote.html", "quote.html", "Անվճար առաջարկ | SmartEye System",
+    page("quote.html", "quote.html", "Անվճար խորհրդատվություն | SmartEye System",
          "Թողեք հայտ և ստացեք անվճար խորհրդատվություն տեսախցիկների, ազդանշանային համակարգերի կամ ցանցի տեղադրման համար։",
-         page_header("Անվճար առաջարկ") + quote_form(), FORM_JS)
+         page_header("Անվճար խորհրդատվություն") + quote_form(), FORM_JS)
 
     # contact
     page("contact.html", "contact.html", "Կապ | SmartEye System",
@@ -729,7 +729,7 @@ def build():
 
 def about_block(more_link):
     more = '<a href="about.html" class="btn btn-primary rounded-pill py-3 px-5">Ավելին</a>' if more_link else \
-        '<a href="quote.html" class="btn btn-primary rounded-pill py-3 px-5">Անվճար առաջարկ</a>'
+        '<a href="quote.html" class="btn btn-primary rounded-pill py-3 px-5">Անվճար խորհրդատվություն</a>'
     return f"""
     <!-- About Start -->
     <div class="container-fluid bg-light overflow-hidden my-5 px-lg-0">
