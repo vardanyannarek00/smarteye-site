@@ -110,7 +110,7 @@
             <div class="text-center mb-5">
                 <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
                 <h2 class="display-5 mb-3">Հաշվիր քո համակարգը</h2>
-                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր մի քանի հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
+                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր 6 հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
             </div>
             <div class="row g-4">
                 <div class="col-lg-7">
@@ -163,7 +163,24 @@
                             <p class="small text-muted mt-2 mb-0">Չգիտե՞ս, թե քանիսը։ Թող այսպես, զննման ժամանակ կճշտենք։</p>
                         </div>
                         <div class="calc-q">
-                            <h5><span>3</span>Պատկերի որակ</h5>
+                            <h5><span>3</span>Համակարգի տեսակ <a class="calc-help" href="#ipvsanalog">Ո՞րն ընտրել</a></h5>
+                            <div class="calc-opts">
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="ip" data-label="IP (թվային)" checked>
+                                <span><b>IP (թվային)</b><small>Ավելի բարձր որակ, խելացի ֆունկցիաներ</small></span>
+                            </label>
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="analog" data-label="Անալոգ (HD)">
+                                <span><b>Անալոգ (HD)</b><small>Ավելի մատչելի, հարմար հին լարերով</small></span>
+                            </label>
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="unsure" data-label="Չգիտեմ">
+                                <span><b>Չգիտեմ</b><small>Կօգնենք ընտրել զննման ժամանակ</small></span>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="calc-q">
+                            <h5><span>4</span>Պատկերի որակ</h5>
                             <div class="calc-opts">
                             <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="q" value="2" data-label="Ստանդարտ">
@@ -180,7 +197,7 @@
                             </div>
                         </div>
                         <div class="calc-q">
-                            <h5><span>4</span>Քանի՞ օր պահել ձայնագրությունը</h5>
+                            <h5><span>5</span>Քանի՞ օր պահել ձայնագրությունը</h5>
                             <div class="calc-opts">
                             <label class="calc-opt">
                                 <input type="radio" name="days" value="7">
@@ -197,7 +214,7 @@
                             </div>
                         </div>
                         <div class="calc-q mb-0">
-                            <h5><span>5</span>Լրացուցիչ</h5>
+                            <h5><span>6</span>Լրացուցիչ</h5>
                             <div class="calc-opts">
                             <label class="calc-opt">
                                 <input type="checkbox" name="extra" value="alarm" data-label="Ազդանշանային համակարգ">
@@ -251,6 +268,9 @@
             document.getElementById('cIn').textContent = n.in;
             document.getElementById('cOut').textContent = n.out;
             var total = n.in + n.out;
+            var sys = val('sys');
+            var rec = !sys || sys.value === 'unsure' ? 'ձայնագրիչ (NVR կամ DVR՝ կընտրենք միասին)'
+                    : sys.value === 'ip' ? 'ձայնագրիչ (NVR)' : 'ձայնագրիչ (DVR)';
             var q = val('q'), days = +(val('days') || { value: 14 }).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
             // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP cameras
@@ -262,8 +282,9 @@
             var obj = val('obj');
             var lines = [];
             lines.push(['fa-video', total + ' տեսախցիկ' + (total ? ' (' + n.in + ' ներսում, ' + n.out + ' դրսում)' : '')]);
+            lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
             lines.push(['fa-image', (q ? q.dataset.label : '') + ' որակ']);
-            lines.push(['fa-server', ch + '-ալիքանի ձայնագրիչ (NVR)']);
+            lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
             extras.forEach(function (x) { lines.push(['fa-plus', x]); });
@@ -292,6 +313,45 @@
     })();
     </script>
     <!-- Calculator End -->
+
+    <!-- IP vs Analog Start -->
+    <div class="container-xxl py-5" id="ipvsanalog">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-3">IP թե անալոգ</h2>
+                <p class="mx-auto mb-0" style="max-width: 640px;">Տեսահսկման երկու հիմնական տեսակ կա։ Երկուսն էլ դիտվում են հեռախոսից, տարբերությունը որակի, ֆունկցիաների և գնի մեջ է։</p>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag">Խորհուրդ ենք տալիս նոր տեղադրման համար</span>
+                        <i class="fa fa-network-wired step-icon"></i>
+                        <h4>IP (թվային) համակարգ</h4>
+                        <p>Յուրաքանչյուր տեսախցիկ փոքր համակարգիչ է, որը պատկերը թվային ձևով ուղարկում է ցանցային մալուխով։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> խանութ, գրասենյակ, պահեստ, տուն, որտեղ կարևոր է տեսնել դեմքերն ու մանրամասները, կամ հետագայում ավելացնել տեսախցիկներ։</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag sys-tag-muted">Մատչելի տարբերակ</span>
+                        <i class="fa fa-video step-icon"></i>
+                        <h4>Անալոգ (HD) համակարգ</h4>
+                        <p>Ժամանակակից անալոգ տեսախցիկները (Hikvision Turbo HD, Dahua HDCVI) նույնպես տալիս են HD պատկեր, բայց աշխատում են կոաքսիալ մալուխով։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> փոքր բյուջե, տուն կամ ամառանոց, ինչպես նաև հին համակարգի փոխարինում, երբ լարերն արդեն կան։</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive sys-table-wrap">
+                <table class="table sys-table mb-0">
+                    <thead><tr><th></th><th>IP</th><th>Անալոգ (HD)</th></tr></thead>
+                    <tbody><tr><th>Ինչպես է միանում</th><td>Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)</td><td>Կոաքսիալ մալուխով + առանձին սնուցում</td></tr><tr><th>Պատկերի որակ</th><td>2–8 ՄՊ, մինչև 4K. ավելի պարզ են դեմքերն ու մեքենայի համարները</td><td>Սովորաբար 2–5 ՄՊ. լավ է ընդհանուր հսկողության համար</td></tr><tr><th>Խելացի ֆունկցիաներ</th><td>Մարդու և մեքենայի ճանաչում, ձայն, ավելի քիչ կեղծ ահազանգ</td><td>Հիմնական շարժման ճանաչում</td></tr><tr><th>Ձայնագրիչ</th><td>NVR</td><td>DVR</td></tr><tr><th>Ընդլայնում</th><td>Հեշտ է ավելացնել տեսախցիկներ, կարելի է օգտագործել առկա ցանցը</td><td>Ավելացնելը սահմանափակ է ձայնագրիչի մուտքերով</td></tr><tr><th>Գին</th><td>Ավելի թանկ</td><td>Ավելի մատչելի</td></tr></tbody>
+                </table>
+            </div>
+            <p class="text-center mt-4 mb-0">Չգիտե՞ք որն ընտրել. զննման ժամանակ կնայենք օբյեկտը և կառաջարկենք ձեզ ճիշտ տարբերակը՝ <a href="quote.html#calc">անվճար</a>։</p>
+        </div>
+    </div>
+    <!-- IP vs Analog End -->
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">

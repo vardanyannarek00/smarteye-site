@@ -433,6 +433,58 @@ def our_work_cta(with_facebook=False):
 """
 
 
+def ip_vs_analog():
+    rows = [
+        ("Ինչպես է միանում", "Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)", "Կոաքսիալ մալուխով + առանձին սնուցում"),
+        ("Պատկերի որակ", "2–8 ՄՊ, մինչև 4K. ավելի պարզ են դեմքերն ու մեքենայի համարները", "Սովորաբար 2–5 ՄՊ. լավ է ընդհանուր հսկողության համար"),
+        ("Խելացի ֆունկցիաներ", "Մարդու և մեքենայի ճանաչում, ձայն, ավելի քիչ կեղծ ահազանգ", "Հիմնական շարժման ճանաչում"),
+        ("Ձայնագրիչ", "NVR", "DVR"),
+        ("Ընդլայնում", "Հեշտ է ավելացնել տեսախցիկներ, կարելի է օգտագործել առկա ցանցը", "Ավելացնելը սահմանափակ է ձայնագրիչի մուտքերով"),
+        ("Գին", "Ավելի թանկ", "Ավելի մատչելի"),
+    ]
+    trs = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>" for a, b, c in rows)
+    return f"""
+    <!-- IP vs Analog Start -->
+    <div class="container-xxl py-5" id="ipvsanalog">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-3">IP թե անալոգ</h2>
+                <p class="mx-auto mb-0" style="max-width: 640px;">Տեսահսկման երկու հիմնական տեսակ կա։ Երկուսն էլ դիտվում են հեռախոսից, տարբերությունը որակի, ֆունկցիաների և գնի մեջ է։</p>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag">Խորհուրդ ենք տալիս նոր տեղադրման համար</span>
+                        <i class="fa fa-network-wired step-icon"></i>
+                        <h4>IP (թվային) համակարգ</h4>
+                        <p>Յուրաքանչյուր տեսախցիկ փոքր համակարգիչ է, որը պատկերը թվային ձևով ուղարկում է ցանցային մալուխով։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> խանութ, գրասենյակ, պահեստ, տուն, որտեղ կարևոր է տեսնել դեմքերն ու մանրամասները, կամ հետագայում ավելացնել տեսախցիկներ։</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="sys-card h-100">
+                        <span class="sys-tag sys-tag-muted">Մատչելի տարբերակ</span>
+                        <i class="fa fa-video step-icon"></i>
+                        <h4>Անալոգ (HD) համակարգ</h4>
+                        <p>Ժամանակակից անալոգ տեսախցիկները (Hikvision Turbo HD, Dahua HDCVI) նույնպես տալիս են HD պատկեր, բայց աշխատում են կոաքսիալ մալուխով։</p>
+                        <p class="sys-fit mb-0"><b>Հարմար է՝</b> փոքր բյուջե, տուն կամ ամառանոց, ինչպես նաև հին համակարգի փոխարինում, երբ լարերն արդեն կան։</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive sys-table-wrap">
+                <table class="table sys-table mb-0">
+                    <thead><tr><th></th><th>IP</th><th>Անալոգ (HD)</th></tr></thead>
+                    <tbody>{trs}</tbody>
+                </table>
+            </div>
+            <p class="text-center mt-4 mb-0">Չգիտե՞ք որն ընտրել. զննման ժամանակ կնայենք օբյեկտը և կառաջարկենք ձեզ ճիշտ տարբերակը՝ <a href="quote.html#calc">անվճար</a>։</p>
+        </div>
+    </div>
+    <!-- IP vs Analog End -->
+"""
+
+
 def calc_cta():
     return f"""
     <!-- Calc CTA Start -->
@@ -441,7 +493,7 @@ def calc_cta():
             <div class="cta-band">
                 <div>
                     <h3 class="text-white mb-2">Ի՞նչ համակարգ է պետք ձեր օբյեկտին</h3>
-                    <p class="mb-0">Պատասխանեք 5 հարցի և ստացեք անվճար հաշվարկ։</p>
+                    <p class="mb-0">Պատասխանեք 6 հարցի և ստացեք անվճար հաշվարկ։</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="quote.html#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
@@ -563,6 +615,8 @@ def build():
          "Այո։ Գալիս ենք, զննում ենք օբյեկտը, որոշում ենք տեսախցիկների քանակն ու տեղերը և ներկայացնում ենք առաջարկ՝ առանց որևէ պարտավորության։"),
         ("Ո՞ր բրենդներով եք աշխատում։",
          "Hikvision և Dahua՝ տեսահսկման ոլորտում աշխարհում ամենատարածված բրենդները։ Ընտրում ենք մոդելը ձեր օբյեկտին և բյուջեին համապատասխան։"),
+        ("Ո՞րն է տարբերությունը IP և անալոգ տեսախցիկների միջև։",
+         "IP տեսախցիկները թվային են. ավելի բարձր որակ և խելացի ֆունկցիաներ (մարդու և մեքենայի ճանաչում)։ Անալոգները (HD) ավելի մատչելի են և հարմար են հին լարերով։ Մանրամասն՝ <a href=\"service.html#ipvsanalog\">այստեղ</a>։"),
         ("Տեսախցիկները գիշերը տեսնու՞մ են։",
          "Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Կան նաև մոդելներ, որոնք գիշերն էլ գունավոր պատկեր են տալիս։"),
         ("Որտե՞ղ եք աշխատում։",
@@ -648,7 +702,7 @@ def build():
     # services
     page("service.html", "service.html",
          "Ծառայություններ | SmartEye System — տեսահսկում, ազդանշանային համակարգեր, ցանցեր",
-         site_desc, page_header("Ծառայություններ") + services_grid() + calc_cta())
+         site_desc, page_header("Ծառայություններ") + services_grid() + ip_vs_analog() + calc_cta())
 
     # projects / work
     page("project.html", "project.html", "Աշխատանքներ | SmartEye System",
@@ -658,7 +712,7 @@ def build():
     # quote
     page("quote.html", "quote.html", "Անվճար խորհրդատվություն | SmartEye System",
          "Թողեք հայտ և ստացեք անվճար խորհրդատվություն տեսախցիկների, ազդանշանային համակարգերի կամ ցանցի տեղադրման համար։",
-         page_header("Անվճար խորհրդատվություն") + calculator(PHONE, PHONE_TXT), FORM_JS)
+         page_header("Անվճար խորհրդատվություն") + calculator(PHONE, PHONE_TXT) + ip_vs_analog(), FORM_JS)
 
     # contact
     page("contact.html", "contact.html", "Կապ | SmartEye System",

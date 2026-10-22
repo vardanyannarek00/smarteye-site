@@ -18,6 +18,12 @@ QUALITY = [
     ("color", "Գիշերը գունավոր", "4 ՄՊ, գիշերն էլ գունավոր"),
 ]
 
+SYSTEMS = [
+    ("ip", "IP (թվային)", "Ավելի բարձր որակ, խելացի ֆունկցիաներ"),
+    ("analog", "Անալոգ (HD)", "Ավելի մատչելի, հարմար հին լարերով"),
+    ("unsure", "Չգիտեմ", "Կօգնենք ընտրել զննման ժամանակ"),
+]
+
 DAYS = [("7", "7 օր"), ("14", "14 օր"), ("30", "30 օր")]
 
 EXTRAS = [
@@ -39,6 +45,11 @@ def calculator(phone, phone_txt):
                                 <input type="radio" name="q" value="{v}" data-label="{t}"{' checked' if v == '4' else ''}>
                                 <span><b>{t}</b><small>{d}</small></span>
                             </label>""" for v, t, d in QUALITY)
+    systems = "".join(f"""
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="{v}" data-label="{t}"{' checked' if v == 'ip' else ''}>
+                                <span><b>{t}</b><small>{d}</small></span>
+                            </label>""" for v, t, d in SYSTEMS)
     days = "".join(f"""
                             <label class="calc-opt">
                                 <input type="radio" name="days" value="{v}"{' checked' if v == '14' else ''}>
@@ -57,7 +68,7 @@ def calculator(phone, phone_txt):
             <div class="text-center mb-5">
                 <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
                 <h2 class="display-5 mb-3">Հաշվիր քո համակարգը</h2>
-                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր մի քանի հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
+                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր 6 հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
             </div>
             <div class="row g-4">
                 <div class="col-lg-7">
@@ -90,17 +101,22 @@ def calculator(phone, phone_txt):
                             <p class="small text-muted mt-2 mb-0">Չգիտե՞ս, թե քանիսը։ Թող այսպես, զննման ժամանակ կճշտենք։</p>
                         </div>
                         <div class="calc-q">
-                            <h5><span>3</span>Պատկերի որակ</h5>
+                            <h5><span>3</span>Համակարգի տեսակ <a class="calc-help" href="#ipvsanalog">Ո՞րն ընտրել</a></h5>
+                            <div class="calc-opts">{systems}
+                            </div>
+                        </div>
+                        <div class="calc-q">
+                            <h5><span>4</span>Պատկերի որակ</h5>
                             <div class="calc-opts">{qual}
                             </div>
                         </div>
                         <div class="calc-q">
-                            <h5><span>4</span>Քանի՞ օր պահել ձայնագրությունը</h5>
+                            <h5><span>5</span>Քանի՞ օր պահել ձայնագրությունը</h5>
                             <div class="calc-opts">{days}
                             </div>
                         </div>
                         <div class="calc-q mb-0">
-                            <h5><span>5</span>Լրացուցիչ</h5>
+                            <h5><span>6</span>Լրացուցիչ</h5>
                             <div class="calc-opts">{extras}
                             </div>
                         </div>
@@ -138,6 +154,9 @@ def calculator(phone, phone_txt):
             document.getElementById('cIn').textContent = n.in;
             document.getElementById('cOut').textContent = n.out;
             var total = n.in + n.out;
+            var sys = val('sys');
+            var rec = !sys || sys.value === 'unsure' ? 'ձայնագրիչ (NVR կամ DVR՝ կընտրենք միասին)'
+                    : sys.value === 'ip' ? 'ձայնագրիչ (NVR)' : 'ձայնագրիչ (DVR)';
             var q = val('q'), days = +(val('days') || {{ value: 14 }}).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
             // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP cameras
@@ -149,8 +168,9 @@ def calculator(phone, phone_txt):
             var obj = val('obj');
             var lines = [];
             lines.push(['fa-video', total + ' տեսախցիկ' + (total ? ' (' + n.in + ' ներսում, ' + n.out + ' դրսում)' : '')]);
+            lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
             lines.push(['fa-image', (q ? q.dataset.label : '') + ' որակ']);
-            lines.push(['fa-server', ch + '-ալիքանի ձայնագրիչ (NVR)']);
+            lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
             extras.forEach(function (x) {{ lines.push(['fa-plus', x]); }});

@@ -410,25 +410,33 @@
                 </div>
                 <div class="accordion-item">
                     <h3 class="accordion-header" id="fh3">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc3" aria-expanded="false" aria-controls="fc3">Տեսախցիկները գիշերը տեսնու՞մ են։</button>
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc3" aria-expanded="false" aria-controls="fc3">Ո՞րն է տարբերությունը IP և անալոգ տեսախցիկների միջև։</button>
                     </h3>
                     <div id="fc3" class="accordion-collapse collapse" aria-labelledby="fh3" data-bs-parent="#faq">
-                        <div class="accordion-body">Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Կան նաև մոդելներ, որոնք գիշերն էլ գունավոր պատկեր են տալիս։</div>
+                        <div class="accordion-body">IP տեսախցիկները թվային են. ավելի բարձր որակ և խելացի ֆունկցիաներ (մարդու և մեքենայի ճանաչում)։ Անալոգները (HD) ավելի մատչելի են և հարմար են հին լարերով։ Մանրամասն՝ <a href="service.html#ipvsanalog">այստեղ</a>։</div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <h3 class="accordion-header" id="fh4">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc4" aria-expanded="false" aria-controls="fc4">Որտե՞ղ եք աշխատում։</button>
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc4" aria-expanded="false" aria-controls="fc4">Տեսախցիկները գիշերը տեսնու՞մ են։</button>
                     </h3>
                     <div id="fc4" class="accordion-collapse collapse" aria-labelledby="fh4" data-bs-parent="#faq">
-                        <div class="accordion-body">Երևանում և Արագածոտնի մարզում։ Այլ վայրերի համար զանգահարեք, կքննարկենք։</div>
+                        <div class="accordion-body">Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Կան նաև մոդելներ, որոնք գիշերն էլ գունավոր պատկեր են տալիս։</div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <h3 class="accordion-header" id="fh5">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc5" aria-expanded="false" aria-controls="fc5">Բացի տեսախցիկներից ի՞նչ եք անում։</button>
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc5" aria-expanded="false" aria-controls="fc5">Որտե՞ղ եք աշխատում։</button>
                     </h3>
                     <div id="fc5" class="accordion-collapse collapse" aria-labelledby="fh5" data-bs-parent="#faq">
+                        <div class="accordion-body">Երևանում և Արագածոտնի մարզում։ Այլ վայրերի համար զանգահարեք, կքննարկենք։</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="fh6">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fc6" aria-expanded="false" aria-controls="fc6">Բացի տեսախցիկներից ի՞նչ եք անում։</button>
+                    </h3>
+                    <div id="fc6" class="accordion-collapse collapse" aria-labelledby="fh6" data-bs-parent="#faq">
                         <div class="accordion-body">Ազդանշանային և հակահրդեհային համակարգեր, լոկալ ցանցեր և Wi-Fi, խանութի կշեռքներ, համակարգիչների սպասարկում։</div>
                     </div>
                 </div>
@@ -443,7 +451,7 @@
             <div class="text-center mb-5">
                 <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
                 <h2 class="display-5 mb-3">Հաշվիր քո համակարգը</h2>
-                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր մի քանի հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
+                <p class="mx-auto mb-0" style="max-width: 620px;">Պատասխանիր 6 հարցի. կտեսնես, թե ինչ համակարգ է պետք քո օբյեկտին, իսկ մենք կուղարկենք ճշգրիտ գինը՝ անվճար։</p>
             </div>
             <div class="row g-4">
                 <div class="col-lg-7">
@@ -496,7 +504,24 @@
                             <p class="small text-muted mt-2 mb-0">Չգիտե՞ս, թե քանիսը։ Թող այսպես, զննման ժամանակ կճշտենք։</p>
                         </div>
                         <div class="calc-q">
-                            <h5><span>3</span>Պատկերի որակ</h5>
+                            <h5><span>3</span>Համակարգի տեսակ <a class="calc-help" href="#ipvsanalog">Ո՞րն ընտրել</a></h5>
+                            <div class="calc-opts">
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="ip" data-label="IP (թվային)" checked>
+                                <span><b>IP (թվային)</b><small>Ավելի բարձր որակ, խելացի ֆունկցիաներ</small></span>
+                            </label>
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="analog" data-label="Անալոգ (HD)">
+                                <span><b>Անալոգ (HD)</b><small>Ավելի մատչելի, հարմար հին լարերով</small></span>
+                            </label>
+                            <label class="calc-opt calc-opt-wide">
+                                <input type="radio" name="sys" value="unsure" data-label="Չգիտեմ">
+                                <span><b>Չգիտեմ</b><small>Կօգնենք ընտրել զննման ժամանակ</small></span>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="calc-q">
+                            <h5><span>4</span>Պատկերի որակ</h5>
                             <div class="calc-opts">
                             <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="q" value="2" data-label="Ստանդարտ">
@@ -513,7 +538,7 @@
                             </div>
                         </div>
                         <div class="calc-q">
-                            <h5><span>4</span>Քանի՞ օր պահել ձայնագրությունը</h5>
+                            <h5><span>5</span>Քանի՞ օր պահել ձայնագրությունը</h5>
                             <div class="calc-opts">
                             <label class="calc-opt">
                                 <input type="radio" name="days" value="7">
@@ -530,7 +555,7 @@
                             </div>
                         </div>
                         <div class="calc-q mb-0">
-                            <h5><span>5</span>Լրացուցիչ</h5>
+                            <h5><span>6</span>Լրացուցիչ</h5>
                             <div class="calc-opts">
                             <label class="calc-opt">
                                 <input type="checkbox" name="extra" value="alarm" data-label="Ազդանշանային համակարգ">
@@ -584,6 +609,9 @@
             document.getElementById('cIn').textContent = n.in;
             document.getElementById('cOut').textContent = n.out;
             var total = n.in + n.out;
+            var sys = val('sys');
+            var rec = !sys || sys.value === 'unsure' ? 'ձայնագրիչ (NVR կամ DVR՝ կընտրենք միասին)'
+                    : sys.value === 'ip' ? 'ձայնագրիչ (NVR)' : 'ձայնագրիչ (DVR)';
             var q = val('q'), days = +(val('days') || { value: 14 }).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
             // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP cameras
@@ -595,8 +623,9 @@
             var obj = val('obj');
             var lines = [];
             lines.push(['fa-video', total + ' տեսախցիկ' + (total ? ' (' + n.in + ' ներսում, ' + n.out + ' դրսում)' : '')]);
+            lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
             lines.push(['fa-image', (q ? q.dataset.label : '') + ' որակ']);
-            lines.push(['fa-server', ch + '-ալիքանի ձայնագրիչ (NVR)']);
+            lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
             extras.forEach(function (x) { lines.push(['fa-plus', x]); });

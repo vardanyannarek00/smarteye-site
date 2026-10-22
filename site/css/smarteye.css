@@ -220,3 +220,20 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 /* Page header: tighter, consistent with hero */
 .page-header { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
 .page-header h1 { font-weight: 900; }
+
+/* ===== IP vs Analog ===== */
+.sys-card { position: relative; background: #fff; border-radius: 18px; padding: 2rem; box-shadow: 0 10px 40px rgba(11, 21, 48, .08); }
+.sys-card h4 { margin-bottom: .75rem; }
+.sys-card p { color: #4A5568; line-height: 1.6; }
+.sys-fit { background: rgba(30, 107, 255, .06); border-radius: 10px; padding: .8rem 1rem; color: #2D3748 !important; }
+.sys-tag { position: absolute; top: 1.25rem; right: 1.25rem; font-size: .72rem; font-weight: 500; padding: .3rem .7rem; border-radius: 2rem;
+    background: rgba(30, 107, 255, .1); color: var(--primary); }
+.sys-tag-muted { background: #EEF1F6; color: #5A6680; }
+@media (max-width: 575.98px) { .sys-tag { position: static; display: inline-block; margin-bottom: 1rem; } }
+.sys-table-wrap { background: #fff; border-radius: 18px; box-shadow: 0 10px 40px rgba(11, 21, 48, .08); padding: .5rem 1rem; }
+.sys-table th, .sys-table td { padding: .9rem .75rem; vertical-align: top; border-color: #EEF1F6; font-size: .95rem; }
+.sys-table thead th { color: var(--primary); font-size: 1.05rem; border-bottom-width: 2px; }
+.sys-table tbody th { color: var(--dark); font-weight: 500; width: 22%; }
+.sys-table td { color: #4A5568; }
+.sys-table tr:last-child th, .sys-table tr:last-child td { border-bottom: 0; }
+.calc-help { font-size: .8rem; font-weight: 400; margin-left: auto; }
