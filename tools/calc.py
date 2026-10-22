@@ -127,6 +127,52 @@ def calculator(phone, phone_txt):
                             <h5><span>6</span>Լրացուցիչ</h5>
                             <div class="calc-opts">{extras}
                             </div>
+                            <div class="calc-alarm" id="cAlarm" hidden>
+                                <p class="small fw-medium mb-2"><i class="fa fa-bell me-2 text-primary"></i>Ազդանշանային համակարգ՝ ինչ է պետք</p>
+                                <div class="row g-2">
+                                <div class="col-sm-6">
+                                    <div class="calc-step">
+                                        <span class="calc-step-label"><i class="fa fa-fire me-2"></i>Ծխի տվիչ</span>
+                                        <button type="button" class="calc-btn" data-step="smoke" data-d="-1" aria-label="Պակասեցնել">−</button>
+                                        <output id="c_smoke">2</output>
+                                        <button type="button" class="calc-btn" data-step="smoke" data-d="1" aria-label="Ավելացնել">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="calc-step">
+                                        <span class="calc-step-label"><i class="fa fa-walking me-2"></i>Շարժման տվիչ</span>
+                                        <button type="button" class="calc-btn" data-step="motion" data-d="-1" aria-label="Պակասեցնել">−</button>
+                                        <output id="c_motion">2</output>
+                                        <button type="button" class="calc-btn" data-step="motion" data-d="1" aria-label="Ավելացնել">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="calc-step">
+                                        <span class="calc-step-label"><i class="fa fa-volume-up me-2"></i>Սիրենա՝ ներսի</span>
+                                        <button type="button" class="calc-btn" data-step="sirenIn" data-d="-1" aria-label="Պակասեցնել">−</button>
+                                        <output id="c_sirenIn">1</output>
+                                        <button type="button" class="calc-btn" data-step="sirenIn" data-d="1" aria-label="Ավելացնել">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="calc-step">
+                                        <span class="calc-step-label"><i class="fa fa-bullhorn me-2"></i>Սիրենա՝ դրսի</span>
+                                        <button type="button" class="calc-btn" data-step="sirenOut" data-d="-1" aria-label="Պակասեցնել">−</button>
+                                        <output id="c_sirenOut">1</output>
+                                        <button type="button" class="calc-btn" data-step="sirenOut" data-d="1" aria-label="Ավելացնել">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="calc-step">
+                                        <span class="calc-step-label"><i class="fa fa-shoe-prints me-2"></i>Տագնապի ոտնակ (պեդալ)</span>
+                                        <button type="button" class="calc-btn" data-step="pedal" data-d="-1" aria-label="Պակասեցնել">−</button>
+                                        <output id="c_pedal">0</output>
+                                        <button type="button" class="calc-btn" data-step="pedal" data-d="1" aria-label="Ավելացնել">+</button>
+                                    </div>
+                                </div>
+                                </div>
+                                <p class="small text-muted mt-2 mb-0">Չգիտե՞ք քանակը. թողեք այսպես, զննման ժամանակ կճշտենք։</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,7 +201,8 @@ def calculator(phone, phone_txt):
     (function () {{
         var root = document.getElementById('calc');
         if (!root) return;
-        var n = {{ in: 2, out: 2 }};
+        var n = {{ in: 2, out: 2, smoke: 2, motion: 2, sirenIn: 1, sirenOut: 1, pedal: 0 }};
+        var ALARM = [["smoke", "Ծխի տվիչ"], ["motion", "Շարժման տվիչ"], ["sirenIn", "Սիրենա՝ ներսի"], ["sirenOut", "Սիրենա՝ դրսի"], ["pedal", "Տագնապի ոտնակ (պեդալ)"]];
         var $ = function (s) {{ return root.querySelector(s); }};
         function val(name) {{ var e = root.querySelector('input[name="' + name + '"]:checked'); return e ? e : null; }}
         function render() {{
@@ -182,7 +229,16 @@ def calculator(phone, phone_txt):
             lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
-            extras.forEach(function (x) {{ lines.push(['fa-plus', x]); }});
+            var alarmOn = !!root.querySelector('input[name="extra"][value="alarm"]:checked');
+            document.getElementById('cAlarm').hidden = !alarmOn;
+            ALARM.forEach(function (a) {{ document.getElementById('c_' + a[0]).textContent = n[a[0]]; }});
+            extras.forEach(function (x) {{
+                lines.push(['fa-plus', x]);
+                if (alarmOn && x.indexOf('Ազդանշանային') === 0) {{
+                    var parts = ALARM.filter(function (a) {{ return n[a[0]] > 0; }}).map(function (a) {{ return a[1] + '՝ ' + n[a[0]]; }});
+                    if (parts.length) lines.push(['fa-bell', parts.join(', ')]);
+                }}
+            }});
             document.getElementById('cList').innerHTML = lines.map(function (l) {{
                 return '<li><i class="fa ' + l[0] + '"></i>' + l[1] + '</li>';
             }}).join('');
