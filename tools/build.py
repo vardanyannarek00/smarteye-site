@@ -28,15 +28,15 @@ NAV = [
 ]
 
 SERVICES = [
-    ("icon-6.png", "Տեսախցիկների տեղադրում",
+    ("fa-video", "Տեսախցիկների տեղադրում",
      "IP և անալոգ տեսախցիկների, NVR և DVR ձայնագրիչների տեղադրում տների, խանութների, գրասենյակների և արտադրամասերի համար։ Կարգավորում ենք հեռախոսից դիտումը, որ ձեր օբյեկտը միշտ տեսնեք՝ որտեղ էլ լինեք։"),
-    ("icon-9.png", "Ազդանշանային և հակահրդեհային համակարգեր",
+    ("fa-bell", "Ազդանշանային և հակահրդեհային համակարգեր",
      "Ներխուժման ազդանշանային համակարգեր, շարժման և դռան սենսորներ, ծխի և հրդեհի դետեկտորներ։ Վտանգի դեպքում ազդանշանը անմիջապես հասնում է ձեզ։"),
-    ("icon-3.png", "Լոկալ ցանցերի կառուցում",
+    ("fa-network-wired", "Լոկալ ցանցերի կառուցում",
      "Գրասենյակների և կազմակերպությունների լոկալ ցանցերի (LAN) և Wi-Fi-ի նախագծում, մոնտաժ և սպասարկում՝ կայուն, արագ և անվտանգ կապի համար։"),
-    ("icon-10.png", "Խանութի կշեռքներ",
+    ("fa-balance-scale", "Խանութի կշեռքներ",
      "Խանութների և առևտրի կետերի համար կշեռքների վաճառք, տեղադրում և կարգավորում։"),
-    ("icon-8.png", "Համակարգիչների սպասարկում",
+    ("fa-desktop", "Համակարգիչների սպասարկում",
      "Համակարգիչների արագ և որակյալ սպասարկում՝ ինչպես տանը, այնպես էլ գրասենյակում։"),
 ]
 
@@ -242,9 +242,7 @@ def services_grid(with_cta=True):
         cards.append(f"""
                 <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="{delays[i % 3]}">
                     <div class="service-item border h-100 p-5">
-                        <div class="btn-square bg-light rounded-circle mb-4" style="width: 64px; height: 64px;">
-                            <img class="img-fluid" src="img/icon/{icon}" alt="">
-                        </div>
+                        <i class="fa {icon} step-icon"></i>
                         <h4 class="mb-3">{name}</h4>
                         <p class="mb-0">{text}</p>
                     </div>
@@ -253,13 +251,11 @@ def services_grid(with_cta=True):
         cards.append(f"""
                 <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
                     <div class="service-item service-cta border h-100 p-5 bg-primary">
-                        <div class="btn-square bg-light rounded-circle mb-4" style="width: 64px; height: 64px;">
-                            <img class="img-fluid" src="img/icon/icon-2.png" alt="">
-                        </div>
+                        <i class="fa fa-comments step-icon step-icon-light"></i>
                         <h4 class="mb-3 text-white">Անվճար խորհրդատվություն</h4>
                         <p class="mb-4 text-white">Կգանք, կզննենք օբյեկտը և կառաջարկենք ձեզ հարմար լուծում՝ անվճար։</p>
                         <a class="btn btn-light me-2 mb-2" href="tel:{PHONE}"><i class="fa fa-phone-alt me-2"></i>Զանգել</a>
-                        <a class="btn btn-outline-light mb-2" href="quote.html">Թողնել հայտ</a>
+                        <a class="btn btn-outline-light mb-2" href="quote.html#calc">Թողնել հայտ</a>
                     </div>
                 </div>""")
     return f"""
@@ -281,17 +277,15 @@ def services_grid(with_cta=True):
 
 def why_us():
     items = [
-        ("icon-7.png", "Hikvision և Dahua", "Աշխարհում ամենատարածված բրենդները"),
-        ("icon-10.png", "Անվճար խորհրդատվություն", "Օբյեկտի զննում և առաջարկ՝ առանց վճարի"),
-        ("icon-3.png", "Դիտում հեռախոսից", "Կարգավորում ենք, որ ամեն տեղից տեսնեք"),
-        ("icon-2.png", "Սպասարկում", "Տեղադրումից հետո էլ կապի մեջ ենք"),
+        ("fa-shield-alt", "Hikvision և Dahua", "Աշխարհում ամենատարածված բրենդները"),
+        ("fa-handshake", "Անվճար խորհրդատվություն", "Օբյեկտի զննում և առաջարկ՝ առանց վճարի"),
+        ("fa-mobile-alt", "Դիտում հեռախոսից", "Կարգավորում ենք, որ ամեն տեղից տեսնեք"),
+        ("fa-headset", "Սպասարկում", "Տեղադրումից հետո էլ կապի մեջ ենք"),
     ]
     cols = "".join(f"""
                         <div class="col-sm-6">
                             <div class="d-flex align-items-center">
-                                <div class="btn-square bg-white rounded-circle flex-shrink-0" style="width: 64px; height: 64px;">
-                                    <img class="img-fluid" src="img/icon/{ic}" alt="">
-                                </div>
+                                <i class="fa {ic} step-icon mb-0 flex-shrink-0"></i>
                                 <div class="ms-4">
                                     <h5 class="mb-1">{t}</h5>
                                     <p class="mb-0 small">{d}</p>
@@ -314,7 +308,7 @@ def why_us():
                 </div>
                 <div class="col-lg-6 pe-lg-0" style="min-height: 400px;">
                     <div class="position-relative h-100">
-                        <img class="position-absolute img-fluid w-100 h-100" src="img/feature.jpg" style="object-fit: cover;" alt="Տեսախցիկ">
+                        <img class="position-absolute img-fluid w-100 h-100" src="img/work/work-2.jpg" style="object-fit: cover;" alt="SmartEye-ի տեղադրած պտտվող տեսախցիկ">
                     </div>
                 </div>
             </div>
@@ -439,6 +433,27 @@ def our_work_cta(with_facebook=False):
 """
 
 
+def calc_cta():
+    return f"""
+    <!-- Calc CTA Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="cta-band">
+                <div>
+                    <h3 class="text-white mb-2">Ի՞նչ համակարգ է պետք ձեր օբյեկտին</h3>
+                    <p class="mb-0">Պատասխանեք 5 հարցի և ստացեք անվճար հաշվարկ։</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="quote.html#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
+                    <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>Զանգել</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Calc CTA End -->
+"""
+
+
 def quote_form(heading_tag="h2"):
     opts = "\n".join(f'                                        <option>{o}</option>' for o in SERVICE_OPTIONS)
     return f"""
@@ -448,7 +463,7 @@ def quote_form(heading_tag="h2"):
             <div class="row g-0 mx-lg-0">
                 <div class="col-lg-6 ps-lg-0" style="min-height: 400px;">
                     <div class="position-relative h-100">
-                        <img class="position-absolute img-fluid w-100 h-100" src="img/quote.jpg" style="object-fit: cover;" alt="">
+                        <img class="position-absolute img-fluid w-100 h-100" src="img/work/work-2.jpg" style="object-fit: cover;" alt="SmartEye-ի տեղադրած տեսախցիկ">
                     </div>
                 </div>
                 <div class="col-lg-6 quote-text py-5 wow fadeIn" data-wow-delay="0.3s">
@@ -628,17 +643,17 @@ def build():
     # about
     page("about.html", "about.html", "Մեր մասին | SmartEye System",
          "SmartEye System-ը տեղադրում է տեսախցիկներ, ազդանշանային համակարգեր և լոկալ ցանցեր Երևանում՝ Hikvision և Dahua սարքավորումներով։",
-         page_header("Մեր մասին") + about_block(more_link=False) + why_us() + our_work_cta())
+         page_header("Մեր մասին") + about_block(more_link=False) + why_us() + calc_cta() + our_work_cta())
 
     # services
     page("service.html", "service.html",
          "Ծառայություններ | SmartEye System — տեսահսկում, ազդանշանային համակարգեր, ցանցեր",
-         site_desc, page_header("Ծառայություններ") + services_grid())
+         site_desc, page_header("Ծառայություններ") + services_grid() + calc_cta())
 
     # projects / work
     page("project.html", "project.html", "Աշխատանքներ | SmartEye System",
          "SmartEye System-ի կատարած տեսախցիկների տեղադրումների լուսանկարներ և տեսանյութեր։",
-         page_header("Աշխատանքներ") + our_work_cta(with_facebook=True))
+         page_header("Աշխատանքներ") + our_work_cta(with_facebook=True) + calc_cta())
 
     # quote
     page("quote.html", "quote.html", "Անվճար խորհրդատվություն | SmartEye System",
@@ -739,7 +754,7 @@ def build():
 
 def about_block(more_link):
     more = '<a href="about.html" class="btn btn-primary rounded-pill py-3 px-5">Ավելին</a>' if more_link else \
-        '<a href="quote.html" class="btn btn-primary rounded-pill py-3 px-5">Անվճար խորհրդատվություն</a>'
+        '<a href="quote.html#calc" class="btn btn-primary rounded-pill py-3 px-5"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>'
     return f"""
     <!-- About Start -->
     <div class="container-fluid bg-light overflow-hidden my-5 px-lg-0">

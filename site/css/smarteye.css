@@ -203,3 +203,20 @@ img[src*="img/icon/"] { filter: hue-rotate(118deg) saturate(1.2); }
 .calc-note { font-size: .82rem; color: #93A3C7; }
 .calc-result .form-control { border: 0; padding: .75rem 1rem; }
 .calc-result .form-notice { margin-bottom: 1rem; }
+
+/* ===== Unified look for inner sections ===== */
+.service-item { border-radius: 0; background: #fff; }
+.service-item .step-icon { margin-bottom: 1.25rem; }
+.service-cta .step-icon-light { background: rgba(255,255,255,.18); color: #fff; }
+.feature-text .step-icon { width: 48px; height: 48px; font-size: 1.15rem; }
+.feature-text h5 { font-size: 1rem; }
+
+.cta-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;
+    padding: 2.25rem 2.5rem; border-radius: 20px; color: #C3CFEA;
+    background: radial-gradient(600px 300px at 100% 0%, rgba(30, 107, 255, .4), transparent 60%), var(--dark); }
+.cta-band .btn-outline-light { border-color: rgba(255,255,255,.35) !important; }
+@media (max-width: 575.98px) { .cta-band { padding: 1.75rem 1.4rem; } }
+
+/* Page header: tighter, consistent with hero */
+.page-header { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+.page-header h1 { font-weight: 900; }
