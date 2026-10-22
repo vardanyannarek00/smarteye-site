@@ -219,6 +219,19 @@
                                 </div>
                             </div>
                             <div class="calc-q">
+                                <h5><span></span>Ձայն</h5>
+                                <div class="calc-opts">
+                            <label class="calc-opt">
+                                <input type="radio" name="audio" value="no" data-label="Առանց ձայնի" checked>
+                                <span>Առանց ձայնի</span>
+                            </label>
+                            <label class="calc-opt">
+                                <input type="radio" name="audio" value="yes" data-label="Ձայնով (միկրոֆոն)">
+                                <span>Ձայնով (միկրոֆոն)</span>
+                            </label>
+                                </div>
+                            </div>
+                            <div class="calc-q">
                                 <h5><span></span>Քանի՞ օր պահել ձայնագրությունը</h5>
                                 <div class="calc-opts">
                             <label class="calc-opt">
@@ -245,10 +258,6 @@
                             <label class="calc-opt">
                                 <input type="checkbox" name="camx" value="cash" data-label="Դրամարկղի (կասսայի) տեսախցիկ">
                                 <span>Դրամարկղի (կասսայի) տեսախցիկ</span>
-                            </label>
-                            <label class="calc-opt">
-                                <input type="checkbox" name="camx" value="audio" data-label="Ձայնի ձայնագրում">
-                                <span>Ձայնի ձայնագրում</span>
                             </label>
                                 </div>
                             </div>
@@ -402,6 +411,8 @@
                 lines.push(['fa-video', total + ' տեսախցիկ (' + n.in + ' ներսում, ' + n.out + ' դրսում)']);
                 lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
                 lines.push(['fa-image', 'Որակ՝ ' + (q ? q.dataset.label : '') + (cvu ? ', ColorVu (գիշերը գունավոր)' : '')]);
+                var au = val('audio');
+                lines.push(['fa-microphone', 'Ձայն՝ ' + (au ? au.dataset.label.toLowerCase() : 'առանց ձայնի')]);
                 lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
                 lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
                 lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);

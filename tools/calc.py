@@ -30,8 +30,9 @@ DAYS = [("7", "7 օր"), ("14", "14 օր"), ("30", "30 օր")]
 CAM_EXTRAS = [
     ("ai", "Խելացի ճանաչում (AcuSense / WizSense)"),
     ("cash", "Դրամարկղի (կասսայի) տեսախցիկ"),
-    ("audio", "Ձայնի ձայնագրում"),
 ]
+
+AUDIO = [("no", "Առանց ձայնի"), ("yes", "Ձայնով (միկրոֆոն)")]
 
 ALARM_TYPES = [
     ("wired", "Լարային", "Hikvision AX Hybrid PRO"),
@@ -157,6 +158,11 @@ def calculator(phone, phone_txt):
                                 </div>
                             </div>
                             <div class="calc-q">
+                                <h5><span></span>Ձայն</h5>
+                                <div class="calc-opts">{_radios("audio", AUDIO, "no")}
+                                </div>
+                            </div>
+                            <div class="calc-q">
                                 <h5><span></span>Քանի՞ օր պահել ձայնագրությունը</h5>
                                 <div class="calc-opts">{_radios("days", DAYS, "14")}
                                 </div>
@@ -252,6 +258,8 @@ def calculator(phone, phone_txt):
                 lines.push(['fa-video', total + ' տեսախցիկ (' + n.in + ' ներսում, ' + n.out + ' դրսում)']);
                 lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
                 lines.push(['fa-image', 'Որակ՝ ' + (q ? q.dataset.label : '') + (cvu ? ', ColorVu (գիշերը գունավոր)' : '')]);
+                var au = val('audio');
+                lines.push(['fa-microphone', 'Ձայն՝ ' + (au ? au.dataset.label.toLowerCase() : 'առանց ձայնի')]);
                 lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
                 lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
                 lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
