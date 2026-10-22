@@ -93,7 +93,7 @@ def _stepper(key, icon, label, value):
 
 def calculator(phone, phone_txt):
     objs = "".join(f"""
-                            <label class="calc-opt">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="{v}" data-label="{t}"{' checked' if i == 0 else ''}>
                                 <span><i class="fa {ic}"></i>{t}</span>
                             </label>""" for i, (v, ic, t) in enumerate(OBJECTS))
@@ -116,20 +116,30 @@ def calculator(phone, phone_txt):
                     <div class="calc-card">
                         <div class="calc-q">
                             <h5><span></span>Ի՞նչ է պետք</h5>
-                            <div class="calc-opts calc-need">
-                                <label class="calc-opt calc-opt-big">
+                            <div class="calc-need">
+                                <label class="calc-tile">
                                     <input type="checkbox" name="need" value="cam" checked>
-                                    <span><i class="fa fa-video"></i>Տեսախցիկներ</span>
+                                    <span class="calc-tile-body">
+                                        <i class="fa fa-video calc-tile-ic"></i>
+                                        <b>Տեսախցիկներ</b>
+                                        <small>Տեսահսկում և դիտում հեռախոսից</small>
+                                        <i class="fa fa-check calc-tile-check"></i>
+                                    </span>
                                 </label>
-                                <label class="calc-opt calc-opt-big">
+                                <label class="calc-tile">
                                     <input type="checkbox" name="need" value="alarm">
-                                    <span><i class="fa fa-bell"></i>Ազդանշանային համակարգ</span>
+                                    <span class="calc-tile-body">
+                                        <i class="fa fa-bell calc-tile-ic"></i>
+                                        <b>Ազդանշանային համակարգ</b>
+                                        <small>Ալարմ, տվիչներ, սիրենա</small>
+                                        <i class="fa fa-check calc-tile-check"></i>
+                                    </span>
                                 </label>
                             </div>
                         </div>
                         <div class="calc-q">
                             <h5><span></span>Ի՞նչ օբյեկտ է</h5>
-                            <div class="calc-opts">{objs}
+                            <div class="calc-objs">{objs}
                             </div>
                         </div>
 
@@ -143,12 +153,12 @@ def calculator(phone, phone_txt):
                             </div>
                             <div class="calc-q">
                                 <h5><span></span>Համակարգի տեսակ <a class="calc-help" href="service.html#ipvsanalog">Ո՞րն ընտրել</a></h5>
-                                <div class="calc-opts">{_radios("sys", SYSTEMS, "ip", wide=True)}
+                                <div class="calc-opts calc-grid">{_radios("sys", SYSTEMS, "ip", wide=True)}
                                 </div>
                             </div>
                             <div class="calc-q">
                                 <h5><span></span>Պատկերի որակ</h5>
-                                <div class="calc-opts">{_radios("q", QUALITY, "4", wide=True)}
+                                <div class="calc-opts calc-grid">{_radios("q", QUALITY, "4", wide=True)}
                                 </div>
                                 <div class="calc-opts mt-2">
                                     <label class="calc-opt">
@@ -178,7 +188,7 @@ def calculator(phone, phone_txt):
                             <div class="calc-group-title"><i class="fa fa-bell me-2"></i>Ազդանշանային համակարգ</div>
                             <div class="calc-q">
                                 <h5><span></span>Ալարմի տեսակ <a class="calc-help" href="alarm.html">Ո՞րն ընտրել</a></h5>
-                                <div class="calc-opts">{_radios("atype", ALARM_TYPES, "wired", wide=True)}
+                                <div class="calc-opts calc-grid">{_radios("atype", ALARM_TYPES, "wired", wide=True)}
                                 </div>
                             </div>
                             <div class="calc-q mb-0">
@@ -226,6 +236,7 @@ def calculator(phone, phone_txt):
             </div>
         </div>
     </div>
+    <a href="#form" class="calc-mbar" id="cBar"><span id="cBarTxt">Քո համակարգը</span><b>Տեսնել և ուղարկել <i class="fa fa-arrow-down ms-1"></i></b></a>
     <script>
     (function () {{
         var root = document.getElementById('calc');
@@ -279,6 +290,7 @@ def calculator(phone, phone_txt):
             document.getElementById('cList').innerHTML = lines.map(function (l) {{
                 return '<li><i class="fa ' + l[0] + '"></i>' + l[1] + '</li>';
             }}).join('');
+            document.getElementById('cBarTxt').textContent = what.length ? what.join(' + ') : 'Ընտրեք, թե ինչ է պետք';
             document.getElementById('cService').value = 'Հաշվիչ — ' + (obj ? obj.dataset.label : '') + (what.length ? ', ' + what.join(' + ') : '');
             document.getElementById('cNote').value =
                 'Օբյեկտ: ' + (obj ? obj.dataset.label : '') + '\\n' +
@@ -332,6 +344,15 @@ def calculator(phone, phone_txt):
             var p = document.getElementById('cPlace').value.trim();
             if (p) document.getElementById('cNote').value += '\\nԲնակավայր: ' + p;
         }});
+        var bar = document.getElementById('cBar'), card = root.querySelector('.calc-card'), res = document.getElementById('form');
+        if ('IntersectionObserver' in window) {{
+            var vis = {{ card: false, res: false }};
+            var io = new IntersectionObserver(function (es) {{
+                es.forEach(function (e) {{ vis[e.target === card ? 'card' : 'res'] = e.isIntersecting; }});
+                bar.classList.toggle('show', vis.card && !vis.res);
+            }});
+            io.observe(card); io.observe(res);
+        }}
         render();
     }})();
     </script>

@@ -417,37 +417,47 @@
                     <div class="calc-card">
                         <div class="calc-q">
                             <h5><span></span>Ի՞նչ է պետք</h5>
-                            <div class="calc-opts calc-need">
-                                <label class="calc-opt calc-opt-big">
+                            <div class="calc-need">
+                                <label class="calc-tile">
                                     <input type="checkbox" name="need" value="cam" checked>
-                                    <span><i class="fa fa-video"></i>Տեսախցիկներ</span>
+                                    <span class="calc-tile-body">
+                                        <i class="fa fa-video calc-tile-ic"></i>
+                                        <b>Տեսախցիկներ</b>
+                                        <small>Տեսահսկում և դիտում հեռախոսից</small>
+                                        <i class="fa fa-check calc-tile-check"></i>
+                                    </span>
                                 </label>
-                                <label class="calc-opt calc-opt-big">
+                                <label class="calc-tile">
                                     <input type="checkbox" name="need" value="alarm">
-                                    <span><i class="fa fa-bell"></i>Ազդանշանային համակարգ</span>
+                                    <span class="calc-tile-body">
+                                        <i class="fa fa-bell calc-tile-ic"></i>
+                                        <b>Ազդանշանային համակարգ</b>
+                                        <small>Ալարմ, տվիչներ, սիրենա</small>
+                                        <i class="fa fa-check calc-tile-check"></i>
+                                    </span>
                                 </label>
                             </div>
                         </div>
                         <div class="calc-q">
                             <h5><span></span>Ի՞նչ օբյեկտ է</h5>
-                            <div class="calc-opts">
-                            <label class="calc-opt">
+                            <div class="calc-objs">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="home" data-label="Տուն / բնակարան" checked>
                                 <span><i class="fa fa-home"></i>Տուն / բնակարան</span>
                             </label>
-                            <label class="calc-opt">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="shop" data-label="Խանութ">
                                 <span><i class="fa fa-store"></i>Խանութ</span>
                             </label>
-                            <label class="calc-opt">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="office" data-label="Գրասենյակ">
                                 <span><i class="fa fa-briefcase"></i>Գրասենյակ</span>
                             </label>
-                            <label class="calc-opt">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="garden" data-label="Այգի / ամառանոց">
                                 <span><i class="fa fa-tree"></i>Այգի / ամառանոց</span>
                             </label>
-                            <label class="calc-opt">
+                            <label class="calc-obj">
                                 <input type="radio" name="obj" value="warehouse" data-label="Պահեստ / արտադրություն">
                                 <span><i class="fa fa-warehouse"></i>Պահեստ / արտադրություն</span>
                             </label>
@@ -480,7 +490,7 @@
                             </div>
                             <div class="calc-q">
                                 <h5><span></span>Համակարգի տեսակ <a class="calc-help" href="service.html#ipvsanalog">Ո՞րն ընտրել</a></h5>
-                                <div class="calc-opts">
+                                <div class="calc-opts calc-grid">
                             <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="sys" value="ip" data-label="IP (թվային)" checked>
                                 <span><b>IP (թվային)</b><small>Ավելի բարձր որակ, խելացի ֆունկցիաներ</small></span>
@@ -497,7 +507,7 @@
                             </div>
                             <div class="calc-q">
                                 <h5><span></span>Պատկերի որակ</h5>
-                                <div class="calc-opts">
+                                <div class="calc-opts calc-grid">
                             <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="q" value="2" data-label="2 ՄՊ">
                                 <span><b>2 ՄՊ</b><small>Full HD, մատչելի</small></span>
@@ -567,7 +577,7 @@
                             <div class="calc-group-title"><i class="fa fa-bell me-2"></i>Ազդանշանային համակարգ</div>
                             <div class="calc-q">
                                 <h5><span></span>Ալարմի տեսակ <a class="calc-help" href="alarm.html">Ո՞րն ընտրել</a></h5>
-                                <div class="calc-opts">
+                                <div class="calc-opts calc-grid">
                             <label class="calc-opt calc-opt-wide">
                                 <input type="radio" name="atype" value="wired" data-label="Լարային" checked>
                                 <span><b>Լարային</b><small>Hikvision AX Hybrid PRO</small></span>
@@ -679,6 +689,7 @@
             </div>
         </div>
     </div>
+    <a href="#form" class="calc-mbar" id="cBar"><span id="cBarTxt">Քո համակարգը</span><b>Տեսնել և ուղարկել <i class="fa fa-arrow-down ms-1"></i></b></a>
     <script>
     (function () {
         var root = document.getElementById('calc');
@@ -732,6 +743,7 @@
             document.getElementById('cList').innerHTML = lines.map(function (l) {
                 return '<li><i class="fa ' + l[0] + '"></i>' + l[1] + '</li>';
             }).join('');
+            document.getElementById('cBarTxt').textContent = what.length ? what.join(' + ') : 'Ընտրեք, թե ինչ է պետք';
             document.getElementById('cService').value = 'Հաշվիչ — ' + (obj ? obj.dataset.label : '') + (what.length ? ', ' + what.join(' + ') : '');
             document.getElementById('cNote').value =
                 'Օբյեկտ: ' + (obj ? obj.dataset.label : '') + '\n' +
@@ -785,6 +797,15 @@
             var p = document.getElementById('cPlace').value.trim();
             if (p) document.getElementById('cNote').value += '\nԲնակավայր: ' + p;
         });
+        var bar = document.getElementById('cBar'), card = root.querySelector('.calc-card'), res = document.getElementById('form');
+        if ('IntersectionObserver' in window) {
+            var vis = { card: false, res: false };
+            var io = new IntersectionObserver(function (es) {
+                es.forEach(function (e) { vis[e.target === card ? 'card' : 'res'] = e.isIntersecting; });
+                bar.classList.toggle('show', vis.card && !vis.res);
+            });
+            io.observe(card); io.observe(res);
+        }
         render();
     })();
     </script>
