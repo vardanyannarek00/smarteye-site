@@ -186,6 +186,7 @@ def footer(extra_js=""):
                 <div class="col-lg-4 col-md-6">
                     <h5 class="text-light mb-4">Արագ հղումներ</h5>
                     <a class="btn btn-link" href="about.html">Մեր մասին</a>
+                    <a class="btn btn-link" href="smart.html">Խելացի տեսախցիկներ</a>
                     <a class="btn btn-link" href="project.html">Աշխատանքներ</a>
                     <a class="btn btn-link" href="quote.html">Անվճար խորհրդատվություն</a>
                     <a class="btn btn-link" href="contact.html">Կապ</a>
@@ -474,6 +475,128 @@ def smart_ai():
 """
 
 
+def smart_teaser():
+    return """
+    <!-- Smart teaser Start -->
+    <div class="container-xxl py-4">
+        <div class="container">
+            <a class="smart-teaser" href="smart.html">
+                <span class="smart-teaser-icon"><i class="fa fa-microchip"></i></span>
+                <span class="flex-grow-1">
+                    <span class="d-block h4 text-white mb-1">Խելացի (AI) տեսախցիկներ</span>
+                    <span class="d-block">Ճանաչում են մարդուն և մեքենային, ահազանգում են միայն իրական վտանգի դեպքում։</span>
+                </span>
+                <span class="btn btn-primary rounded-pill px-4">Իմանալ ավելին <i class="fa fa-arrow-right ms-2"></i></span>
+            </a>
+        </div>
+    </div>
+    <!-- Smart teaser End -->
+"""
+
+
+def smart_page_body():
+    flow = [("fa-video", "Տեսախցիկը տեսնում է շարժում"), ("fa-microchip", "AI-ն որոշում է՝ մարդ է, մեքենա, թե պարզապես ծառ"),
+            ("fa-filter", "Կենդանիները, ստվերներն ու անձրևը անտեսվում են"), ("fa-mobile-alt", "Ահազանգը նկարով գալիս է ձեր հեռախոսին")]
+    flow_html = "".join(f"""
+                <div class="col-6 col-lg-3">
+                    <div class="step h-100">
+                        <span class="step-num">{i + 1}</span>
+                        <i class="fa {ic} step-icon"></i>
+                        <p class="mb-0">{t}</p>
+                    </div>
+                </div>""" for i, (ic, t) in enumerate(flow))
+    uses = [
+        ("fa-home", "Տուն", "Գիշերը մարդ մոտեցավ դարպասին. ստանում եք ահազանգ նկարով, իսկ բակում վազող կատվի համար՝ ոչ։"),
+        ("fa-store", "Խանութ", "Փակվելուց հետո ներս մտնողը անմիջապես հայտնաբերվում է։ Աշխատանքային ժամերին կարելի է ահազանգերը անջատել։"),
+        ("fa-warehouse", "Պահեստ / արտադրություն", "Ցանկապատի երկայնքով գիծ ենք նշում. մեքենան կամ մարդը, որ հատում է այն, անմիջապես գրանցվում է։"),
+        ("fa-tree", "Այգի / ամառանոց", "Երբ տանը չեք, տեսախցիկը հսկում է տարածքը, իսկ ծառերի ու քամու պատճառով կեղծ ահազանգ չի լինում։"),
+    ]
+    uses_html = "".join(f"""
+                <div class="col-md-6">
+                    <div class="use-card h-100">
+                        <i class="fa {ic}"></i>
+                        <div>
+                            <h5>{t}</h5>
+                            <p class="mb-0">{d}</p>
+                        </div>
+                    </div>
+                </div>""" for ic, t, d in uses)
+    cmp_rows = [
+        ("Ինչի վրա է ահազանգում", "Ցանկացած շարժում՝ ծառ, կենդանի, լույս, անձրև", "Միայն մարդ կամ մեքենա"),
+        ("Կեղծ ահազանգեր", "Շատ, մարդիկ հաճախ անջատում են ծանուցումները", "Զգալիորեն քիչ"),
+        ("Ձայնագրության մեջ որոնում", "Պետք է դիտել ժամերով", "Զտում եք՝ «միայն մարդիկ» կամ «միայն մեքենաներ»"),
+        ("Գոտիներ և գծեր", "Սահմանափակ", "Մուտք գոտի, գծի հատում, ներխուժում"),
+        ("Գին", "Ավելի մատչելի", "Մի փոքր ավելի թանկ"),
+    ]
+    cmp_html = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>" for a, b, c in cmp_rows)
+    faq = [
+        ("Գիշերը աշխատու՞մ է։", "Այո։ Գիշերային տեսողությամբ և ColorVu տեսախցիկներով ճանաչումը աշխատում է նաև մթության մեջ։"),
+        ("Ինտերնետ պե՞տք է։", "Ճանաչումն աշխատում է տեսախցիկի կամ ձայնագրիչի մեջ, ինտերնետ պետք չէ։ Ինտերնետը պետք է միայն ահազանգը հեռախոսին ստանալու և հեռվից դիտելու համար։"),
+        ("Կարելի՞ է առկա համակարգը դարձնել խելացի։", "Կախված է առկա ձայնագրիչից և տեսախցիկներից։ Հաճախ բավական է փոխել մի մասը։ Կնայենք զննման ժամանակ՝ անվճար։"),
+        ("Կա՞ն անալոգ խելացի տեսախցիկներ։", "Այո, Hikvision-ը և Dahua-ն ունեն նաև անալոգ (HD) մոդելներ մարդու և մեքենայի ճանաչմամբ, բայց IP տարբերակներում ֆունկցիաներն ավելի շատ են։"),
+    ]
+    faq_html = "".join(f"""
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="sh{i}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sc{i}" aria-expanded="false" aria-controls="sc{i}">{q}</button>
+                    </h3>
+                    <div id="sc{i}" class="accordion-collapse collapse" aria-labelledby="sh{i}" data-bs-parent="#faq">
+                        <div class="accordion-body">{a}</div>
+                    </div>
+                </div>""" for i, (q, a) in enumerate(faq))
+    return f"""
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-3">Ինչպես է աշխատում</h2>
+                <p class="mx-auto mb-0" style="max-width: 640px;">Hikvision AcuSense և Dahua WizSense տեխնոլոգիաներով տեսախցիկը ոչ միայն ձայնագրում է, այլև հասկանում է, թե ինչ է տեսնում։</p>
+            </div>
+            <div class="row g-4">{flow_html}
+            </div>
+        </div>
+    </div>
+{smart_ai()}
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-0">Որտեղ է օգտակար</h2>
+            </div>
+            <div class="row g-4">{uses_html}
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-0">Սովորական թե խելացի</h2>
+            </div>
+            <div class="table-responsive sys-table-wrap">
+                <table class="table sys-table mb-0">
+                    <thead><tr><th></th><th>Սովորական</th><th>Խելացի (AI)</th></tr></thead>
+                    <tbody>{cmp_html}</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container" style="max-width: 860px;">
+            <div class="text-center mb-5">
+                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
+                <h2 class="display-5 mb-0">Հարցեր</h2>
+            </div>
+            <div class="accordion" id="faq">{faq_html}
+            </div>
+        </div>
+    </div>
+{calc_cta()}
+"""
+
+
 def ip_vs_analog():
     rows = [
         ("Ինչպես է միանում", "Ցանցային (UTP) մալուխով. մեկ մալուխով և՛ հոսանք, և՛ պատկեր (PoE)", "Կոաքսիալ մալուխով + առանձին սնուցում"),
@@ -659,7 +782,7 @@ def build():
         ("Ո՞րն է տարբերությունը IP և անալոգ տեսախցիկների միջև։",
          "IP տեսախցիկները թվային են. ավելի բարձր որակ և խելացի ֆունկցիաներ (մարդու և մեքենայի ճանաչում)։ Անալոգները (HD) ավելի մատչելի են և հարմար են հին լարերով։ Մանրամասն՝ <a href=\"service.html#ipvsanalog\">այստեղ</a>։"),
         ("Ի՞նչ են «խելացի» (AI) տեսախցիկները։",
-         "Hikvision AcuSense և Dahua WizSense տեսախցիկները ճանաչում են մարդուն և մեքենային, անտեսում են ծառերն ու կենդանիներին, ուստի ահազանգը գալիս է միայն իրական վտանգի դեպքում։ Մանրամասն՝ <a href=\"index.html#ai\">այստեղ</a>։"),
+         "Hikvision AcuSense և Dahua WizSense տեսախցիկները ճանաչում են մարդուն և մեքենային, անտեսում են ծառերն ու կենդանիներին, ուստի ահազանգը գալիս է միայն իրական վտանգի դեպքում։ Մանրամասն՝ <a href=\"smart.html\">այստեղ</a>։"),
         ("Տեսախցիկները գիշերը տեսնու՞մ են։",
          "Այո, մեր առաջարկած տեսախցիկներն ունեն գիշերային տեսողություն։ Իսկ ColorVu մոդելները (2, 4 և 5 ՄՊ) գիշերն էլ գունավոր պատկեր են տալիս։"),
         ("Որտե՞ղ եք աշխատում։",
@@ -716,7 +839,7 @@ def build():
     </div>
     <!-- Steps End -->
 {services_grid()}
-{smart_ai()}
+{smart_teaser()}
 {our_work_cta()}
 {why_us()}
 
@@ -746,12 +869,17 @@ def build():
     # services
     page("service.html", "service.html",
          "Ծառայություններ | SmartEye System — տեսահսկում, ազդանշանային համակարգեր, ցանցեր",
-         site_desc, page_header("Ծառայություններ") + services_grid() + smart_ai() + ip_vs_analog() + calc_cta())
+         site_desc, page_header("Ծառայություններ") + services_grid() + smart_teaser() + ip_vs_analog() + calc_cta())
 
     # projects / work
     page("project.html", "project.html", "Աշխատանքներ | SmartEye System",
          "SmartEye System-ի կատարած տեսախցիկների տեղադրումների լուսանկարներ և տեսանյութեր։",
          page_header("Աշխատանքներ") + our_work_cta(with_facebook=True) + calc_cta())
+
+    # smart cameras
+    page("smart.html", "", "Խելացի (AI) տեսախցիկներ | SmartEye System",
+         "Hikvision AcuSense և Dahua WizSense խելացի տեսախցիկներ. մարդու և մեքենայի ճանաչում, ավելի քիչ կեղծ ահազանգ։ Տեղադրում Երևանում և Արագածոտնում։",
+         page_header("Խելացի տեսախցիկներ") + smart_page_body())
 
     # quote
     page("quote.html", "quote.html", "Անվճար խորհրդատվություն | SmartEye System",
@@ -884,7 +1012,7 @@ def about_block(more_link):
 
 
 def seo_files():
-    pages = ["index.html", "service.html", "project.html", "about.html", "quote.html", "contact.html"]
+    pages = ["index.html", "service.html", "smart.html", "project.html", "about.html", "quote.html", "contact.html"]
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for pg in pages:
