@@ -13,9 +13,9 @@ OBJECTS = [
 ]
 
 QUALITY = [
-    ("2", "2 ՄՊ", "Full HD, մատչելի տարբերակ"),
-    ("4", "4 ՄՊ", "Բարձր որակ, գիշերը՝ սև-սպիտակ"),
-    ("5c", "5 ՄՊ ColorVu", "Գիշերն էլ գունավոր պատկեր"),
+    ("2", "2 ՄՊ", "Full HD, մատչելի"),
+    ("4", "4 ՄՊ", "Բարձր որակ"),
+    ("5", "5 ՄՊ", "Ամենամանրամասն"),
 ]
 
 SYSTEMS = [
@@ -109,6 +109,12 @@ def calculator(phone, phone_txt):
                             <h5><span>4</span>Պատկերի որակ</h5>
                             <div class="calc-opts">{qual}
                             </div>
+                            <div class="calc-opts mt-2">
+                                <label class="calc-opt">
+                                    <input type="checkbox" name="colorvu" value="1">
+                                    <span><i class="fa fa-moon"></i>ColorVu՝ գիշերն էլ գունավոր</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="calc-q">
                             <h5><span>5</span>Քանի՞ օր պահել ձայնագրությունը</h5>
@@ -160,7 +166,8 @@ def calculator(phone, phone_txt):
             var q = val('q'), days = +(val('days') || {{ value: 14 }}).value;
             var ch = total <= 4 ? 4 : total <= 8 ? 8 : total <= 16 ? 16 : 32;
             // H.265, continuous recording: ~10 GB/day for 2 MP, ~20 GB/day for 4 MP, ~25 GB/day for 5 MP cameras
-            var perDay = !q ? 20 : q.value === '2' ? 10 : q.value === '5c' ? 25 : 20;
+            var perDay = !q ? 20 : q.value === '2' ? 10 : q.value === '5' ? 25 : 20;
+            var cvu = root.querySelector('input[name="colorvu"]:checked');
             var tb = total * perDay * days / 1000;
             var disks = [1, 2, 4, 6, 8, 10, 12, 16];
             var disk = disks.find(function (d) {{ return d >= tb; }}) || Math.ceil(tb);
@@ -169,7 +176,7 @@ def calculator(phone, phone_txt):
             var lines = [];
             lines.push(['fa-video', total + ' տեսախցիկ' + (total ? ' (' + n.in + ' ներսում, ' + n.out + ' դրսում)' : '')]);
             lines.push(['fa-project-diagram', 'Համակարգ՝ ' + (sys ? sys.dataset.label : '')]);
-            lines.push(['fa-image', 'Որակ՝ ' + (q ? q.dataset.label : '')]);
+            lines.push(['fa-image', 'Որակ՝ ' + (q ? q.dataset.label : '') + (cvu ? ', ColorVu (գիշերը գունավոր)' : '')]);
             lines.push(['fa-server', ch + '-ալիքանի ' + rec]);
             lines.push(['fa-hdd', 'Կոշտ սկավառակ՝ ' + disk + ' ՏԲ (' + days + ' օր)']);
             lines.push(['fa-mobile-alt', 'Դիտում հեռախոսից']);
