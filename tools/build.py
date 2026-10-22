@@ -5,6 +5,8 @@ Usage: python3 build.py <template_dir> <out_dir>
 Copies css/js/lib/img from the template (skipping non-web files) and writes all pages.
 """
 import os, shutil, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from calc import calculator
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 
@@ -372,6 +374,8 @@ FB_PLUGIN = ("https://www.facebook.com/plugins/page.php?href=" + FB.replace(":",
 
 
 def our_work_cta(with_facebook=False):
+    # Heavy TikTok/Facebook embeds only on the Աշխատանքներ page (with_facebook=True); the homepage stays fast.
+    with_tiktok = with_facebook
     cards = [
         ("fab fa-instagram", "Instagram", "@smarteye_system", IG),
         ("fab fa-facebook-f", "Facebook", "SmartEye System", FB),
@@ -403,6 +407,11 @@ def our_work_cta(with_facebook=False):
                         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                 </div>
             </div>""" if with_facebook else ""
+    tiktok_block = f"""
+            <h3 class="text-center mb-4">TikTok-ում</h3>
+            <div class="row g-4 justify-content-center">{vids}
+            </div>""" if with_tiktok else ""
+    tiktok_js = '<script async src="https://www.tiktok.com/embed.js"></script>' if with_tiktok else ""
     return f"""
     <!-- Social Start -->
     <div class="container-xxl py-5">
@@ -419,15 +428,13 @@ def our_work_cta(with_facebook=False):
             <h3 class="text-center mb-4">Տեսանյութեր</h3>
             <div class="row g-4 justify-content-center mb-5">{work_videos()}
             </div>
-            <h3 class="text-center mb-4">TikTok-ում</h3>
-            <div class="row g-4 justify-content-center">{vids}
-            </div>
+{tiktok_block}
             <div class="text-center mt-4">
                 <a class="btn btn-primary rounded-pill py-3 px-5" href="{TT}" target="_blank" rel="noopener"><i class="fab fa-tiktok me-2"></i>Բոլոր տեսանյութերը</a>
             </div>{fb}
         </div>
     </div>
-    <script async src="https://www.tiktok.com/embed.js"></script>
+    {tiktok_js}
     <!-- Social End -->
 """
 
@@ -512,7 +519,7 @@ def build():
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
-    site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
+    site_desc = "SmartEye System — տեսախցիկների, ազդանշանային համակարգերի և լոկալ ցանցերի տեղադրում Երևանում և Արագածոտնի մարզում։ Hikvision և Dahua սարքավորումներ, խանութի կշեռքներ, անվճար խորհրդատվություն։"
 
     # index
     trust = [("fa-shield-alt", "Hikvision և Dahua"), ("fa-mobile-alt", "Դիտում հեռախոսից"), ("fa-map-marker-alt", "Երևան և Արագածոտն")]
@@ -568,14 +575,14 @@ def build():
                     <h1 class="hero-title">Ձեր տունն ու բիզնեսը՝ միշտ ձեր աչքի առաջ</h1>
                     <p class="hero-lead">Տեղադրում ենք տեսախցիկներ, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։ Ամեն ինչ կարգավորում ենք այնպես, որ ձեր օբյեկտը տեսնեք հեռախոսից՝ ցանկացած պահի։</p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
-                        <a href="quote.html" class="btn btn-primary btn-lg rounded-pill px-4">Անվճար խորհրդատվություն</a>
+                        <a href="#calc" class="btn btn-primary btn-lg rounded-pill px-4"><i class="fa fa-calculator me-2"></i>Հաշվիր համակարգը</a>
                         <a href="tel:{PHONE}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fa fa-phone-alt me-2"></i>{PHONE_TXT}</a>
                     </div>
                     <div class="d-flex flex-wrap gap-2">{trust_html}</div>
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-media">
-                        <img src="img/work/work-1.jpg" alt="SmartEye-ի տեղադրած Hikvision տեսախցիկ" class="hero-img">
+                        <img src="img/work/work-1-hero.jpg" alt="SmartEye-ի տեղադրած Hikvision տեսախցիկ" class="hero-img" fetchpriority="high">
                         <div class="hero-badge"><i class="fa fa-video me-2"></i>Մեր իրական աշխատանքը</div>
                     </div>
                 </div>
@@ -612,10 +619,10 @@ def build():
         </div>
     </div>
     <!-- FAQ End -->
-{quote_form()}
+{calculator(PHONE, PHONE_TXT)}
 """
     page("index.html", "index.html",
-         "SmartEye System — տեսախցիկների տեղադրում և անվտանգության համակարգեր Երևանում",
+         "SmartEye System — տեսախցիկների տեղադրում Երևանում և Արագածոտնում",
          site_desc, body, FORM_JS)
 
     # about
@@ -636,7 +643,7 @@ def build():
     # quote
     page("quote.html", "quote.html", "Անվճար խորհրդատվություն | SmartEye System",
          "Թողեք հայտ և ստացեք անվճար խորհրդատվություն տեսախցիկների, ազդանշանային համակարգերի կամ ցանցի տեղադրման համար։",
-         page_header("Անվճար խորհրդատվություն") + quote_form(), FORM_JS)
+         page_header("Անվճար խորհրդատվություն") + calculator(PHONE, PHONE_TXT), FORM_JS)
 
     # contact
     page("contact.html", "contact.html", "Կապ | SmartEye System",
