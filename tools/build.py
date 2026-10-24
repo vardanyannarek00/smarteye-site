@@ -45,7 +45,7 @@ SERVICES = [
      "Համակարգիչների արագ և որակյալ սպասարկում՝ ինչպես տանը, այնպես էլ գրասենյակում։"),
 ]
 
-SERVICE_OPTIONS = [s[1] for s in SERVICES] + ["Այլ / չգիտեմ, խորհրդատվություն է պետք"]
+SERVICE_OPTIONS = [s[1] for s in SERVICES] + ["Խելացի դռան աչք (EZVIZ)", "Այլ / չգիտեմ, խորհրդատվություն է պետք"]
 
 
 LD_BUSINESS = json.dumps({
@@ -558,6 +558,39 @@ def smart_teaser():
         </div>
     </div>
     <!-- Smart teaser End -->
+"""
+
+
+def door_viewer():
+    feats = [("fa-door-closed", "Տեղադրվում է դռան եղած դիտանցքի անցքում"),
+             ("fa-tv", "Ներսում՝ մեծ էկրան, կռանալ ու անցքից նայել պետք չէ"),
+             ("fa-bell", "Զանգի կոճակ և ծանուցում հեռախոսին"),
+             ("fa-user-friends", "Հարմար է տարեցների և երեխաների համար")]
+    feats_html = "".join(f'''
+                            <li class="mb-2"><i class="fa {i} text-primary me-2"></i>{t}</li>''' for i, t in feats)
+    return f"""
+    <!-- Door viewer Start -->
+    <div class="container-xxl py-4">
+        <div class="container">
+            <div class="door-card">
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-5 text-center">
+                        <img class="img-fluid door-img" src="img/ezviz-door-viewer.jpg" alt="EZVIZ խելացի դռան աչք՝ ներսի էկրանով" loading="lazy" width="540" height="540">
+                    </div>
+                    <div class="col-md-7">
+                        <span class="badge bg-primary mb-2">Բնակարանների համար</span>
+                        <h3 class="mb-3">Խելացի դռան աչք EZVIZ</h3>
+                        <p>Տեսեք, թե ով է դռան մոտ, առանց դուռը բացելու։ Սովորական դիտանցքի փոխարեն դրսում տեղադրում ենք տեսախցիկ զանգի կոճակով, իսկ ներսում՝ էկրան։</p>
+                        <ul class="list-unstyled mb-4">{feats_html}
+                        </ul>
+                        <a class="btn btn-primary rounded-pill px-4 me-2 mb-2" href="tel:{PHONE}"><i class="fa fa-phone-alt me-2"></i>Զանգել</a>
+                        <a class="btn btn-outline-primary rounded-pill px-4 mb-2" href="quote.html">Անվճար խորհրդատվություն</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Door viewer End -->
 """
 
 
@@ -1075,6 +1108,7 @@ def build():
     <!-- Steps End -->
 {services_grid()}
 {smart_teaser()}
+{door_viewer()}
 {our_work_cta()}
 
     <!-- FAQ Start -->
@@ -1103,7 +1137,7 @@ def build():
     # services
     page("service.html", "service.html",
          "Ծառայություններ | SmartEye System — տեսահսկում, ազդանշանային համակարգեր, ցանցեր",
-         site_desc, page_header("Ծառայություններ") + services_grid() + smart_teaser() + ip_vs_analog() + calc_cta())
+         site_desc, page_header("Ծառայություններ") + services_grid() + smart_teaser() + door_viewer() + ip_vs_analog() + calc_cta())
 
     # projects / work
     page("project.html", "project.html", "Աշխատանքներ | SmartEye System",

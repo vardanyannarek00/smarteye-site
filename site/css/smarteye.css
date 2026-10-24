@@ -427,3 +427,8 @@ h2.display-5, h1.display-5 { font-weight: 700; font-size: clamp(1.75rem, 3vw, 2.
 
 /* hero kicker is the page H1 for SEO; keep its small kicker look */
 h1.hero-kicker { font-family: inherit; font-size: .85rem; font-weight: 500; line-height: 1.5; color: #8FB4FF; margin: 0 0 1rem; }
+
+/* ===== Door viewer (EZVIZ) ===== */
+.door-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 35px rgba(11, 21, 48, .07); }
+.door-img { max-height: 320px; border-radius: 14px; }
+.door-card ul li { color: #4A5568; }
