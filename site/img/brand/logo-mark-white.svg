@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 630 320"><defs><linearGradient id="svw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9DADD"/><stop offset=".55" stop-color="#A9ABAF"/><stop offset="1" stop-color="#7E8186"/></linearGradient></defs>
+<path d="M12 162 C100 -12 392 -22 500 96 L472 116 C372 16 140 24 58 162 Z" fill="#FFFFFF"/>
+<path d="M12 162 C112 332 432 346 556 134 L522 134 C422 314 150 308 58 162 Z" fill="#FFFFFF"/>
+<path d="M66 162 C152 56 356 46 454 112" stroke="url(#svw)" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M66 164 C164 278 398 288 502 150" stroke="url(#svw)" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="290" cy="164" r="96" fill="#FFFFFF"/>
+<circle cx="290" cy="164" r="74" fill="#0B1530"/>
+<circle cx="290" cy="164" r="62" fill="#14294B"/>
+<path d="M240 142H268" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="272" cy="142" r="5.5" fill="#5BC3DA"/><path d="M238 160H276" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="280" cy="160" r="5.5" fill="#5BC3DA"/><path d="M240 178H262" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="266" cy="178" r="5.5" fill="#5BC3DA"/><path d="M250 196H258" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="262" cy="196" r="5.5" fill="#5BC3DA"/><path d="M296 220V196" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="296" cy="192" r="5.5" fill="#5BC3DA"/><path d="M312 214V184" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="312" cy="180" r="5.5" fill="#5BC3DA"/><path d="M326 204V178" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="326" cy="174" r="5.5" fill="#5BC3DA"/><path d="M282 218V206" stroke="#5BC3DA" stroke-width="4" stroke-linecap="round"/><circle cx="282" cy="202" r="5.5" fill="#5BC3DA"/><path d="M252 206 L266 216 H272" stroke="#5BC3DA" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="270" cy="112" r="3.5" fill="#5BC3DA"/><circle cx="282" cy="112" r="3.5" fill="#5BC3DA"/><circle cx="294" cy="112" r="3.5" fill="#5BC3DA"/>
+<circle cx="326" cy="126" r="18" fill="#0B1530"/><circle cx="331" cy="130" r="9" fill="#14294B"/>
+<path d="M398 112 L432 108 L462 150 L620 22 L474 190 Z" fill="url(#svw)"/></svg>

@@ -53,7 +53,7 @@ LD_BUSINESS = json.dumps({
     "name": "SmartEye System", "alternateName": ["SmartEye", "Սմարթ Այ"],
     "description": "Տեսախցիկների, ազդանշանային համակարգերի (ալարմ) և ցանցերի տեղադրում Երևանում և Արագածոտնի մարզում։ Установка видеонаблюдения и сигнализации в Ереване. CCTV and alarm installation in Yerevan, Armenia.",
     "url": "https://smarteye.am/", "telephone": "+37443535332", "email": "info@smarteye.am",
-    "image": "https://smarteye.am/img/work/work-10-hero.jpg", "logo": "https://smarteye.am/img/favicon.png",
+    "image": "https://smarteye.am/img/work/work-10-hero.jpg", "logo": "https://smarteye.am/img/brand/logo-full.png",
     "address": {"@type": "PostalAddress", "addressLocality": "Yerevan", "addressRegion": "Yerevan", "addressCountry": "AM"},
     "areaServed": [{"@type": "City", "name": "Yerevan"}, {"@type": "AdministrativeArea", "name": "Aragatsotn"}],
     "knowsAbout": ["CCTV installation", "IP cameras", "Hikvision", "Dahua", "alarm systems", "Hikvision AX PRO", "LAN networks", "Fluke cable certification"],
@@ -92,7 +92,7 @@ def head(title, desc, fname="index.html"):
 
     <link href="img/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="img/favicon.png" rel="icon" type="image/png">
-    <link href="img/favicon.png" rel="apple-touch-icon">
+    <link href="img/brand/apple-touch-icon.png" rel="apple-touch-icon">
     <script type="application/ld+json">{LD_BUSINESS}</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,11 +153,7 @@ def topbar_nav(active):
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 px-4 px-lg-5">
         <a href="index.html" class="navbar-brand d-flex align-items-center">
-            <svg class="logo-mark me-2" viewBox="0 0 48 32" width="44" height="30" aria-hidden="true">
-                <path d="M2 16 C10 3, 38 3, 46 16 C38 29, 10 29, 2 16 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-                <circle cx="24" cy="16" r="7.5" fill="currentColor"/><circle cx="26.5" cy="13.5" r="2.4" fill="#fff"/>
-            </svg>
-            <span class="logo-text"><span class="logo-main">SmartEye</span><span class="logo-sub">System</span></span>
+            <img class="site-logo" src="img/brand/logo-horizontal.svg" alt="SmartEye System" width="236" height="44">
         </a>
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Մենյու">
             <span class="navbar-toggler-icon"></span>
@@ -203,8 +199,7 @@ def footer(extra_js=""):
             <div class="row g-5">
                 <div class="col-lg-4 col-md-6">
                     <div class="footer-brand mb-3">
-                        <svg viewBox="0 0 48 32" width="40" height="27" aria-hidden="true"><path d="M2 16 C10 3, 38 3, 46 16 C38 29, 10 29, 2 16 Z" fill="none" stroke="#1E6BFF" stroke-width="3"/><circle cx="24" cy="16" r="7.5" fill="#1E6BFF"/><circle cx="26.5" cy="13.5" r="2.4" fill="#fff"/></svg>
-                        <span>SmartEye <small>System</small></span>
+                        <img src="img/brand/logo-horizontal-white.svg" alt="SmartEye System" width="236" height="44" style="height:44px;width:auto">
                     </div>
                     <p class="footer-about">Տեսահսկում, ազդանշանային համակարգեր և ցանցեր Երևանում և Արագածոտնում։</p>
                     <h5 class="text-light mb-3 mt-4">Կապ</h5>
@@ -1004,6 +999,7 @@ def build():
     shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-photos"), os.path.join(OUT, "img", "work"), dirs_exist_ok=True)
     shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "work-videos"), os.path.join(OUT, "img", "video"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
+    shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "brand"), os.path.join(OUT, "img", "brand"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye-presentation.pdf"), os.path.join(OUT, "smarteye-presentation.pdf"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
 
@@ -1298,11 +1294,7 @@ def seo_files():
         f.write("</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
         f.write("User-agent: *\nDisallow: /send.php\nDisallow: /tg-test.php\nSitemap: https://smarteye.am/sitemap.xml\n")
-    svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0B1530"/>'
-           '<path d="M8 32 C18 16, 46 16, 56 32 C46 48, 18 48, 8 32 Z" fill="none" stroke="#1E6BFF" stroke-width="4"/>'
-           '<circle cx="32" cy="32" r="9" fill="#1E6BFF"/><circle cx="35" cy="29" r="3" fill="#fff"/></svg>')
-    with open(os.path.join(OUT, "img", "favicon.svg"), "w") as f:
-        f.write(svg)
+    shutil.copy(os.path.join(os.path.dirname(__file__), "brand", "logo-icon.svg"), os.path.join(OUT, "img", "favicon.svg"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "favicon.png"), os.path.join(OUT, "img", "favicon.png"))
 
 

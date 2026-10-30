@@ -432,3 +432,14 @@ h1.hero-kicker { font-family: inherit; font-size: .85rem; font-weight: 500; line
 .door-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 35px rgba(11, 21, 48, .07); }
 .door-img { max-height: 320px; border-radius: 14px; }
 .door-card ul li { color: #4A5568; }
+
+/* brand logo (vector) */
+.site-logo { height: 44px; width: auto; display: block; }
+@media (max-width: 575.98px) { .site-logo { height: 36px; } }
+@media (min-width: 992px) {
+  .navbar .navbar-nav .nav-link { white-space: nowrap; }
+}
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .site-logo { height: 36px; }
+  .navbar .navbar-nav .nav-link { margin-right: 18px !important; padding-left: 0; padding-right: 0; font-size: .95rem; }
+}
