@@ -328,6 +328,7 @@ nav .lf{display:none}nav .ls{display:block}
       <button class="btn ghost" id="newQ" type="button" style="margin:0">＋ Նոր</button>
     </div>
     <div class="sub" id="editInfo" style="text-align:center;margin-top:6px"></div>
+    <button class="btn" id="toSale" type="button" style="background:var(--ok)">🧾 Ձևակերպել վաճառք + երաշխիք</button>
     <button class="btn ghost" id="toClient" type="button" style="border-color:var(--ok);color:var(--ok)">✅ Պատվերը ընդունվեց → հաճախորդների ցուցակ</button>
     <button class="btn ghost" id="resetQ">Զրոյացնել քանակները</button>
   </div>
@@ -2424,7 +2425,7 @@ function saleForm(){
       r.innerHTML=`<div class="n">${l.sid?'':'<input type="text" class="ln" placeholder="Աշխատանք / ապրանք">'}${l.sid?`<b>${esc(l.model||l.name)}</b><small>${esc([l.model&&l.name!==l.model?l.name:'',l.sn?'SN: '+l.sn:''].filter(Boolean).join(' · '))}</small>`:''}</div>
        <input type="number" inputmode="numeric" class="lq" min="1" ${l.sn?'disabled':''} title="Քանակ"><input type="number" inputmode="numeric" class="lp" title="Գին 1 հատ"><button type="button" class="ib red">✕</button>`;
       const lq=r.querySelector('.lq'),lp=r.querySelector('.lp');lq.value=l.q;lp.value=l.price;if(!l.sid){const ln=r.querySelector('.ln');ln.value=l.name||'';ln.oninput=()=>{l.name=ln.value;l.model=''}}
-      lq.oninput=()=>{l.q=Math.min(max,Math.max(1,+lq.value||1));tot()};lq.onchange=()=>{lq.value=l.q};lp.oninput=()=>{l.price=+lp.value||0;tot()};
+      lq.oninput=()=>{l.q=Math.min(max,Math.max(1,+lq.value||1));tot()};lq.onchange=()=>{lq.value=l.q};lp.oninput=()=>{l.price=+lp.value||0;tot()};if(l.price<0)lp.min='';
       r.querySelector('button').onclick=()=>{D.lines.splice(i,1);lines()};B.appendChild(r)});tot()};
   q('.s_q').oninput=()=>{const v=norm(q('.s_q').value);const sg=q('.s_sg');sg.innerHTML='';if(v.length<2)return;
     stkAvail().filter(x=>norm([x.model,x.name,x.sn].join(' ')).includes(v)&&!D.lines.some(l=>l.sid===x.id&&x.sn)).slice(0,8).forEach(x=>{const b=document.createElement('button');b.type='button';
@@ -2544,6 +2545,23 @@ async function salePdfSend(sl){toast('PDF-ը պատրաստվում է…');let 
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('PDF-ը ներբեռնվեց ✓');
   }catch(e){if(!(e&&e.name==='AbortError'))toast('Չհաջողվեց ('+(e&&(e.message||e.name)||'error')+')')}}
 
+
+/* quote → sale: one click, takes products from stock by model */
+$('toSale').onclick=()=>{
+  const L=quoteLines();if(!L.length){toast('Գնահաշվարկը դատարկ է');return}
+  slDraft=null;slStart();const D=slDraft;D.client=$('client').value.trim();
+  const c=clients.find(x=>norm(x.name)===norm(D.client));if(c){D.cid=c.id;D.phone=c.phone||'';D.addr=c.addr||''}
+  const used={};let fromStock=0,missing=0;
+  cart.filter(x=>x.q>0).forEach(it=>{const model=String(it.n).split(' — ')[0].trim();const key=cmp(model);let need=+it.q||0;
+    stkAvail().filter(x=>cmp(x.model)===key||(key.length>5&&cmp(x.model).includes(key))).forEach(x=>{if(need<=0)return;
+      const free=(+x.qty||0)-(used[x.id]||0);if(free<=0)return;const take=x.sn?1:Math.min(free,need);used[x.id]=(used[x.id]||0)+take;need-=take;fromStock+=take;
+      D.lines.push({sid:x.id,model:x.model,name:x.name,sn:x.sn||'',q:take,price:+it.p||+x.price||0,cost:+x.cost||(+it.cost||0)})});
+    if(need>0){missing+=need;D.lines.push({sid:'',model:'',name:shortName(it),sn:'',q:need,price:+it.p||0,cost:+it.cost||0})}});
+  DEFAULT_ITEMS.forEach(it=>{const q=qty[it.id]||0;if(q>0)D.lines.push({sid:'',model:'',name:it.name,sn:'',q,price:priceOf(it),cost:0})});
+  customs.forEach(x=>{if(x.q>0&&x.name)D.lines.push({sid:'',model:'',name:x.name,sn:'',q:x.q,price:x.p,cost:0})});
+  const d=Math.min(100,Math.max(0,+$('disc').value||0));if(d>0){const sub=D.lines.reduce((a,l)=>a+l.q*l.price,0);D.lines.push({sid:'',model:'',name:`Զեղչ ${d}%`,sn:'',q:1,price:-Math.round(sub*d/100),cost:0})}
+  location.hash='stock';stkTab='sl';show('stock');saleForm();
+  toast(fromStock?`Պահեստից վերցվեց ${fromStock} հատ${missing?` · ${missing} հատ պահեստում չկա՝ ավելացվեց ձեռքով տողով`:''}`:'Ապրանքները պահեստում չեն գտնվել՝ ավելացվեցին ձեռքով տողերով')};
 /* ---------- Tabs ---------- */
 const views=['quote','prod','cli','hist','tools','set','hdd','poe','stock'];
 function show(v){
