@@ -62,6 +62,17 @@ ipcMain.handle('send-file', async (e, { app: target, name, bytes }) => {
   return { ok: true, direct: false, file };
 });
 
+// Print: the PDF carries an auto-print flag, so the system PDF viewer (Edge/Acrobat) opens straight into the print dialog.
+ipcMain.handle('print-file', async (e, { name, bytes }) => {
+  const safe = String(name || 'SmartEye.pdf').replace(/[\\/:*?"<>|]+/g, '_');
+  const dir = path.join(app.getPath('temp'), 'smarteye-print');
+  fs.mkdirSync(dir, { recursive: true });
+  const file = path.join(dir, safe);
+  fs.writeFileSync(file, Buffer.from(bytes));
+  const err = await shell.openPath(file);
+  return { ok: !err, err, file };
+});
+
 const single = app.requestSingleInstanceLock();
 if (!single) app.quit();
 else {

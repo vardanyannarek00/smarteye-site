@@ -320,7 +320,7 @@ nav .lf{display:none}nav .ls{display:block}
       <a id="shWa" class="sh wa" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-2.9.8.8-2.8-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.1 5.1 0 001.1 2.7 11.7 11.7 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.7-1.2 2.2 2.2 0 00.2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>WhatsApp</a>
     </div>
     <div class="note" id="shNote" style="text-align:center">Telegram, Viber կամ WhatsApp սեղմելիս կհարցնի՝ PDF ֆայլով, թե տեքստով։ Instagram-ով գնում է միայն տեքստը։</div>
-    <button class="btn" id="pdfQ" style="background:#fff;color:#16233d;border:1px solid var(--line)">⬇ Ներբեռնել PDF</button>
+    <div class="grid2"><button class="btn" id="pdfQ" style="background:#fff;color:#16233d;border:1px solid var(--line)">⬇ Ներբեռնել PDF</button><button class="btn" id="printQ" type="button" style="background:#fff;color:#16233d;border:1px solid var(--line)">🖨 Տպել</button></div>
     <button class="btn ghost" id="copyQ">Պատճենել գնահաշվարկը</button>
     <pre id="qtext"></pre>
     <div class="grid2" style="margin-top:10px">
@@ -1610,6 +1610,7 @@ async function makePdf(){
   doc.setPage(pages);doc.setFontSize(8);
   doc.text('Գնահաշվարկը նախնական է և կարող է ճշգրտվել տեղում զննելուց հետո։',M,277);
   const safe=(cl||'').replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'').slice(0,30);
+  if(PRINT_MODE)doc.autoPrint();
   return {blob:doc.output('blob'),name:`SmartEye-gnahashvark-${no}${safe?'-'+safe:''}.pdf`};
 }
 /* ---------- Send the PDF itself (share sheet) ---------- */
@@ -2457,12 +2458,12 @@ function saleView(sl){
    <div class="kv"><span>Ընդամենը</span><b>${fmt(sl.total)}</b></div><div class="kv"><span>Շահույթ</span><b style="color:var(--ok)">${fmt(sl.total-(+sl.costT||0))}</b></div>
    <div class="kv"><span>Վճարված</span><b>${fmt(sl.got||0)}${debt?` · <span class="wr-bad">պարտք ${fmt(debt)}</span>`:''}</b></div>
    <div class="kv"><span>Երաշխիք</span><b class="${ok?'wr-ok':'wr-bad'}">${sl.war?(ok?'✅ մինչև ':'❌ ավարտվել է ')+dfmt(end):'չկա'}</b></div>${sl.note?`<div class="note">${esc(sl.note)}</div>`:''}
-   <button type="button" class="btn v_pdf">📄 Ակտ + Երաշխիքային տալոն (PDF)</button>
+   <div class="grid2"><button type="button" class="btn v_pdf">📄 Ակտ + տալոն (PDF)</button><button type="button" class="btn v_prn" style="background:#16233d">🖨 Տպել</button></div>
    <div class="grid2"><button type="button" class="btn ghost v_pay">💰 Վճարում</button><button type="button" class="btn ghost v_del" style="color:var(--bad)">Չեղարկել</button></div>
    <button type="button" class="btn ghost v_x">Փակել</button>`;
   const q=c=>P.querySelector(c);
   q('.v_x').onclick=()=>{P.style.display='none'};
-  q('.v_pdf').onclick=()=>salePdfSend(sl);
+  q('.v_pdf').onclick=()=>salePdfSend(sl);q('.v_prn').onclick=()=>printWith(()=>salePdf(sl));
   q('.v_pay').onclick=async()=>{const v=prompt('Ընդհանուր վճարված գումարը ֏',sl.got||sl.total);if(v===null)return;sl.got=Math.min(+v||0,sl.total);await slSave(sl);
     const c=clients.find(x=>x.id===sl.cid);if(c){const it=(c.inst||[]).find(i=>i.id===sl.id);if(it){it.got=sl.got;await saveClient(c)}}stkRender();saleView(sl);toast('Պահպանվեց ✓')};
   q('.v_del').onclick=async()=>{const b=q('.v_del');if(!b.dataset.c){b.dataset.c=1;b.textContent='Չեղարկե՞լ — ապրանքները կվերադառնան պահեստ';return}
@@ -2534,6 +2535,7 @@ async function salePdf(sl){
   const pages=doc.internal.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setDrawColor(220,226,238);doc.line(M,284,W-M,284);doc.setFontSize(8);doc.setTextColor(...grey);
     doc.text('SmartEye System · smarteye.am · 043 53 53 32 · Երևան և Արագածոտն',M,289);doc.text(`${i}/${pages}`,W-M,289,{align:'right'})}
   const safe=String(sl.client||'').replace(/[^\wա-ֆԱ-Ֆ\-]+/g,'_').slice(0,30);
+  if(PRINT_MODE)doc.autoPrint();
   return {blob:doc.output('blob'),name:`SmartEye-${sl.no}${safe?'-'+safe:''}.pdf`}}
 async function salePdfSend(sl){toast('PDF-ը պատրաստվում է…');let r;try{r=await salePdf(sl)}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}
   const {blob,name}=r;const fn=name.replace(/[^\w.\-]+/g,'_');
@@ -2546,6 +2548,20 @@ async function salePdfSend(sl){toast('PDF-ը պատրաստվում է…');let 
   }catch(e){if(!(e&&e.name==='AbortError'))toast('Չհաջողվեց ('+(e&&(e.message||e.name)||'error')+')')}}
 
 
+
+/* ---------- Print (printer) ---------- */
+let PRINT_MODE=false;
+async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
+  const {blob,name}=r;const fn=name.replace(/[^\w.\-]+/g,'_');
+  try{
+    if(window.smarteyeDesktop&&window.smarteyeDesktop.printFile){await window.smarteyeDesktop.printFile(fn,new Uint8Array(await blob.arrayBuffer()));toast('Բացվեց տպելու պատուհանը 🖨');return}
+    if(NATIVE){const b64=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=no;fr.readAsDataURL(blob)});
+      const w=await capPlugin('Filesystem').writeFile({path:fn,data:b64,directory:'CACHE'});toast('Ընտրեք «Տպել» / Print կամ PDF դիտիչը');await capPlugin('Share').share({title:name,files:[w.uri],dialogTitle:'Տպել'});return}
+    const url=URL.createObjectURL(blob);let f=$('printFrame');if(f)f.remove();f=document.createElement('iframe');f.id='printFrame';
+    f.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';f.src=url;document.body.appendChild(f);
+    f.onload=()=>{setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){window.open(url,'_blank')}},400)};
+  }catch(e){if(!(e&&e.name==='AbortError'))toast('Չհաջողվեց ('+(e&&(e.message||e.name)||'error')+')')}}
+$('printQ').onclick=()=>{if(!quoteLines().length){toast('Գնահաշվարկը դատարկ է');return}printWith(makePdf)};
 /* quote → sale: one click, takes products from stock by model */
 $('toSale').onclick=()=>{
   const L=quoteLines();if(!L.length){toast('Գնահաշվարկը դատարկ է');return}
