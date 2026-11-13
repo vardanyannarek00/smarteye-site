@@ -2480,7 +2480,7 @@ function drawStock(){
     d.innerHTML=`<div class="n"><b>${esc(x.model||x.name)}</b><small>${esc([x.model&&x.name&&x.name!==x.model?x.name:'',x.sn?'SN: '+x.sn:'',x.sup,dfmt(x.date)].filter(Boolean).join(' · '))}</small></div>
      <div class="pr"><b>${sold?'<span class="wr-bad">վաճառված</span>':(+x.qty)+' հատ'}</b>${x.cost?fmt(x.cost):''}${x.price?' → '+fmt(x.price):''}</div>
      ${sold?'':'<button type="button" class="ib go" title="Վաճառել">🛒</button>'}<button type="button" class="ib" title="Խմբագրել">✎</button>`;
-    const bs=d.querySelectorAll('button');if(!sold)bs[0].onclick=()=>{slStart();slAddStock(x);stkTab='sl';stkRender();saleForm()};bs[bs.length-1].onclick=()=>stockForm(x);L.appendChild(d)})}
+    const bs=d.querySelectorAll('button');if(!sold)bs[0].onclick=()=>{slNewStart();slAddStock(x);stkTab='sl';stkRender();saleForm()};bs[bs.length-1].onclick=()=>stockForm(x);L.appendChild(d)})}
 function stockForm(x){
   const isNew=!x;x=x||{id:uid(),model:'',name:'',sup:'',cost:'',price:'',qty:1,sn:'',date:today(),note:''};
   const P=$('stkPane2');P.style.display='block';
@@ -2512,13 +2512,15 @@ function stockForm(x){
   P.scrollIntoView({behavior:'smooth'})}
 
 /* --- sales --- */
+function slHeld(sid){const D=slDraft;return D&&D._edit?(D._orig||[]).filter(l=>l.sid===sid).reduce((a,l)=>a+(+l.q||1),0):0}
+function slNewStart(){if(slDraft&&slDraft._edit)slDraft=null;slStart()}
 function slStart(){if(!slDraft)slDraft={id:uid(),no:'',date:today(),cid:'',client:'',phone:'',addr:'',lines:[],war:DEF_WAR,got:0,note:''}}
-function slAddStock(x){slStart();const ex=slDraft.lines.find(l=>l.sid===x.id);if(ex){if(!x.sn&&ex.q<(+x.qty||0))ex.q++;return}
+function slAddStock(x){slStart();const ex=slDraft.lines.find(l=>l.sid===x.id);if(ex){if(!x.sn&&ex.q<(+x.qty||0)+slHeld(x.id))ex.q++;return}
   slDraft.lines.push({sid:x.id,model:x.model,name:x.name,sn:x.sn||'',q:1,price:+x.price||+x.cost||0,cost:+x.cost||0})}
 function renderSales(){
   const P=$('stkPane');
   P.innerHTML=`<div class="wtools"><input type="search" id="slS" placeholder="🔍 Համար, հաճախորդ, հեռախոս, SN…"><button type="button" class="btn" id="slNew" style="margin:0;width:auto;padding:9px 14px;white-space:nowrap">＋ Նոր վաճառք</button></div><div id="slList"></div>`;
-  $('slS').value=stkQ;$('slS').oninput=()=>{stkQ=$('slS').value;drawSales()};$('slNew').onclick=()=>{slStart();saleForm()};drawSales();if(slDraft)saleForm()}
+  $('slS').value=stkQ;$('slS').oninput=()=>{stkQ=$('slS').value;drawSales()};$('slNew').onclick=()=>{slNewStart();saleForm()};drawSales();if(slDraft)saleForm()}
 function drawSales(){const q=norm($('slS').value),L=$('slList');
   const rows=sales.filter(x=>!q||norm([x.no,x.client,x.phone,x.addr,...(x.lines||[]).map(l=>l.model+' '+l.name+' '+l.sn)].join(' ')).includes(q));
   if(!rows.length){L.innerHTML=`<div class="note">${sales.length?'Չգտնվեց':'Դեռ վաճառք չկա։'}</div>`;return}
@@ -2529,7 +2531,7 @@ function drawSales(){const q=norm($('slS').value),L=$('slList');
 function slTotals(){const L=slDraft.lines;const total=L.reduce((a,l)=>a+(+l.q||0)*(+l.price||0),0),costT=L.reduce((a,l)=>a+(+l.q||0)*(+l.cost||0),0);return {total,costT}}
 function saleForm(){
   const P=$('stkPane2');P.style.display='block';const D=slDraft;
-  P.innerHTML=`<div class="stk-form"><h2>🧾 Նոր վաճառք</h2>
+  P.innerHTML=`<div class="stk-form"><h2>${D._edit?'✏ Վաճառք '+esc(D.no)+' — խմբագրում':'🧾 Նոր վաճառք'}</h2>
    <b style="font-size:14px">Հաճախորդ</b>
    <div class="grid2"><label>Անուն<input type="text" class="s_c" list="slCli" autocomplete="off"></label><label>Հեռախոս<input type="tel" class="s_p"></label></div>
    <datalist id="slCli">${clients.map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist>
@@ -2543,7 +2545,7 @@ function saleForm(){
    <label>Նշում<input type="text" class="s_o" placeholder="օր․ տեղադրումը ներառված է"></label>
    <div class="card total" style="margin:12px 0 0"><div class="stk-sum"><span>Ընդամենը</span><b class="s_t"></b></div><div class="stk-sum" style="font-size:13px;color:var(--mut)"><span>Ինքնարժեք / շահույթ</span><span class="s_pr"></span></div></div>
    <button type="button" class="btn s_save">💾 Պահպանել վաճառքը</button>
-   <div class="grid2"><button type="button" class="btn ghost s_clear">Մաքրել</button><button type="button" class="btn ghost s_x">Փակել</button></div></div>`;
+   <div class="grid2"><button type="button" class="btn ghost s_clear"${D._edit?' style="display:none"':''}>Մաքրել</button><button type="button" class="btn ghost s_x">Փակել</button></div></div>`;
   const q=c=>P.querySelector(c);
   q('.s_c').value=D.client;q('.s_p').value=D.phone;q('.s_a').value=D.addr;q('.s_d').value=D.date;q('.s_w').value=D.war;q('.s_g').value=D.got||'';q('.s_o').value=D.note||'';q('.s_tin').value=D.tin||'';
   const sync=()=>{D.client=q('.s_c').value.trim();D.phone=q('.s_p').value.trim();D.addr=q('.s_a').value.trim();D.date=q('.s_d').value||today();D.war=Math.max(0,+q('.s_w').value||0);D.got=+q('.s_g').value||0;D.note=q('.s_o').value.trim();D.tin=q('.s_tin').value.trim()};
@@ -2551,7 +2553,7 @@ function saleForm(){
   ['.s_p','.s_a','.s_d','.s_w','.s_g','.s_o','.s_tin'].forEach(c=>q(c).oninput=sync);
   const tot=()=>{const t=slTotals();q('.s_t').textContent=fmt(t.total);q('.s_pr').textContent=`${fmt(t.costT)} / ${fmt(t.total-t.costT)}`};
   const lines=()=>{const B=q('.s_lines');B.innerHTML=D.lines.length?'':'<div class="note">Ավելացրեք ապրանք պահեստից կամ ձեռքով տող</div>';
-    D.lines.forEach((l,i)=>{const r=document.createElement('div');r.className='sl-line'+(l.sid?'':' man');const st=l.sid?stock.find(x=>x.id===l.sid):null;const max=st&&!st.sn?(+st.qty||0):(l.sid?1:999);
+    D.lines.forEach((l,i)=>{const r=document.createElement('div');r.className='sl-line'+(l.sid?'':' man');const st=l.sid?stock.find(x=>x.id===l.sid):null;const max=st&&!st.sn?(+st.qty||0)+slHeld(st.id):(l.sid?1:999);
       r.innerHTML=`<div class="n">${l.sid?'':'<input type="text" class="ln" placeholder="Աշխատանք / ապրանք">'}${l.sid?`<b>${esc(l.model||l.name)}</b><small>${esc([l.model&&l.name!==l.model?l.name:'',l.sn?'SN: '+l.sn:''].filter(Boolean).join(' · '))}</small>`:''}</div>
        <input type="number" inputmode="numeric" class="lq" min="1" ${l.sn?'disabled':''} title="Քանակ" placeholder="Քանակ"><input type="number" inputmode="numeric" class="lp" title="Գին 1 հատ" placeholder="Գին ֏"><button type="button" class="ib red">✕</button>`;
       const lq=r.querySelector('.lq'),lp=r.querySelector('.lp');lq.value=l.q;lp.value=l.price;if(!l.sid){const ln=r.querySelector('.ln');ln.value=l.name||'';ln.oninput=()=>{l.name=ln.value;l.model=''}}
@@ -2562,13 +2564,18 @@ function saleForm(){
       b.innerHTML=`<b>${esc(x.model||x.name)}</b>${x.sn?' · SN '+esc(x.sn):' · '+x.qty+' հատ'} · ${fmt(x.price||x.cost)}`;b.onclick=()=>{slAddStock(x);q('.s_q').value='';sg.innerHTML='';lines()};sg.appendChild(b)});
     if(!sg.children.length)sg.innerHTML='<span class="note" style="margin:0">Պահեստում չգտնվեց</span>'};
   q('.s_man').onclick=()=>{D.lines.push({sid:'',model:'',name:'',sn:'',q:1,price:0,cost:0});lines();const ins=P.querySelectorAll('.ln');ins.length&&ins[ins.length-1].focus()};
-  q('.s_x').onclick=()=>{sync();P.style.display='none'};
+  q('.s_x').onclick=()=>{sync();if(D._edit)slDraft=null;P.style.display='none'};
   q('.s_clear').onclick=()=>{slDraft=null;P.style.display='none';toast('Մաքրվեց')};
   q('.s_save').onclick=async()=>{sync();const L=D.lines.filter(l=>l.sid||(l.name||'').trim());
     if(!D.client){toast('Գրեք հաճախորդի անունը');q('.s_c').focus();return}if(!L.length){toast('Ավելացրեք ապրանք կամ աշխատանք');return}
-    for(const l of L){if(!l.sid)continue;const st=stock.find(x=>x.id===l.sid);if(!st||(+st.qty||0)<(+l.q||1)){toast(`«${l.model||l.name}»՝ պահեստում բավարար չէ`);return}}
+    {const need={};L.forEach(l=>{if(l.sid)need[l.sid]=(need[l.sid]||0)+(+l.q||1)});for(const id in need){const st=stock.find(x=>x.id===id);const l=L.find(x=>x.sid===id);if(!st||(+st.qty||0)+slHeld(id)<need[id]){toast(`«${l.model||l.name}»՝ պահեստում բավարար չէ`);return}}}
     const t={total:L.reduce((a,l)=>a+(+l.q||0)*(+l.price||0),0),costT:L.reduce((a,l)=>a+(+l.q||0)*(+l.cost||0),0)};
-    const sl=Object.assign({},D,{lines:L,no:nextSaleNo(),total:t.total,costT:t.costT,got:Math.min(+D.got||0,t.total),created:new Date().toISOString()});
+    const ed=!!D._edit,orig=D._orig||[],oldCid=D._cid0;
+    const sl=Object.assign({},D,{lines:L,no:ed?D.no:nextSaleNo(),total:t.total,costT:t.costT,got:Math.min(+D.got||0,t.total),created:ed?(D.created||new Date().toISOString()):new Date().toISOString()});
+    delete sl._edit;delete sl._orig;delete sl._cid0;if(ed)sl.edited=new Date().toISOString();
+    // editing: first give back what the sale held before
+    if(ed){for(const l of orig){if(!l.sid)continue;const st=stock.find(x=>x.id===l.sid);if(st){st.qty=(+st.qty||0)+(+l.q||1);st.soldIn=(st.soldIn||[]).filter(n=>n!==sl.no)}}
+      const c0=clients.find(x=>x.id===oldCid);if(c0){c0.inst=(c0.inst||[]).filter(i=>i.id!==sl.id);if(c0.id!==sl.cid)await saveClient(c0)}}
     // client card
     let c=sl.cid?clients.find(x=>x.id===sl.cid):clients.find(x=>norm(x.name)===norm(sl.client));
     if(!c)c={id:uid(),name:sl.client,phone:sl.phone,addr:sl.addr,note:'',inst:[],visits:[],created:new Date().toISOString()};
@@ -2576,8 +2583,9 @@ function saleForm(){
     const devs=L.filter(l=>l.sid).map(l=>({t:guessDev((l.name||'')+' '+(l.model||'')),m:l.model||l.name,q:+l.q||1,sn:l.sn||''}));
     c.inst=c.inst||[];c.inst.push({id:sl.id,date:sl.date,sale:sl.no,war:sl.war,cams:devs.filter(d=>/տեսախց/i.test(d.t)).reduce((a,d)=>a+d.q,0),devs,items:devsText(devs),
       work:['Վաճառք '+sl.no,...L.filter(l=>!l.sid).map(l=>`${l.name} × ${l.q}`)].join(', '),price:sl.total,got:sl.got});
-    for(const l of L){if(!l.sid)continue;const st=stock.find(x=>x.id===l.sid);st.qty=(+st.qty||0)-(+l.q||1);st.soldIn=(st.soldIn||[]).concat(sl.no);await stkSave(st)}
-    await saveClient(c);await slSave(sl);slDraft=null;P.style.display='none';stkTab='sl';stkRender();saleView(sl);toast(`Վաճառքը պահպանվեց ✓ ${sl.no}`)};
+    const touched=new Set();for(const l of L){if(!l.sid)continue;const st=stock.find(x=>x.id===l.sid);st.qty=(+st.qty||0)-(+l.q||1);if(!(st.soldIn||[]).includes(sl.no))st.soldIn=(st.soldIn||[]).concat(sl.no);touched.add(st)}
+    for(const l of orig){if(l.sid){const st=stock.find(x=>x.id===l.sid);if(st)touched.add(st)}}for(const st of touched)await stkSave(st);
+    await saveClient(c);await slSave(sl);slDraft=null;P.style.display='none';stkTab='sl';stkRender();saleView(sl);toast(ed?`Վաճառքը թարմացվեց ✓ ${sl.no}`:`Վաճառքը պահպանվեց ✓ ${sl.no}`)};
   lines();P.scrollIntoView({behavior:'smooth'})}
 function saleView(sl){
   const P=$('stkPane2');P.style.display='block';const end=warEnd(sl);const ok=sl.war&&new Date()<end;const debt=Math.max(0,(+sl.total||0)-(+sl.got||0));
@@ -2590,10 +2598,12 @@ function saleView(sl){
    <div class="doc-box"><b>📑 Փաստաթուղթ</b><select class="v_kind">${DOC_KINDS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select>
    <label class="v_cpl" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" class="v_cp" style="width:auto"> 2 օրինակ (հաճախորդին + մեզ)</label>
    <div class="grid2"><button type="button" class="btn v_prn" style="background:#16233d">🖨 Տպել</button><button type="button" class="btn v_pdf">📤 PDF ուղարկել</button></div></div>
+   <button type="button" class="btn v_edit" style="background:var(--ok)">✏ Ավելացնել ապրանք / ծառայություն</button>
    <div class="grid2"><button type="button" class="btn ghost v_pay">💰 Վճարում</button><button type="button" class="btn ghost v_del" style="color:var(--bad)">Չեղարկել</button></div>
    <button type="button" class="btn ghost v_x">Փակել</button>`;
   const q=c=>P.querySelector(c);
   q('.v_x').onclick=()=>{P.style.display='none'};
+  q('.v_edit').onclick=()=>{slDraft=JSON.parse(JSON.stringify(sl));slDraft._edit=true;slDraft._orig=JSON.parse(JSON.stringify(sl.lines));slDraft._cid0=sl.cid;saleForm()};
   const vk=q('.v_kind'),vc=q('.v_cp');vk.value=LS.get('docKind','act');vc.checked=!!LS.get('docCp',false);const cpv=()=>{q('.v_cpl').style.display=vk.value.startsWith('act')?'flex':'none'};cpv();
   vk.onchange=()=>{LS.set('docKind',vk.value);cpv()};vc.onchange=()=>LS.set('docCp',vc.checked);
   q('.v_pdf').onclick=()=>salePdfSend(sl,vk.value,vc.checked?2:1);q('.v_prn').onclick=()=>printWith(()=>salePdf(sl,vk.value,vc.checked?2:1));
