@@ -2,13 +2,14 @@
   "name": "smarteye-price-manager",
   "version": "1.0.0",
   "private": true,
-  "description": "SmartEye Price Manager — Android app (Capacitor) wrapping tools/calc-app",
+  "description": "SmartEye Price Manager \u2014 Android app (Capacitor) wrapping tools/calc-app",
   "dependencies": {
     "@capacitor/android": "^8.0.0",
     "@capacitor/app-launcher": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/filesystem": "^8.0.0",
-    "@capacitor/share": "^8.0.0"
+    "@capacitor/share": "^8.0.0",
+    "@capgo/capacitor-native-biometric": "^8.9.3"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.0",

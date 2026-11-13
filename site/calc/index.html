@@ -12,8 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Price Manager">
 <title>SmartEye Price Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="vendor/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="vendor/supabase.js"></script>
 <script src="config.js"></script>
 <style>
@@ -89,6 +88,12 @@ body.pfon .prow{display:flex}
 .refbtn{flex:none;margin-left:auto;background:var(--btn2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:50%;font-size:22px;line-height:1;padding:0;cursor:pointer}
 .cst+.refbtn{margin-left:6px}.cst:empty+.refbtn{margin-left:auto}
 .refbtn.spin{animation:refspin .8s linear infinite}@keyframes refspin{to{transform:rotate(360deg)}}
+.locked main,.locked nav,.locked #cartBar{visibility:hidden}
+.lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
+.lk-dots{display:flex;gap:12px;justify-content:center;height:18px;margin:6px 0}.lk-dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);display:block}.lk-dots i.on{background:var(--acc,#1f6feb);border-color:var(--acc,#1f6feb)}
+.lk-dots.shake{animation:lkSh .4s}@keyframes lkSh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.lk-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center}.lk-pad button{height:64px;border-radius:50%;border:1px solid var(--line);background:var(--card,#fff);color:var(--txt);font-size:24px;font-weight:600;cursor:pointer}.lk-pad button:active{transform:scale(.94)}
 .login{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}
 .lcard{width:100%;max-width:360px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
 .hq{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sep)}
@@ -196,6 +201,10 @@ pre#qtext{white-space:pre-wrap;font-family:inherit;font-size:13px;background:var
 
 /* ===== Warehouse / sales / warranty ===== */
 .stk-tabs{margin-bottom:6px}
+.doc-box{border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0;display:grid;gap:8px}.doc-box select{width:100%}
+.rp-k{flex-wrap:wrap}.rp-sum{background:var(--card,#fff);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}.rp-sum>b{display:block}.rp-sum>small{display:block;color:var(--mut);margin-bottom:6px}
+.rp-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}@media(max-width:600px){.rp-btns{grid-template-columns:1fr 1fr}}.rp-btns .btn{margin:0}
+.rp-tb{width:100%;border-collapse:collapse;font-size:13px}.rp-tb th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:6px;border-bottom:2px solid var(--line);white-space:nowrap}.rp-tb td{padding:6px;border-bottom:1px solid var(--line)}.rp-tb .r{text-align:right;white-space:nowrap}
 .stk-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--sep)}
 .stk-row:last-child{border-bottom:none}
 .stk-row .n{flex:1;min-width:0;font-size:14px;line-height:1.3}.stk-row .n b{display:block;word-break:break-word}
@@ -243,6 +252,11 @@ nav .lf{display:none}nav .ls{display:block}
 </style>
 </head>
 <body>
+<script>try{if(JSON.parse(localStorage.getItem('se_lock')))document.documentElement.classList.add('locked')}catch(e){}</script>
+<div id="lock" class="lockscr" style="display:none"><div class="lk-box">
+  <div class="lk-logo">🔒</div><b>Price Manager</b><div id="lkMsg" class="note">Մուտքագրեք PIN-ը</div><div id="lkDots" class="lk-dots"></div>
+  <div class="lk-pad"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" id="lkBio" title="Մատնահետք / Face ID">👆</button><button type="button" data-k="0">0</button><button type="button" data-k="del">⌫</button></div>
+  <a href="#" id="lkForgot" class="note" style="display:block;color:var(--mut)">Մոռացե՞լ եք PIN-ը</a></div></div>
 <header>
 <button type="button" id="backBtn" class="backbtn" aria-label="Հետ" style="display:none">‹</button>
 <svg width="38" height="38" viewBox="0 0 40 40"><path d="M2 20C8 10 14 6 20 6s12 4 18 14c-6 10-12 14-18 14S8 30 2 20z" fill="#0b1a3a" stroke="#2f8cff" stroke-width="2"/><circle cx="20" cy="20" r="7.5" fill="#123a8a" stroke="#5fd0ff" stroke-width="1.6"/><path d="M16.5 20.3l2.4 2.4 4.8-5" fill="none" stroke="#d9e2f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -484,7 +498,7 @@ nav .lf{display:none}nav .ls{display:block}
 <!-- ============ ԳՆԵՐ ============ -->
 <section class="view" id="v-stock">
   <div class="card stk-top">
-    <div class="chips stk-tabs"><button type="button" class="chip on" data-t="st">📦 Պահեստ</button><button type="button" class="chip" data-t="sl">🧾 Վաճառք</button><button type="button" class="chip" data-t="wr">🛡 Երաշխիք</button></div>
+    <div class="chips stk-tabs"><button type="button" class="chip on" data-t="st">📦 Պահեստ</button><button type="button" class="chip" data-t="sl">🧾 Վաճառք</button><button type="button" class="chip" data-t="wr">🛡 Երաշխիք</button><button type="button" class="chip" data-t="rp">📊 Հաշվետվություն</button></div>
     <div id="stkStats" class="note" style="margin-top:2px"></div>
   </div>
   <div class="card" id="stkPane"></div>
@@ -504,6 +518,21 @@ nav .lf{display:none}nav .ls{display:block}
     <div id="prices"></div>
     <p class="note">Աշխատանքների գները օգտագործվում են գնահաշվարկում։ Մուտք գործած լինելու դեպքում պահվում են ամպում։</p>
     <button class="btn ghost" id="resetP">Վերադարձնել սկզբնական գները</button>
+  </div>
+  <div class="card">
+    <h2>🏢 Ռեկվիզիտներ (ակտ, հաշիվ, տալոն)</h2>
+    <div id="reqBox" class="grid2"></div>
+    <p class="note">Լրացրեք մեկ անգամ՝ ավտոմատ կհայտնվեն բոլոր փաստաթղթերում։ Դատարկ դաշտերը չեն տպվում։</p>
+  </div>
+  <div class="card">
+    <h2>🔒 Կողպեք (PIN / մատնահետք / Face ID)</h2>
+    <div id="lockSet"></div>
+  </div>
+  <div class="card">
+    <h2>🗄 Հին գնահաշվարկներ</h2>
+    <div class="grid2"><label>Ի՞նչ անել<select id="arcMode"><option value="tg">Ուղարկել Telegram արխիվ, հետո ջնջել</option><option value="del">Պարզապես ջնջել</option><option value="off">Ոչինչ չանել</option></select></label>
+    <label>Քանի օր հետո<input type="number" id="arcDays" min="1" inputmode="numeric"></label></div>
+    <p class="note">Եթե գնահաշվարկից հետո ոչ վաճառք է ձևակերպվել, ոչ «Պատվերը ընդունվեց» է սեղմվել, նշված օրերից հետո այն ավտոմատ հանվում է Պատմությունից (օրը մեկ անգամ)։ Ընդունված պատվերները (✅) չեն ջնջվում։ Telegram-ը չաշխատելու դեպքում ոչինչ չի ջնջվում։</p>
   </div>
   <div class="card">
     <h2>Գնահաշվարկի ստորագրություն</h2>
@@ -1048,6 +1077,7 @@ $('xfile').onchange=async e=>{
     e.target.value='';return;
   }
   document.querySelectorAll('#map .xl').forEach(x=>x.style.display='');
+  if(typeof XLSX==='undefined'){try{await loadScript('vendor/xlsx.full.min.js')}catch(e){}}
   if(typeof XLSX==='undefined'){toast('Excel գրադարանը չբեռնվեց, ստուգեք ինտերնետը');return}
   try{
     const buf=await f.arrayBuffer();
@@ -2149,7 +2179,7 @@ function visitForm(c,v){
 }
 $('cliSearch').oninput=renderClients;
 $('cliAdd').onclick=()=>openClient(null);
-$('toClient').onclick=async()=>{
+$('toClient').onclick=async()=>{markQuoteDone();
   const cs=cartSummary();if(!cs.items&&!quoteLines().length){toast('Գնահաշվարկը դատարկ է');return}
   const nm=$('client').value.trim();if(!nm){toast('Գրեք հաճախորդի անունը գնահաշվարկում');$('client').focus();return}
   let c=clients.find(x=>norm(x.name)===norm(nm));if(!c)c={id:uid(),name:nm,phone:'',addr:'',note:'',inst:[],visits:[],created:new Date().toISOString()};
@@ -2162,7 +2192,7 @@ const CLOUD={sb:null,user:null,offline:false};
 const cloudOn=()=>!!(CLOUD.sb&&CLOUD.user&&!CLOUD.offline);
 function cst(state,txt){const e=$('cloudSt');e.className='cst '+(state||'');e.textContent=txt||'';}
 function cloudErr(e,where){console.warn(where,e);cst('err','Սխալ');toast('Համաժամեցման սխալ'+(e&&e.message?': '+e.message.slice(0,60):''))}
-function settingsData(){return {promoText:$('promoText').value,prices,sign:$('sign').value,mk:$('m_mk').value,usdRate:LS.get('usdRate',390),trash:LS.get('trash',[]),shops}}
+function settingsData(){return {promoText:$('promoText').value,prices,sign:$('sign').value,mk:$('m_mk').value,usdRate:LS.get('usdRate',390),trash:LS.get('trash',[]),shops,req:REQ,arc:ARC}}
 let _setT=0;
 function pushSettingsSoon(){if(!cloudOn())return;clearTimeout(_setT);_setT=setTimeout(async()=>{cst('busy','…');
   const {error}=await CLOUD.sb.from('pm_settings').upsert({user_id:CLOUD.user.id,data:settingsData(),updated_at:new Date().toISOString()});
@@ -2188,6 +2218,8 @@ async function pullAll(){
       if(d.usdRate){LS.set('usdRate',d.usdRate)}
       if(d.promoText!=null){$('promoText').value=d.promoText;LS.set('promoText',d.promoText);promoUI()}
       if(Array.isArray(d.shops)){shops=d.shops;LS.set('shops',shops);renderShops()}
+      if(d.req&&typeof d.req==='object'){REQ=Object.assign(REQ,d.req);LS.set('req',REQ);reqUI()}
+      if(d.arc&&d.arc.mode){ARC=d.arc;LS.set('arc',ARC);arcUI()}
       if(Array.isArray(d.trash)&&d.trash.length){const loc=LS.get('trash',[]);const all=d.trash.concat(loc.filter(x=>!d.trash.some(y=>y.at===x.at)));LS.set('trash',all.sort((a,b)=>b.at.localeCompare(a.at)).slice(0,8));catUI()}
       renderPrices();renderItems();calcQuote();
     }else pushSettingsSoon();
@@ -2208,7 +2240,7 @@ function acctUI(){
   $('logout').textContent=CLOUD.user?'Ելք':'Մուտք';$('syncNow').style.display=CLOUD.user?'block':'none';
 }
 function showLogin(){$('login').style.display='flex';setTimeout(()=>$('lEmail').focus(),100)}
-async function signedIn(user){CLOUD.user=user;CLOUD.offline=false;$('login').style.display='none';acctUI();await pullAll()}
+async function signedIn(user){CLOUD.user=user;CLOUD.offline=false;$('login').style.display='none';if(LS.get('lockReset',0)){LS.set('lockReset',0);LS.set('lock',null);LOCK=null;$('lOffline').style.display='';setTimeout(()=>{toast('PIN-ը ջնջվեց․ կարող եք նորը դնել Կարգավորումներում');lockUI()},800)}acctUI();await pullAll()}
 $('refreshBtn').onclick=async()=>{
   const b=$('refreshBtn');if(b.classList.contains('spin'))return;b.classList.add('spin');
   try{
@@ -2277,7 +2309,7 @@ async function renderHistory(){
     if(cloudOn()){const {data,error}=await CLOUD.sb.from('quotes').select('id,client,total,data,created_at,updated_at').order('created_at',{ascending:false}).limit(300);if(error)throw error;hist=data}
     else hist=LS.get('quotes',[]);
   }catch(e){cloudErr(e,'hist');hist=[]}
-  drawHistory();
+  drawHistory();arcSweep();
 }
 function drawHistory(){
   const box=$('hList');box.innerHTML='';
@@ -2289,7 +2321,7 @@ function drawHistory(){
     const dt=new Date(h.created_at);const ds=`${String(dt.getDate()).padStart(2,'0')}.${String(dt.getMonth()+1).padStart(2,'0')}.${dt.getFullYear()}`;
     const lines=(h.data&&h.data.lines)||[];
     r.innerHTML='<div class="n"><b></b><small></small></div><div class="t"></div><button type="button">Բացել</button><button type="button" class="dl" style="color:var(--bad)">×</button>';
-    r.querySelector('b').textContent=h.client||'Առանց անվան';
+    r.querySelector('b').textContent=(h.data&&h.data.done?'✅ ':'')+(h.client||'Առանց անվան');
     r.querySelector('small').textContent=`${ds} · ${lines.length} տող · ${lines.slice(0,2).map(l=>String(l.n).split(' — ')[0]).join(', ')}`;
     r.querySelector('.t').innerHTML=fmt(h.total||0)+(showPf&&h.data&&h.data.profit!=null?`<br><span style="font-size:11px;color:var(--ok);font-weight:600">շահ․ ${fmt(h.data.profit)}</span>`:'');
     const [ob,db]=r.querySelectorAll('button');
@@ -2335,7 +2367,7 @@ function stkStats(){const av=stkAvail();const units=av.reduce((a,x)=>a+(+x.qty||
 function stkRender(){
   document.querySelectorAll('.stk-tabs .chip').forEach(b=>b.classList.toggle('on',b.dataset.t===stkTab));
   stkStats();$('stkPane2').style.display='none';
-  if(stkTab==='st')renderStock();else if(stkTab==='sl')renderSales();else renderWarranty()}
+  if(stkTab==='st')renderStock();else if(stkTab==='sl')renderSales();else if(stkTab==='rp')renderReport();else renderWarranty()}
 document.querySelectorAll('.stk-tabs .chip').forEach(b=>b.onclick=()=>{stkTab=b.dataset.t;stkQ='';stkRender()});
 
 /* --- stock list --- */
@@ -2406,6 +2438,7 @@ function saleForm(){
    <div class="grid2"><label>Անուն<input type="text" class="s_c" list="slCli" autocomplete="off"></label><label>Հեռախոս<input type="tel" class="s_p"></label></div>
    <datalist id="slCli">${clients.map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist>
    <div class="grid2"><label>Հասցե<input type="text" class="s_a"></label><label>Ամսաթիվ<input type="date" class="s_d"></label></div>
+   <label>ՀՎՀՀ (եթե կազմակերպություն է)<input type="text" class="s_tin" inputmode="numeric"></label>
    <b style="font-size:14px;display:block;margin-top:12px">Ապրանքներ պահեստից</b>
    <input type="search" class="s_q" placeholder="🔍 Գրեք մոդելը կամ SN-ը՝ պահեստից ավելացնելու համար" style="margin-top:6px"><div class="sugg s_sg"></div>
    <div class="s_lines" style="margin-top:6px"></div>
@@ -2416,10 +2449,10 @@ function saleForm(){
    <button type="button" class="btn s_save">💾 Պահպանել վաճառքը</button>
    <div class="grid2"><button type="button" class="btn ghost s_clear">Մաքրել</button><button type="button" class="btn ghost s_x">Փակել</button></div></div>`;
   const q=c=>P.querySelector(c);
-  q('.s_c').value=D.client;q('.s_p').value=D.phone;q('.s_a').value=D.addr;q('.s_d').value=D.date;q('.s_w').value=D.war;q('.s_g').value=D.got||'';q('.s_o').value=D.note||'';
-  const sync=()=>{D.client=q('.s_c').value.trim();D.phone=q('.s_p').value.trim();D.addr=q('.s_a').value.trim();D.date=q('.s_d').value||today();D.war=Math.max(0,+q('.s_w').value||0);D.got=+q('.s_g').value||0;D.note=q('.s_o').value.trim()};
+  q('.s_c').value=D.client;q('.s_p').value=D.phone;q('.s_a').value=D.addr;q('.s_d').value=D.date;q('.s_w').value=D.war;q('.s_g').value=D.got||'';q('.s_o').value=D.note||'';q('.s_tin').value=D.tin||'';
+  const sync=()=>{D.client=q('.s_c').value.trim();D.phone=q('.s_p').value.trim();D.addr=q('.s_a').value.trim();D.date=q('.s_d').value||today();D.war=Math.max(0,+q('.s_w').value||0);D.got=+q('.s_g').value||0;D.note=q('.s_o').value.trim();D.tin=q('.s_tin').value.trim()};
   q('.s_c').oninput=()=>{sync();const c=clients.find(x=>norm(x.name)===norm(D.client));if(c){D.cid=c.id;if(!q('.s_p').value)q('.s_p').value=c.phone||'';if(!q('.s_a').value)q('.s_a').value=c.addr||'';sync()}else D.cid=''};
-  ['.s_p','.s_a','.s_d','.s_w','.s_g','.s_o'].forEach(c=>q(c).oninput=sync);
+  ['.s_p','.s_a','.s_d','.s_w','.s_g','.s_o','.s_tin'].forEach(c=>q(c).oninput=sync);
   const tot=()=>{const t=slTotals();q('.s_t').textContent=fmt(t.total);q('.s_pr').textContent=`${fmt(t.costT)} / ${fmt(t.total-t.costT)}`};
   const lines=()=>{const B=q('.s_lines');B.innerHTML=D.lines.length?'':'<div class="note">Ավելացրեք ապրանք պահեստից կամ ձեռքով տող</div>';
     D.lines.forEach((l,i)=>{const r=document.createElement('div');r.className='sl-line';const st=l.sid?stock.find(x=>x.id===l.sid):null;const max=st&&!st.sn?(+st.qty||0):(l.sid?1:999);
@@ -2458,12 +2491,16 @@ function saleView(sl){
    <div class="kv"><span>Ընդամենը</span><b>${fmt(sl.total)}</b></div><div class="kv"><span>Շահույթ</span><b style="color:var(--ok)">${fmt(sl.total-(+sl.costT||0))}</b></div>
    <div class="kv"><span>Վճարված</span><b>${fmt(sl.got||0)}${debt?` · <span class="wr-bad">պարտք ${fmt(debt)}</span>`:''}</b></div>
    <div class="kv"><span>Երաշխիք</span><b class="${ok?'wr-ok':'wr-bad'}">${sl.war?(ok?'✅ մինչև ':'❌ ավարտվել է ')+dfmt(end):'չկա'}</b></div>${sl.note?`<div class="note">${esc(sl.note)}</div>`:''}
-   <div class="grid2"><button type="button" class="btn v_pdf">📄 Ակտ + տալոն (PDF)</button><button type="button" class="btn v_prn" style="background:#16233d">🖨 Տպել</button></div>
+   <div class="doc-box"><b>📑 Փաստաթուղթ</b><select class="v_kind">${DOC_KINDS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select>
+   <label class="v_cpl" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" class="v_cp" style="width:auto"> 2 օրինակ (հաճախորդին + մեզ)</label>
+   <div class="grid2"><button type="button" class="btn v_prn" style="background:#16233d">🖨 Տպել</button><button type="button" class="btn v_pdf">📤 PDF ուղարկել</button></div></div>
    <div class="grid2"><button type="button" class="btn ghost v_pay">💰 Վճարում</button><button type="button" class="btn ghost v_del" style="color:var(--bad)">Չեղարկել</button></div>
    <button type="button" class="btn ghost v_x">Փակել</button>`;
   const q=c=>P.querySelector(c);
   q('.v_x').onclick=()=>{P.style.display='none'};
-  q('.v_pdf').onclick=()=>salePdfSend(sl);q('.v_prn').onclick=()=>printWith(()=>salePdf(sl));
+  const vk=q('.v_kind'),vc=q('.v_cp');vk.value=LS.get('docKind','act');vc.checked=!!LS.get('docCp',false);const cpv=()=>{q('.v_cpl').style.display=vk.value.startsWith('act')?'flex':'none'};cpv();
+  vk.onchange=()=>{LS.set('docKind',vk.value);cpv()};vc.onchange=()=>LS.set('docCp',vc.checked);
+  q('.v_pdf').onclick=()=>salePdfSend(sl,vk.value,vc.checked?2:1);q('.v_prn').onclick=()=>printWith(()=>salePdf(sl,vk.value,vc.checked?2:1));
   q('.v_pay').onclick=async()=>{const v=prompt('Ընդհանուր վճարված գումարը ֏',sl.got||sl.total);if(v===null)return;sl.got=Math.min(+v||0,sl.total);await slSave(sl);
     const c=clients.find(x=>x.id===sl.cid);if(c){const it=(c.inst||[]).find(i=>i.id===sl.id);if(it){it.got=sl.got;await saveClient(c)}}stkRender();saleView(sl);toast('Պահպանվեց ✓')};
   q('.v_del').onclick=async()=>{const b=q('.v_del');if(!b.dataset.c){b.dataset.c=1;b.textContent='Չեղարկե՞լ — ապրանքները կվերադառնան պահեստ';return}
@@ -2486,69 +2523,245 @@ function drawWar(){const q=norm($('wrS').value),L=$('wrList');const now=new Date
     d.innerHTML=`<div class="n"><b>${esc(l.model||l.name)}${l.sn?' · SN '+esc(l.sn):''}</b><small>${esc(sl.client)} · ${esc(sl.no)} · ${dfmt(sl.date)}</small><small>${st}</small></div><button type="button" class="ib">›</button>`;
     d.querySelector('button').onclick=()=>saleView(sl);L.appendChild(d)})}
 
-/* --- PDF: act + warranty card --- */
-async function salePdf(sl){
-  if(!window.jspdf)await loadScript('vendor/jspdf.umd.min.js');
-  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
-  doc.addFileToVFS('arm400.ttf',FONT400);doc.addFont('arm400.ttf','Arm','normal');doc.addFileToVFS('arm700.ttf',FONT700);doc.addFont('arm700.ttf','Arm','bold');
-  const dark=[18,24,40],red=[224,30,47],grey=[100,110,130],W=210,M=16;const P=n=>Math.round(n).toLocaleString('ru-RU').replace(/ | /g,' ')+' ֏';
+/* --- Documents (act / invoice / warranty) — like 1C / МойСклад --- */
+let REQ=Object.assign({name:'SmartEye System',tin:'',addr:'ք. Երևան',bank:'',acc:'',phone:'043 53 53 32',email:'info@smarteye.am',boss:''},LS.get('req',{}));
+const REQ_F=[['name','Անվանում (ԱՁ / ՍՊԸ)'],['tin','ՀՎՀՀ'],['addr','Հասցե'],['bank','Բանկ'],['acc','Հաշվեհամար'],['phone','Հեռախոս'],['email','Էլ. փոստ'],['boss','Ղեկավար / ԱՁ (ստորագրող)']];
+function reqUI(){const B=$('reqBox');if(!B)return;B.innerHTML='';REQ_F.forEach(([k,l])=>{const lb=document.createElement('label');lb.innerHTML=`${l}<input type="text">`;const i=lb.querySelector('input');i.value=REQ[k]||'';
+  i.oninput=()=>{REQ[k]=i.value.trim();LS.set('req',REQ);pushSettingsSoon()};B.appendChild(lb)})}
+function armWords(n){n=Math.round(Math.abs(+n||0));if(!n)return 'զրո';
+  const u=['','մեկ','երկու','երեք','չորս','հինգ','վեց','յոթ','ութ','ինը'],t=['','տասը','քսան','երեսուն','քառասուն','հիսուն','վաթսուն','յոթանասուն','ութսուն','իննսուն'];
+  const tri=x=>{const h=Math.floor(x/100),r=x%100,d=Math.floor(r/10),e=r%10,p=[];if(h)p.push(h===1?'հարյուր':u[h]+' հարյուր');
+    if(r)p.push(d===1?(e?'տասն'+u[e]:'տասը'):(d?t[d]:'')+(e?u[e]:''));return p.join(' ')};
+  const b=Math.floor(n/1e9),m=Math.floor(n%1e9/1e6),k=Math.floor(n%1e6/1e3),r=n%1e3,P=[];
+  if(b)P.push(tri(b)+' միլիարդ');if(m)P.push(tri(m)+' միլիոն');if(k)P.push(k===1?'հազար':tri(k)+' հազար');if(r)P.push(tri(r));return P.join(' ')}
+const DOC_KINDS=[['act','Ակտ + երաշխիքային տալոն'],['act0','Ընդունման-հանձնման ակտ'],['inv','Հաշիվ վճարման համար'],['war','Երաշխիքային տալոն (հաճախորդին)']];
+async function pdfBase(){if(!window.jspdf)await loadScript('vendor/jspdf.umd.min.js');const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  doc.addFileToVFS('arm400.ttf',FONT400);doc.addFont('arm400.ttf','Arm','normal');doc.addFileToVFS('arm700.ttf',FONT700);doc.addFont('arm700.ttf','Arm','bold');return doc}
+const PD={dark:[18,24,40],red:[224,30,47],grey:[100,110,130],line:[220,226,238],W:210,M:16};
+const PM=n=>(n<0?'-':'')+Math.round(Math.abs(n)).toLocaleString('ru-RU').replace(/ | /g,' ')+' ֏';
+function pdfHead(doc,title,sub,tag){const {dark,red,W,M}=PD;
   doc.setFillColor(...dark);doc.rect(0,0,W,30,'F');doc.setFillColor(...red);doc.rect(0,30,W,1.6,'F');
   doc.addImage(EYE_F,'PNG',M,9,26,13.2);doc.setFont('Arm','bold');doc.setFontSize(18);doc.setTextColor(255,255,255);doc.text('Smart',M+30,16);
   const sw=doc.getTextWidth('Smart');doc.setTextColor(...red);doc.text('Eye',M+30+sw,16);doc.setFont('Arm','normal');doc.setFontSize(8.5);doc.setTextColor(184,192,207);doc.text('SYSTEM  •  Տեսահսկում • Ալարմ • Ցանցեր',M+30,22);
-  doc.setFontSize(9);doc.setTextColor(255,255,255);doc.text('043 53 53 32',W-M,14,{align:'right'});doc.text('smarteye.am',W-M,19,{align:'right'});doc.text('info@smarteye.am',W-M,24,{align:'right'});
-  let y=44;doc.setFont('Arm','bold');doc.setFontSize(15);doc.setTextColor(...dark);doc.text('ԿԱՏԱՐՎԱԾ ԱՇԽԱՏԱՆՔՆԵՐԻ / ՎԱՃԱՌՔԻ ԱԿՏ',M,y);
-  doc.setFont('Arm','normal');doc.setFontSize(10);doc.setTextColor(...grey);doc.text(`${sl.no}   ·   ${dfmt(sl.date)}`,M,y+6);
-  y+=14;doc.setDrawColor(220,226,238);doc.setFillColor(246,248,252);doc.roundedRect(M,y,W-2*M,sl.addr?20:15,2,2,'FD');
-  doc.setFontSize(9);doc.setTextColor(...grey);doc.text('Հաճախորդ',M+4,y+6);doc.setFont('Arm','bold');doc.setFontSize(11);doc.setTextColor(...dark);doc.text(sl.client||'',M+30,y+6);
-  doc.setFont('Arm','normal');doc.setFontSize(9);doc.setTextColor(...grey);doc.text('Հեռախոս',M+4,y+12);doc.setTextColor(...dark);doc.text(sl.phone||'—',M+30,y+12);
-  if(sl.addr){doc.setTextColor(...grey);doc.text('Հասցե',M+4,y+17);doc.setTextColor(...dark);doc.text(doc.splitTextToSize(sl.addr,W-2*M-34)[0],M+30,y+17)}
-  y+=(sl.addr?20:15)+8;
-  const cx={n:M+2,name:M+9,sn:M+86,q:M+126,p:M+152,s:W-M-2};
-  const head=()=>{doc.setFillColor(...dark);doc.rect(M,y-5,W-2*M,8,'F');doc.setFont('Arm','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);
-    doc.text('#',cx.n,y);doc.text('Անվանում / մոդել',cx.name,y);doc.text('Սերիական համար',cx.sn,y);doc.text('Քան.',cx.q,y,{align:'right'});doc.text('Գին',cx.p,y,{align:'right'});doc.text('Գումար',cx.s,y,{align:'right'});y+=8};
-  head();doc.setFont('Arm','normal');doc.setFontSize(9);
-  sl.lines.forEach((l,i)=>{const nm=doc.splitTextToSize([l.model,l.name&&l.name!==l.model?l.name:''].filter(Boolean).join(' — ')||l.name||'',cx.sn-cx.name-3);const sn=doc.splitTextToSize(l.sn||'—',cx.q-cx.sn-14);const h=Math.max(nm.length,sn.length)*4.3+2.5;
-    if(y+h>250){doc.addPage();y=20;head();doc.setFont('Arm','normal');doc.setFontSize(9)}
-    doc.setTextColor(...dark);doc.text(String(i+1),cx.n,y);doc.text(nm,cx.name,y);doc.setTextColor(...grey);doc.text(sn,cx.sn,y);doc.setTextColor(...dark);
-    doc.text(String(l.q),cx.q,y,{align:'right'});doc.text(P(l.price),cx.p,y,{align:'right'});doc.text(P(l.q*l.price),cx.s,y,{align:'right'});
-    y+=h;doc.setDrawColor(230,234,242);doc.line(M,y-3.2,W-M,y-3.2)});
-  y+=3;doc.setFont('Arm','bold');doc.setFontSize(12);doc.setTextColor(...dark);doc.text('Ընդամենը',W-M-60,y);doc.setTextColor(...red);doc.text(P(sl.total),W-M,y,{align:'right'});
-  const debt=Math.max(0,(+sl.total||0)-(+sl.got||0));doc.setFont('Arm','normal');doc.setFontSize(9);doc.setTextColor(...grey);
-  y+=6;doc.text(`Վճարված՝ ${P(sl.got||0)}${debt?'   ·   Մնացորդ՝ '+P(debt):''}`,W-M,y,{align:'right'});
-  if(sl.note){y+=7;doc.setTextColor(...dark);doc.text(doc.splitTextToSize('Նշում՝ '+sl.note,W-2*M),M,y);y+=4}
-  y+=12;doc.setFontSize(9);doc.setTextColor(...grey);doc.text('Հանձնեց՝ SmartEye System ________________',M,y);doc.text('Ընդունեց՝ ________________',W-M,y,{align:'right'});
-  // warranty card
-  y+=12;if(y>200){doc.addPage();y=24}
-  const end=warEnd(sl);doc.setDrawColor(...red);doc.setLineWidth(0.6);doc.setLineDashPattern([2,1.5],0);doc.line(M,y-6,W-M,y-6);doc.setLineDashPattern([],0);doc.setLineWidth(0.2);
-  doc.setFillColor(...dark);doc.roundedRect(M,y,W-2*M,16,2,2,'F');doc.setFont('Arm','bold');doc.setFontSize(14);doc.setTextColor(255,255,255);doc.text('ԵՐԱՇԽԻՔԱՅԻՆ ՏԱԼՈՆ',M+5,y+7);
+  doc.setFontSize(9);doc.setTextColor(255,255,255);[REQ.phone,'smarteye.am',REQ.email].filter(Boolean).forEach((x,i)=>doc.text(x,W-M,14+i*5,{align:'right'}));
+  let y=43;doc.setFont('Arm','bold');doc.setFontSize(15);doc.setTextColor(...dark);doc.text(title,M,y);
+  if(tag){doc.setFont('Arm','normal');doc.setFontSize(8.5);doc.setTextColor(...red);doc.text(tag,W-M,y,{align:'right'})}
+  if(sub){doc.setFont('Arm','normal');doc.setFontSize(10);doc.setTextColor(...PD.grey);doc.text(sub,M,y+6);y+=6}
+  return y+8}
+function pdfParties(doc,y,sl,leftT,rightT){const {dark,grey,W,M}=PD;const cw=(W-2*M-6)/2;
+  const L=[REQ.name,REQ.tin&&'ՀՎՀՀ՝ '+REQ.tin,REQ.addr,REQ.bank&&'Բանկ՝ '+REQ.bank,REQ.acc&&'Հ/հ՝ '+REQ.acc,REQ.phone&&'Հեռ.՝ '+REQ.phone].filter(Boolean);
+  const R=[sl.client||'—',sl.tin&&'ՀՎՀՀ՝ '+sl.tin,sl.addr,sl.phone&&'Հեռ.՝ '+sl.phone].filter(Boolean);
+  const box=(x,t,arr)=>{doc.setFont('Arm','normal');doc.setFontSize(8.5);doc.setTextColor(...grey);doc.text(t,x+4,y+5.5);
+    doc.setFont('Arm','bold');doc.setFontSize(10.5);doc.setTextColor(...dark);doc.text(doc.splitTextToSize(arr[0],cw-8)[0],x+4,y+11);
+    doc.setFont('Arm','normal');doc.setFontSize(8.8);arr.slice(1).forEach((s,i)=>doc.text(doc.splitTextToSize(s,cw-8)[0],x+4,y+16+i*4.4))};
+  const h=Math.max(L.length,R.length)*4.4+10;doc.setDrawColor(...PD.line);doc.setFillColor(246,248,252);
+  doc.roundedRect(M,y,cw,h,2,2,'FD');doc.roundedRect(M+cw+6,y,cw,h,2,2,'FD');box(M,leftT,L);box(M+cw+6,rightT,R);return y+h+8}
+function pdfTable(doc,y,cols,rows,onNew,minH){const {dark,W,M}=PD;
+  const head=()=>{doc.setFillColor(...dark);doc.rect(M,y-5,W-2*M,8,'F');doc.setFont('Arm','bold');doc.setFontSize(8.3);doc.setTextColor(255,255,255);
+    let x=M+2;cols.forEach(c=>{doc.text(c.h,c.al==='r'?x+c.w-3:x,y,c.al==='r'?{align:'right'}:undefined);x+=c.w});y+=8;doc.setFont('Arm','normal');doc.setFontSize(8.8)};
+  head();rows.forEach(r=>{const cells=cols.map((c,i)=>c.al==='r'?[String(r[i]??'')]:doc.splitTextToSize(String(r[i]??''),c.w-3));const h=Math.max(minH||0,Math.max(...cells.map(c=>c.length))*4.2+2.6);
+    if(y+h>268){doc.addPage();y=20;onNew&&onNew();head()}
+    let x=M+2;cols.forEach((c,i)=>{doc.setTextColor(...(c.g?PD.grey:dark));doc.text(cells[i],c.al==='r'?x+c.w-3:x,y,c.al==='r'?{align:'right'}:undefined);x+=c.w});
+    y+=h;doc.setDrawColor(230,234,242);doc.line(M,y-3.3,W-M,y-3.3)});return y+2}
+function pdfFoot(doc){const {grey,W,M}=PD;const n=doc.internal.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setDrawColor(...PD.line);doc.line(M,284,W-M,284);doc.setFont('Arm','normal');doc.setFontSize(8);doc.setTextColor(...grey);
+  doc.text([REQ.name,'smarteye.am',REQ.phone,REQ.tin&&'ՀՎՀՀ '+REQ.tin].filter(Boolean).join(' · '),M,289);doc.text(`${i}/${n}`,W-M,289,{align:'right'})}}
+function pdfSign(doc,y,l,r){const {grey,W,M}=PD;if(y>262){doc.addPage();y=30}doc.setFont('Arm','normal');doc.setFontSize(9);doc.setTextColor(...grey);
+  doc.text(l,M,y);doc.text('________________',M,y+8);doc.text('Կ.Տ.',M+48,y+8);doc.text(r,W/2+6,y);doc.text('________________',W/2+6,y+8);return y+16}
+function pdfTotals(doc,y,sl,words,payLeft){const {dark,red,grey,W,M}=PD;if(y>250){doc.addPage();y=24}
+  doc.setFont('Arm','bold');doc.setFontSize(12);doc.setTextColor(...dark);doc.text('Ընդամենը',W-M-62,y);doc.setTextColor(...red);doc.text(PM(sl.total),W-M,y,{align:'right'});
+  doc.setFont('Arm','normal');doc.setFontSize(8.6);doc.setTextColor(...grey);doc.text('ԱԱՀ չի հաշվարկվում',W-M,y+4.5,{align:'right'});y+=6;
+  const debt=Math.max(0,(+sl.total||0)-(+sl.got||0));
+  if(payLeft){y+=5;doc.setFont('Arm','bold');doc.setFontSize(10.5);doc.setTextColor(...dark);doc.text('Վճարման ենթակա',W-M-62,y);doc.text(PM(debt||sl.total),W-M,y,{align:'right'})}
+  else{y+=5;doc.setFontSize(9);doc.text(`Վճարված՝ ${PM(sl.got||0)}${debt?'   ·   Մնացորդ՝ '+PM(debt):''}`,W-M,y,{align:'right'})}
+  if(words){y+=7;doc.setFont('Arm','normal');doc.setFontSize(9);doc.setTextColor(...dark);const w='Գումարը տառերով՝ '+armWords(payLeft?(debt||sl.total):sl.total)+' ՀՀ դրամ';doc.text(doc.splitTextToSize(w,W-2*M),M,y);y+=4}
+  return y+6}
+const saleRows=(sl,sn)=>sl.lines.map((l,i)=>{const nm=[l.model,l.name&&l.name!==l.model?l.name:''].filter(Boolean).join(' — ')||l.name||'';
+  return sn?[i+1,nm,l.sn||'—',l.q,PM(l.price),PM(l.q*l.price)]:[i+1,nm,'հատ',l.q,PM(l.price),PM(l.q*l.price)]});
+function drawAct(doc,sl,tag){const {dark,grey,W,M}=PD;
+  let y=pdfHead(doc,'ԸՆԴՈՒՆՄԱՆ-ՀԱՆՁՆՄԱՆ ԱԿՏ',`${sl.no}   ·   ${dfmt(sl.date)}   ·   ${REQ.addr||'ք. Երևան'}`,tag);
+  doc.setFont('Arm','normal');doc.setFontSize(9);doc.setTextColor(...grey);doc.text('կատարված աշխատանքների և հանձնված սարքավորումների',M,y-3);y+=3;
+  y=pdfParties(doc,y,sl,'Կատարող','Պատվիրատու');
+  y=pdfTable(doc,y,[{h:'#',w:7},{h:'Անվանում / մոդել',w:72},{h:'Սերիական համար',w:38,g:1},{h:'Քան.',w:13,al:'r'},{h:'Գին',w:24,al:'r'},{h:'Գումար',w:24,al:'r'}],saleRows(sl,1));
+  y=pdfTotals(doc,y+2,sl,1,0);
+  if(sl.note){doc.setFontSize(9);doc.setTextColor(...dark);const t=doc.splitTextToSize('Նշում՝ '+sl.note,W-2*M);doc.text(t,M,y);y+=t.length*4.3+2}
+  doc.setFontSize(9);doc.setTextColor(...dark);const ok=doc.splitTextToSize('Աշխատանքները կատարված են ամբողջությամբ և ժամանակին, սարքավորումները հանձնված են աշխատունակ վիճակում։ Պատվիրատուն ծավալի, որակի և ժամկետների վերաբերյալ պահանջներ չունի։',W-2*M);
+  if(y>250){doc.addPage();y=24}doc.text(ok,M,y);y+=ok.length*4.3+8;
+  return pdfSign(doc,y,`Հանձնեց՝ ${REQ.name}${REQ.boss?' / '+REQ.boss:''}`,'Ընդունեց՝ '+(sl.client||'Պատվիրատու'))}
+function drawWar(doc,sl,y,full){const {dark,red,grey,W,M}=PD;const end=warEnd(sl);
+  if(full)y=pdfHead(doc,'ԵՐԱՇԽԻՔԱՅԻՆ ՏԱԼՈՆ',`${sl.no}   ·   ${dfmt(sl.date)}`,'');
+  else{y+=6;if(y>200){doc.addPage();y=24}doc.setDrawColor(...red);doc.setLineWidth(0.6);doc.setLineDashPattern([2,1.5],0);doc.line(M,y-6,W-M,y-6);doc.setLineDashPattern([],0);doc.setLineWidth(0.2)}
+  doc.setFillColor(...dark);doc.roundedRect(M,y,W-2*M,16,2,2,'F');doc.setFont('Arm','bold');doc.setFontSize(14);doc.setTextColor(255,255,255);doc.text(full?(sl.client||'Հաճախորդ'):'ԵՐԱՇԽԻՔԱՅԻՆ ՏԱԼՈՆ',M+5,y+7);
   doc.setFontSize(10);doc.setTextColor(255,90,105);doc.text(sl.war?`${sl.war} ամիս · վավեր է մինչև ${dfmt(end)}`:'Երաշխիք չի տրամադրվում',M+5,y+13);
-  doc.setTextColor(255,255,255);doc.setFont('Arm','normal');doc.setFontSize(9);doc.text(`${sl.no}`,W-M-5,y+7,{align:'right'});doc.text(dfmt(sl.date),W-M-5,y+13,{align:'right'});
-  y+=23;const devs=sl.lines.filter(l=>l.sid||l.sn);
-  if(devs.length){doc.setFont('Arm','bold');doc.setFontSize(9.5);doc.setTextColor(...dark);doc.text('Երաշխիքը տարածվում է՝',M,y);y+=5;doc.setFont('Arm','normal');doc.setFontSize(9);
-    devs.forEach(l=>{const t=doc.splitTextToSize(`• ${l.model||l.name}${l.q>1?' × '+l.q:''}${l.sn?'   SN: '+l.sn:''}`,W-2*M);if(y>265){doc.addPage();y=20}doc.text(t,M+2,y);y+=t.length*4.3});y+=2}
-  const terms=['SmartEye System-ը երաշխավորում է կատարված տեղադրման և կարգավորման աշխատանքների որակը նշված ժամկետում։ Թերության դեպքում անվճար վերացնում ենք մեր աշխատանքից առաջացած խնդիրները։',
-    'Սարքավորումների գործարանային երաշխիքը տրամադրվում է արտադրողի / պաշտոնական ներմուծողի պայմաններով։ SmartEye-ն կօգնի ձևակերպել երաշխիքային դիմումը։',
+  doc.setTextColor(255,255,255);doc.setFont('Arm','normal');doc.setFontSize(9);doc.text(sl.no,W-M-5,y+7,{align:'right'});doc.text(dfmt(sl.date),W-M-5,y+13,{align:'right'});y+=23;
+  if(full&&(sl.phone||sl.addr)){doc.setFontSize(9);doc.setTextColor(...grey);doc.text([sl.phone,sl.addr].filter(Boolean).join('   ·   '),M,y);y+=7}
+  const devs=sl.lines.filter(l=>l.sid||l.sn);
+  if(devs.length){if(full){y=pdfTable(doc,y,[{h:'#',w:8},{h:'Սարքավորում',w:84},{h:'Սերիական համար',w:52,g:1},{h:'Քան.',w:14,al:'r'},{h:'Երաշխիք',w:20,al:'r'}],devs.map((l,i)=>[i+1,[l.model,l.name&&l.name!==l.model?l.name:''].filter(Boolean).join(' — '),l.sn||'—',l.q,sl.war?sl.war+' ամիս':'—']))+3}
+    else{doc.setFont('Arm','bold');doc.setFontSize(9.5);doc.setTextColor(...dark);doc.text('Երաշխիքը տարածվում է՝',M,y);y+=5;doc.setFont('Arm','normal');doc.setFontSize(9);
+      devs.forEach(l=>{const t=doc.splitTextToSize(`• ${l.model||l.name}${l.q>1?' × '+l.q:''}${l.sn?'   SN: '+l.sn:''}`,W-2*M);if(y>265){doc.addPage();y=20}doc.text(t,M+2,y);y+=t.length*4.3});y+=2}}
+  const terms=[`${REQ.name}-ը երաշխավորում է կատարված տեղադրման և կարգավորման աշխատանքների որակը նշված ժամկետում։ Թերության դեպքում անվճար վերացնում ենք մեր աշխատանքից առաջացած խնդիրները։`,
+    'Սարքավորումների գործարանային երաշխիքը տրամադրվում է արտադրողի / պաշտոնական ներմուծողի պայմաններով։ Մենք կօգնենք ձևակերպել երաշխիքային դիմումը։',
     'Երաշխիքը չի տարածվում՝ մեխանիկական վնասի, խոնավության կամ կրակի, լարման տատանման կամ կայծակի, երրորդ անձանց միջամտության, սարքի տեղափոխման կամ կարգավորումների փոփոխության դեպքերում։',
-    'Երաշխիքից օգտվելու համար ներկայացրեք այս տալոնը կամ նշեք վաճառքի համարը։ Կապ՝ 043 53 53 32։'];
+    `Երաշխիքից օգտվելու համար ներկայացրեք այս տալոնը կամ նշեք համարը՝ ${sl.no}։ Կապ՝ ${REQ.phone}։`];
   doc.setFont('Arm','bold');doc.setFontSize(9.5);doc.setTextColor(...dark);if(y>250){doc.addPage();y=20}doc.text('Երաշխիքի պայմաններ',M,y);y+=5;doc.setFont('Arm','normal');doc.setFontSize(8.6);doc.setTextColor(60,68,85);
-  terms.forEach((t,i)=>{const tl=doc.splitTextToSize(`${i+1}. ${t}`,W-2*M);if(y+tl.length*4>278){doc.addPage();y=20}doc.text(tl,M,y);y+=tl.length*4+1.5});
-  const pages=doc.internal.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setDrawColor(220,226,238);doc.line(M,284,W-M,284);doc.setFontSize(8);doc.setTextColor(...grey);
-    doc.text('SmartEye System · smarteye.am · 043 53 53 32 · Երևան և Արագածոտն',M,289);doc.text(`${i}/${pages}`,W-M,289,{align:'right'})}
-  const safe=String(sl.client||'').replace(/[^\wա-ֆԱ-Ֆ\-]+/g,'_').slice(0,30);
-  if(PRINT_MODE)doc.autoPrint();
-  return {blob:doc.output('blob'),name:`SmartEye-${sl.no}${safe?'-'+safe:''}.pdf`}}
-async function salePdfSend(sl){toast('PDF-ը պատրաստվում է…');let r;try{r=await salePdf(sl)}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}
+  terms.forEach((t,i)=>{const tl=doc.splitTextToSize(`${i+1}. ${t}`,W-2*M);if(y+tl.length*4>279){doc.addPage();y=20}doc.text(tl,M,y);y+=tl.length*4+1.5});
+  if(full){y+=4;y=pdfSign(doc,y,`Վաճառող՝ ${REQ.name}`,'Գնորդ՝ '+(sl.client||''));
+    // service record
+    if(y<215){doc.setFont('Arm','bold');doc.setFontSize(9.5);doc.setTextColor(...dark);doc.text('Սպասարկման նշումներ',M,y);y+=3;
+      y=pdfTable(doc,y+5,[{h:'Ամսաթիվ',w:28},{h:'Խնդիր / կատարված աշխատանք',w:110},{h:'Ստորագրություն',w:40}],[['','',''],['','',''],['','',''],['','','']],null,10)}}
+  return y}
+function drawInv(doc,sl){const {dark,grey,W,M}=PD;const no='ՀՎ-'+String(sl.no).replace(/^SE-/,'');
+  let y=pdfHead(doc,'ՀԱՇԻՎ ՎՃԱՐՄԱՆ ՀԱՄԱՐ',`${no}   ·   ${dfmt(sl.date)}`,'');
+  y=pdfParties(doc,y,sl,'Մատակարար','Գնորդ');
+  y=pdfTable(doc,y,[{h:'#',w:7},{h:'Անվանում',w:96},{h:'Միավ.',w:14,g:1},{h:'Քան.',w:13,al:'r'},{h:'Գին',w:24,al:'r'},{h:'Գումար',w:24,al:'r'}],saleRows(sl,0));
+  y=pdfTotals(doc,y+2,sl,1,1);
+  doc.setFontSize(9);doc.setTextColor(...dark);const t=doc.splitTextToSize(`Վճարումը՝ ${REQ.acc?'փոխանցումով հաշվեհամարին '+REQ.acc+(REQ.bank?' ('+REQ.bank+')':'')+' կամ ':''}կանխիկ։ Նպատակում նշեք հաշվի համարը՝ ${no}։ Հաշիվը վավեր է 5 բանկային օր։`,W-2*M);
+  doc.text(t,M,y);y+=t.length*4.3+10;return pdfSign(doc,y,`Ղեկավար / ԱՁ՝ ${REQ.boss||REQ.name}`,'Գնորդ՝ '+(sl.client||''))}
+async function salePdf(sl,kind,copies){kind=kind||'act';const doc=await pdfBase();
+  if(kind==='inv')drawInv(doc,sl);
+  else if(kind==='war')drawWar(doc,sl,0,1);
+  else{const n=copies>1?2:1;for(let c=0;c<n;c++){if(c)doc.addPage();const y=drawAct(doc,sl,n>1?(c?'Օրինակ 2 · Կատարողի':'Օրինակ 1 · Պատվիրատուի'):'');if(kind==='act'&&(c===0))drawWar(doc,sl,y,0)}}
+  pdfFoot(doc);if(PRINT_MODE)doc.autoPrint();
+  const safe=String(sl.client||'').replace(/[^\wա-ֆԱ-Ֆ\-]+/g,'_').slice(0,30);const pre={inv:'Hashiv',war:'Erashxiq',act:'Akt',act0:'Akt'}[kind];
+  return {blob:doc.output('blob'),name:`SmartEye-${pre}-${sl.no}${safe?'-'+safe:''}.pdf`}}
+async function pdfSendWith(make,label){toast('PDF-ը պատրաստվում է…');let r;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}
   const {blob,name}=r;const fn=name.replace(/[^\w.\-]+/g,'_');
   try{
     if(NATIVE){const b64=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=no;fr.readAsDataURL(blob)});
-      const w=await capPlugin('Filesystem').writeFile({path:fn,data:b64,directory:'CACHE'});await capPlugin('Share').share({title:name,files:[w.uri],dialogTitle:'Ուղարկել PDF-ը'});return}
+      const w=await capPlugin('Filesystem').writeFile({path:fn,data:b64,directory:'CACHE'});await capPlugin('Share').share({title:name,files:[w.uri],dialogTitle:label||'Ուղարկել PDF-ը'});return}
     if(window.smarteyeDesktop){const x=await window.smarteyeDesktop.sendFile('telegram',name,new Uint8Array(await blob.arrayBuffer()));toast(x.direct?'Telegram-ում ընտրեք չաթը — PDF-ն արդեն կցված է ✓':'PDF-ը պահվեց Downloads-ում ✓');return}
     if(canShareFiles()){await navigator.share({files:[new File([blob],fn,{type:'application/pdf'})],title:name});return}
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('PDF-ը ներբեռնվեց ✓');
   }catch(e){if(!(e&&e.name==='AbortError'))toast('Չհաջողվեց ('+(e&&(e.message||e.name)||'error')+')')}}
+const salePdfSend=(sl,k,c)=>pdfSendWith(()=>salePdf(sl,k,c));
+async function saveBlob(blob,name){const fn=name.replace(/[^\w.\-]+/g,'_');
+  if(NATIVE){const b64=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=no;fr.readAsDataURL(blob)});
+    const w=await capPlugin('Filesystem').writeFile({path:fn,data:b64,directory:'CACHE'});await capPlugin('Share').share({title:name,files:[w.uri]});return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();toast('Ֆայլը ներբեռնվեց ✓')}
+
+/* --- Reports (Հաշվետվություններ) --- */
+let RP={k:LS.get('rpK','sales'),p:'m0',f:'',t:''};
+const RP_K=[['sales','🧾 Վաճառքներ'],['items','📦 Վաճառված ապրանքներ'],['stock','🏬 Պահեստի մնացորդ'],['debt','💰 Պարտքեր'],['war','🛡 Գործող երաշխիքներ']];
+const isoL=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function rpPeriod(p){const n=new Date();if(p==='m0')return [isoL(new Date(n.getFullYear(),n.getMonth(),1)),isoL(n)];
+  if(p==='m1')return [isoL(new Date(n.getFullYear(),n.getMonth()-1,1)),isoL(new Date(n.getFullYear(),n.getMonth(),0))];
+  if(p==='y0')return [isoL(new Date(n.getFullYear(),0,1)),isoL(n)];return ['','']}
+function rpData(){const inP=s=>(!RP.f||s.date>=RP.f)&&(!RP.t||s.date<=RP.t);const S=sales.filter(inP).sort((a,b)=>String(a.date+a.no).localeCompare(String(b.date+b.no)));
+  const per=RP.f||RP.t?`${RP.f?dfmt(RP.f):'…'} — ${RP.t?dfmt(RP.t):'…'}`:'Ամբողջ ժամանակահատված';
+  if(RP.k==='sales'){const rows=S.map(s=>{const d=Math.max(0,s.total-(+s.got||0));return [dfmt(s.date),s.no,s.client,PM(s.total),PM(s.total-(+s.costT||0)),PM(+s.got||0),d?PM(d):'—']});
+    const T=S.reduce((a,s)=>(a[0]+=+s.total||0,a[1]+=(+s.total||0)-(+s.costT||0),a[2]+=+s.got||0,a),[0,0,0]);
+    return {title:'ՎԱՃԱՌՔՆԵՐԻ ՀԱՇՎԵՏՎՈՒԹՅՈՒՆ',per,cols:[{h:'Ամսաթիվ',w:22},{h:'Համար',w:24},{h:'Հաճախորդ',w:46},{h:'Գումար',w:23,al:'r'},{h:'Շահույթ',w:22,al:'r'},{h:'Վճարված',w:22,al:'r'},{h:'Պարտք',w:19,al:'r'}],rows,
+      csv:[['Ամսաթիվ','Համար','Հաճախորդ','Հեռախոս','Գումար','Ինքնարժեք','Շահույթ','Վճարված','Պարտք']].concat(S.map(s=>[s.date,s.no,s.client,s.phone,s.total,+s.costT||0,s.total-(+s.costT||0),+s.got||0,Math.max(0,s.total-(+s.got||0))])),
+      sum:[['Վաճառքների քանակ',S.length],['Շրջանառություն',PM(T[0])],['Շահույթ',PM(T[1])],['Վճարված',PM(T[2])],['Պարտք',PM(Math.max(0,T[0]-T[2]))]]}}
+  if(RP.k==='items'){const M={};S.forEach(s=>s.lines.forEach(l=>{const k=(l.model||l.name||'').trim()||'—';const m=M[k]||(M[k]={n:k,q:0,r:0,c:0,w:!l.sid&&!l.sn});m.q+=+l.q||0;m.r+=(+l.q||0)*(+l.price||0);m.c+=(+l.q||0)*(+l.cost||0)}));
+    const A=Object.values(M).sort((a,b)=>b.r-a.r);return {title:'ՎԱՃԱՌՎԱԾ ԱՊՐԱՆՔՆԵՐ ԵՎ ԱՇԽԱՏԱՆՔՆԵՐ',per,cols:[{h:'Անվանում / մոդել',w:80},{h:'Քան.',w:16,al:'r'},{h:'Գումար',w:28,al:'r'},{h:'Ինքնարժեք',w:27,al:'r'},{h:'Շահույթ',w:27,al:'r'}],
+      rows:A.map(m=>[m.n,m.q,PM(m.r),PM(m.c),PM(m.r-m.c)]),csv:[['Անվանում','Քանակ','Գումար','Ինքնարժեք','Շահույթ']].concat(A.map(m=>[m.n,m.q,m.r,m.c,m.r-m.c])),
+      sum:[['Դիրքեր',A.length],['Գումար',PM(A.reduce((a,m)=>a+m.r,0))],['Շահույթ',PM(A.reduce((a,m)=>a+m.r-m.c,0))]]}}
+  if(RP.k==='stock'){const A=stkAvail().slice().sort((a,b)=>String(a.model).localeCompare(String(b.model)));const v=A.reduce((a,x)=>a+(+x.qty||0)*(+x.cost||0),0),pv=A.reduce((a,x)=>a+(+x.qty||0)*(+x.price||x.cost||0),0);
+    return {title:'ՊԱՀԵՍՏԻ ՄՆԱՑՈՐԴ',per:'առ '+dfmt(today()),cols:[{h:'Մոդել',w:46},{h:'Անվանում',w:44},{h:'SN',w:30,g:1},{h:'Քան.',w:12,al:'r'},{h:'Ինքնարժ.',w:22,al:'r'},{h:'Գումար',w:24,al:'r'}],
+      rows:A.map(x=>[x.model,x.name&&x.name!==x.model?x.name:'',x.sn||'',x.qty,PM(+x.cost||0),PM((+x.qty||0)*(+x.cost||0))]),
+      csv:[['Մոդել','Անվանում','SN','Քանակ','Ինքնարժեք','Վաճառքի գին','Գումար','Մատակարար','Մուտքի ամսաթիվ']].concat(A.map(x=>[x.model,x.name,x.sn,x.qty,+x.cost||0,+x.price||0,(+x.qty||0)*(+x.cost||0),x.sup,x.date])),
+      sum:[['Միավոր',A.reduce((a,x)=>a+(+x.qty||0),0)],['Ինքնարժեքով',PM(v)],['Վաճառքի գնով',PM(pv)]]}}
+  if(RP.k==='debt'){const A=sales.filter(s=>(+s.total||0)-(+s.got||0)>0).sort((a,b)=>String(a.date).localeCompare(String(b.date)));const T=A.reduce((a,s)=>a+s.total-(+s.got||0),0);
+    return {title:'ՊԱՐՏՔԵՐ (ԴԵԲԻՏՈՐՆԵՐ)',per:'առ '+dfmt(today()),cols:[{h:'Ամսաթիվ',w:22},{h:'Համար',w:24},{h:'Հաճախորդ',w:48},{h:'Հեռախոս',w:28},{h:'Գումար',w:20,al:'r'},{h:'Պարտք',w:36,al:'r'}],
+      rows:A.map(s=>[dfmt(s.date),s.no,s.client,s.phone||'',PM(s.total),PM(s.total-(+s.got||0))]),csv:[['Ամսաթիվ','Համար','Հաճախորդ','Հեռախոս','Գումար','Վճարված','Պարտք']].concat(A.map(s=>[s.date,s.no,s.client,s.phone,s.total,+s.got||0,s.total-(+s.got||0)])),
+      sum:[['Պարտապաններ',A.length],['Ընդհանուր պարտք',PM(T)]]}}
+  const now=new Date(),R=[];sales.forEach(s=>{if(!+s.war)return;const e=warEnd(s);if(e<now)return;s.lines.filter(l=>l.sid||l.sn).forEach(l=>R.push([s.client,s.phone||'',l.model||l.name,l.sn||'—',dfmt(e),e]))});R.sort((a,b)=>a[5]-b[5]);
+  return {title:'ԳՈՐԾՈՂ ԵՐԱՇԽԻՔՆԵՐ',per:'առ '+dfmt(today()),cols:[{h:'Հաճախորդ',w:42},{h:'Հեռախոս',w:26},{h:'Սարքավորում',w:46},{h:'SN',w:38,g:1},{h:'Մինչև',w:26,al:'r'}],rows:R.map(r=>r.slice(0,5)),
+    csv:[['Հաճախորդ','Հեռախոս','Սարքավորում','SN','Մինչև']].concat(R.map(r=>r.slice(0,5))),sum:[['Գործող երաշխիքներ',R.length]]}}
+function renderReport(){const P=$('stkPane');if(!RP.f&&!RP.t&&RP.p!=='all'){[RP.f,RP.t]=rpPeriod(RP.p)}
+  P.innerHTML=`<div class="chips rp-k">${RP_K.map(([k,l])=>`<button type="button" class="chip${RP.k===k?' on':''}" data-k="${k}">${l}</button>`).join('')}</div>
+   <div class="rp-per"><div class="chips rp-p">${[['m0','Այս ամիս'],['m1','Անցյալ ամիս'],['y0','Այս տարի'],['all','Ամբողջը']].map(([k,l])=>`<button type="button" class="chip${RP.p===k?' on':''}" data-p="${k}">${l}</button>`).join('')}</div>
+   <div class="grid2"><label>Սկիզբ<input type="date" id="rpF"></label><label>Ավարտ<input type="date" id="rpT"></label></div></div>
+   <div class="rp-sum" id="rpSum"></div>
+   <div class="rp-btns"><button type="button" class="btn" id="rpPrn" style="background:#16233d">🖨 Տպել</button><button type="button" class="btn ghost" id="rpPdf">📄 PDF</button><button type="button" class="btn ghost" id="rpCsv">📊 Excel</button><button type="button" class="btn ghost" id="rpTg">📨 Telegram</button></div>
+   <div id="rpTbl" style="overflow-x:auto;margin-top:10px"></div>`;
+  const per=P.querySelector('.rp-per');per.style.display=['stock','debt','war'].includes(RP.k)?'none':'';
+  P.querySelectorAll('.rp-k .chip').forEach(b=>b.onclick=()=>{RP.k=b.dataset.k;LS.set('rpK',RP.k);renderReport()});
+  P.querySelectorAll('.rp-p .chip').forEach(b=>b.onclick=()=>{RP.p=b.dataset.p;[RP.f,RP.t]=rpPeriod(RP.p);renderReport()});
+  $('rpF').value=RP.f;$('rpT').value=RP.t;$('rpF').onchange=$('rpT').onchange=()=>{RP.f=$('rpF').value;RP.t=$('rpT').value;RP.p='c';renderReport()};
+  const D=rpData();$('rpSum').innerHTML=`<b>${D.title}</b><small>${D.per}</small>`+D.sum.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('');
+  $('rpTbl').innerHTML=D.rows.length?`<table class="rp-tb"><tr>${D.cols.map(c=>`<th${c.al?' class="r"':''}>${c.h}</th>`).join('')}</tr>${D.rows.map(r=>`<tr>${r.map((v,i)=>`<td${D.cols[i].al?' class="r"':''}>${esc(String(v??''))}</td>`).join('')}</tr>`).join('')}</table>`:'<div class="note">Տվյալներ չկան այս ժամանակահատվածում</div>';
+  $('rpPrn').onclick=()=>printWith(reportPdf);$('rpPdf').onclick=()=>pdfSendWith(reportPdf,'Ուղարկել հաշվետվությունը');
+  $('rpTg').onclick=async()=>{if(!cloudOn()){toast('Telegram-ի համար մուտք գործեք');return}const D=rpData();const {data}=await CLOUD.sb.auth.getSession();const token=data&&data.session&&data.session.access_token;
+    const txt=[`📊 ${D.title}`,D.per,'',...D.sum.map(([a,b])=>`${a}՝ ${b}`),'',...D.rows.slice(0,40).map(r=>'• '+r.filter(x=>x!==''&&x!=null).join(' · ')),D.rows.length>40?`… և ևս ${D.rows.length-40}`:''].join('\n');
+    try{const r=await fetch(ARC_URL,{method:'POST',body:new URLSearchParams({token,text:txt})});const j=await r.json().catch(()=>({}));toast(r.ok&&j.ok?'Ուղարկվեց Telegram ✓':'Չհաջողվեց ('+(j.err||r.status)+')')}catch(e){toast('Չհաջողվեց՝ ինտերնետ')}};
+  $('rpCsv').onclick=()=>{const D=rpData();const csv='﻿'+D.csv.map(r=>r.map(v=>{v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(';')).join('\r\n');
+    saveBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),`SmartEye-${RP.k}-${today()}.csv`)}}
+async function reportPdf(){const D=rpData();const doc=await pdfBase();let y=pdfHead(doc,D.title,D.per,'Կազմված է '+dfmt(today()));
+  const {dark,W,M}=PD;doc.setFontSize(9.5);D.sum.forEach(([a,b],i)=>{const x=M+(i%3)*((W-2*M)/3);if(i&&i%3===0)y+=6;doc.setFont('Arm','normal');doc.setTextColor(...PD.grey);doc.text(a+'՝',x,y);doc.setFont('Arm','bold');doc.setTextColor(...dark);doc.text(String(b),x+doc.getTextWidth(a+'՝ ')+1,y)});
+  y+=10;if(D.rows.length)pdfTable(doc,y,D.cols,D.rows);else{doc.setFont('Arm','normal');doc.text('Տվյալներ չկան',M,y)}
+  pdfFoot(doc);if(PRINT_MODE)doc.autoPrint();return {blob:doc.output('blob'),name:`SmartEye-hashvetvutyun-${RP.k}-${today()}.pdf`}}
 
 
-
+/* ---------- Old quotes → Telegram archive ---------- */
+const ARC_URL='https://smarteye.am/pm-archive.php';
+let ARC=Object.assign({mode:'tg',days:10},LS.get('arc',{}));
+function arcUI(){const m=$('arcMode'),d=$('arcDays');if(!m)return;m.value=ARC.mode;d.value=ARC.days;
+  m.onchange=d.oninput=()=>{ARC={mode:m.value,days:Math.max(1,+d.value||10)};LS.set('arc',ARC);pushSettingsSoon()}}
+async function markQuoteDone(){if(!editId)return;const h=hist.find(x=>x.id===editId);
+  try{if(h){h.data=Object.assign({},h.data,{done:true});if(cloudOn()&&!String(h.id).startsWith('L')){await CLOUD.sb.from('quotes').update({data:h.data}).eq('id',h.id)}
+    else LS.set('quotes',LS.get('quotes',[]).map(x=>x.id===h.id?Object.assign(x,{data:h.data}):x))}}catch(e){}}
+function arcText(h){const d=h.data||{},L=d.lines||[];const dt=dfmt(h.created_at);
+  return [`🗄 Արխիվ · չկատարված գնահաշվարկ`,`👤 ${h.client||'Առանց անվան'}${d.ig?' · @'+String(d.ig).replace(/^@/,''):''}`,`📅 ${dt} · 💰 ${fmt(h.total||0)}${d.disc?' (զեղչ '+d.disc+'%)':''}`,'',
+    ...L.map(l=>`• ${l.n}${l.q?' × '+l.q:''}${l.p!=null?' = '+fmt((+l.q||1)*(+l.p||0)):''}`),'',`ID ${h.id}`].join('\n')}
+async function arcSweep(){if(ARC.mode==='off'||!hist.length)return;const day=today();if(LS.get('arcDay','')===day)return;
+  const lim=Date.now()-ARC.days*864e5;const old=hist.filter(h=>!(h.data&&h.data.done)&&new Date(h.created_at).getTime()<lim&&h.id!==editId);if(!old.length){LS.set('arcDay',day);return}
+  let token='';if(ARC.mode==='tg'){if(!cloudOn())return;const {data}=await CLOUD.sb.auth.getSession();token=data&&data.session&&data.session.access_token;if(!token)return}
+  let n=0;for(const h of old){
+    if(ARC.mode==='tg'){try{const r=await fetch(ARC_URL,{method:'POST',body:new URLSearchParams({token,text:arcText(h)})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok){toast('Telegram արխիվը չաշխատեց ('+(j.err||r.status)+')՝ ոչինչ չջնջվեց');return}}catch(e){return}}
+    try{if(cloudOn()&&!String(h.id).startsWith('L')){const {error}=await CLOUD.sb.from('quotes').delete().eq('id',h.id);if(error)throw error}else LS.set('quotes',LS.get('quotes',[]).filter(x=>x.id!==h.id));
+      hist=hist.filter(x=>x.id!==h.id);n++}catch(e){cloudErr(e,'arc');break}}
+  LS.set('arcDay',day);if(n){drawHistory();toast(`${n} հին գնահաշվարկ ${ARC.mode==='tg'?'ուղարկվեց Telegram արխիվ և ':''}ջնջվեց`)}}
+/* ---------- App lock: PIN + fingerprint / Face ID ---------- */
+let LOCK=LS.get('lock',null);   // {s:salt,h:hash,bio:'native'|'web'|'',cid:credId,after:min}
+let _lockIn='',_hiddenAt=0,_locked=false;
+const b64u=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const ub64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+async function pinHash(pin,salt){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin));return b64u(d)}
+async function bioKind(){try{if(NATIVE){const p=capPlugin('NativeBiometric');if(!p)return '';const r=await p.isAvailable({useFallback:false});return r&&r.isAvailable?'native':''}
+  if(location.protocol==='https:'&&window.PublicKeyCredential&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())return 'web'}catch(e){}return ''}
+async function bioVerify(){try{
+  if(LOCK.bio==='native'){await capPlugin('NativeBiometric').verifyIdentity({title:'Price Manager',reason:'Բացել Price Manager-ը',negativeButtonText:'PIN',maxAttempts:5});return true}
+  if(LOCK.bio==='web'&&LOCK.cid){await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:ub64(LOCK.cid)}],userVerification:'required',timeout:60000}});return true}
+}catch(e){}return false}
+async function bioRegister(kind){if(kind==='native'){try{await capPlugin('NativeBiometric').verifyIdentity({title:'Price Manager',reason:'Միացնել մատնահետքով / դեմքով բացելը',negativeButtonText:'Չեղարկել'});return {bio:'native'}}catch(e){return null}}
+  try{const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'SmartEye Price Manager'},
+    user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'smarteye-pm',displayName:'SmartEye Price Manager'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000}});
+    return {bio:'web',cid:b64u(c.rawId)}}catch(e){return null}}
+function lockDots(){$('lkDots').innerHTML=Array.from({length:Math.max(4,_lockIn.length)},(_,i)=>`<i class="${i<_lockIn.length?'on':''}"></i>`).join('')}
+function lockShow(){if(!LOCK||_locked)return;_locked=true;document.documentElement.classList.add('locked');_lockIn='';const L=$('lock');L.style.display='flex';$('lkMsg').textContent='Մուտքագրեք PIN-ը';lockDots();
+  $('lkBio').style.visibility=LOCK.bio?'visible':'hidden';if(LOCK.bio)setTimeout(lockBio,350)}
+function lockOpen(){_locked=false;_lockIn='';$('lock').style.display='none';document.documentElement.classList.remove('locked')}
+async function lockBio(){if(await bioVerify())lockOpen()}
+async function lockKey(k){if(k==='del'){_lockIn=_lockIn.slice(0,-1);lockDots();return}if(_lockIn.length>=6)return;_lockIn+=k;lockDots();
+  if(_lockIn.length>=4&&await pinHash(_lockIn,LOCK.s)===LOCK.h){lockOpen();return}
+  if(_lockIn.length>=6||(_lockIn.length===(LOCK.n||4))){const m=$('lkMsg');m.textContent='Սխալ PIN';$('lkDots').classList.add('shake');setTimeout(()=>{$('lkDots').classList.remove('shake');_lockIn='';lockDots();m.textContent='Մուտքագրեք PIN-ը'},500)}}
+function lockInit(){const L=$('lock');if(!L)return;
+  L.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lockKey(b.dataset.k));$('lkBio').onclick=lockBio;
+  document.addEventListener('keydown',e=>{if(!_locked)return;if(/^\d$/.test(e.key))lockKey(e.key);else if(e.key==='Backspace')lockKey('del')});
+  $('lkForgot').onclick=e=>{e.preventDefault();if(!window.SE_CONFIG||!CLOUD.sb){toast('PIN-ը վերականգնելու համար անհրաժեշտ է ինտերնետ');return}
+    if(!confirm('PIN-ը կջնջվի։ Պետք է նորից մուտք գործեք Ձեր էլ. փոստով և գաղտնաբառով։ Շարունակե՞լ'))return;
+    LS.set('lockReset',1);$('lOffline').style.display='none';_locked=false;L.style.display='none';CLOUD.sb.auth.signOut().catch(()=>{});showLogin()};
+  document.addEventListener('visibilitychange',()=>{if(!LOCK)return;if(document.hidden)_hiddenAt=Date.now();else if(_hiddenAt&&Date.now()-_hiddenAt>(LOCK.after??2)*6e4)lockShow()});
+  if(LS.get('lockReset',0)){$('lOffline').style.display='none'}
+  if(LOCK)lockShow();lockUI()}
+async function lockUI(){const B=$('lockSet');if(!B)return;const kind=await bioKind();
+  B.innerHTML=LOCK?`<div class="kv"><span>Կողպեք</span><b class="wr-ok">✅ միացված է (PIN${LOCK.bio?' + '+(LOCK.bio==='native'?'մատնահետք':'Face ID / մատնահետք'):''})</b></div>
+     <label>Կողպել, երբ ծրագիրը փակ է եղել<select id="lkAfter"><option value="0">միշտ</option><option value="1">1 րոպե</option><option value="2">2 րոպե</option><option value="5">5 րոպե</option><option value="15">15 րոպե</option><option value="60">1 ժամ</option></select></label>
+     ${kind&&!LOCK.bio?'<button type="button" class="btn ghost" id="lkBioOn">👆 Միացնել մատնահետք / Face ID</button>':''}${LOCK.bio?'<button type="button" class="btn ghost" id="lkBioOff">Անջատել մատնահետք / Face ID</button>':''}
+     <div class="grid2"><button type="button" class="btn ghost" id="lkChg">🔢 Փոխել PIN-ը</button><button type="button" class="btn ghost" id="lkOff" style="color:var(--bad)">Անջատել կողպեքը</button></div>`
+   :`<p class="note" style="margin-top:0">Ծրագիրը բացելիս կհարցնի PIN${kind?' կամ մատնահետք / Face ID':''}։</p><button type="button" class="btn" id="lkOn">🔒 Միացնել կողպեքը</button>`;
+  const q=id=>$(id);
+  if(q('lkAfter')){q('lkAfter').value=String(LOCK.after??2);q('lkAfter').onchange=()=>{LOCK.after=+q('lkAfter').value;LS.set('lock',LOCK)}}
+  const setPin=async()=>{const a=prompt('Նոր PIN (4–6 թվանշան)');if(a===null)return false;if(!/^\d{4,6}$/.test(a)){toast('PIN-ը պետք է լինի 4–6 թվանշան');return false}
+    const b=prompt('Կրկնեք PIN-ը');if(b!==a){toast('PIN-երը չեն համընկնում');return false}
+    const s=b64u(crypto.getRandomValues(new Uint8Array(16)));LOCK=Object.assign(LOCK||{after:2,bio:''},{s,h:await pinHash(a,s),n:a.length});LS.set('lock',LOCK);return true};
+  if(q('lkOn'))q('lkOn').onclick=async()=>{if(!await setPin())return;if(kind&&confirm('Միացնե՞լ նաև մատնահետքով / Face ID-ով բացելը')){const r=await bioRegister(kind);if(r){Object.assign(LOCK,r);LS.set('lock',LOCK)}}toast('Կողպեքը միացված է 🔒');lockUI()};
+  if(q('lkChg'))q('lkChg').onclick=async()=>{if(await setPin()){toast('PIN-ը փոխվեց ✓');lockUI()}};
+  if(q('lkOff'))q('lkOff').onclick=async()=>{const a=prompt('Մուտքագրեք ընթացիկ PIN-ը');if(a===null)return;if(await pinHash(a,LOCK.s)!==LOCK.h){toast('Սխալ PIN');return}LOCK=null;LS.set('lock',null);toast('Կողպեքն անջատված է');lockUI()};
+  if(q('lkBioOn'))q('lkBioOn').onclick=async()=>{const r=await bioRegister(kind);if(!r){toast('Չհաջողվեց');return}Object.assign(LOCK,r);LS.set('lock',LOCK);toast('Միացված է ✓');lockUI()};
+  if(q('lkBioOff'))q('lkBioOff').onclick=()=>{LOCK.bio='';delete LOCK.cid;LS.set('lock',LOCK);lockUI()}}
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
@@ -2561,9 +2774,10 @@ async function printWith(make){toast('Պատրաստվում է տպելու…'
     f.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';f.src=url;document.body.appendChild(f);
     f.onload=()=>{setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){window.open(url,'_blank')}},400)};
   }catch(e){if(!(e&&e.name==='AbortError'))toast('Չհաջողվեց ('+(e&&(e.message||e.name)||'error')+')')}}
+reqUI();arcUI();lockInit();
 $('printQ').onclick=()=>{if(!quoteLines().length){toast('Գնահաշվարկը դատարկ է');return}printWith(makePdf)};
 /* quote → sale: one click, takes products from stock by model */
-$('toSale').onclick=()=>{
+$('toSale').onclick=()=>{markQuoteDone();
   const L=quoteLines();if(!L.length){toast('Գնահաշվարկը դատարկ է');return}
   slDraft=null;slStart();const D=slDraft;D.client=$('client').value.trim();
   const c=clients.find(x=>norm(x.name)===norm(D.client));if(c){D.cid=c.id;D.phone=c.phone||'';D.addr=c.addr||''}

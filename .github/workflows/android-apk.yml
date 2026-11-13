@@ -44,7 +44,7 @@ jobs:
           rm -f www/.htaccess
           cp node_modules/@capacitor/core/dist/capacitor.js www/vendor/capacitor.js
           # load Capacitor core before the app scripts
-          sed -i 's#<script src="vendor/xlsx.full.min.js"></script>#<script src="vendor/capacitor.js"></script>\n<script src="vendor/xlsx.full.min.js"></script>#' www/index.html
+          sed -i 's#<script src="vendor/supabase.js"></script>#<script src="vendor/capacitor.js"></script>\n<script src="vendor/supabase.js"></script>#' www/index.html
           grep -q 'vendor/capacitor.js' www/index.html
 
       - name: Create Android project
