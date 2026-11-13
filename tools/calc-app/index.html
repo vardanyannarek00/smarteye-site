@@ -113,6 +113,7 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 .cbs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.cb{font-size:11px;font-weight:600;padding:1px 7px;border-radius:7px;background:var(--btn2,#eef1f6);color:var(--txt);white-space:nowrap}
 .cb.t-ip{background:#e3efff;color:#1f5fc4}.cb.t-an{background:#fff1dc;color:#a35a00}.cb.t-wf{background:#efe6ff;color:#6a3fc9}.cb.p-out{background:#e2f6ea;color:#17803d}.cb.p-in{background:#f0f0f3;color:#555b66}.cb.p-both{background:#e9f4f1;color:#2f6f5e}
 @media(prefers-color-scheme:dark){.cb{background:#ffffff14;color:var(--txt)}.cb.t-ip{background:#1f5fc433;color:#8db8ff}.cb.t-an{background:#a35a0033;color:#ffc27a}.cb.t-wf{background:#6a3fc933;color:#c6a9ff}.cb.p-out{background:#17803d33;color:#7fe0a3}}
+.grp-h{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:14px 2px 4px;padding-bottom:4px;border-bottom:1px solid var(--line)}
 .camf{margin-top:6px}.camf:empty{display:none}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -903,6 +904,12 @@ function camBadges(it){const a=camAttr(it);if(!a.cam&&!a.rec)return '';const b=[
   if(a.place)b.push(`<span class="cb p-${a.place}">${PLACE_L[a.place]}</span>`);
   if(a.form)b.push(`<span class="cb">${a.form}</span>`);if(a.mp)b.push(`<span class="cb">${a.mp}</span>`);
   return b.length?`<div class="cbs">${b.join('')}</div>`:''}
+
+const GRP=[['📡 IP տեսախցիկներ'],['📼 Անալոգ տեսախցիկներ'],['📶 Wi-Fi տեսախցիկներ'],['📷 Այլ տեսախցիկներ'],['🗄️ IP գրանցիչներ (NVR)'],['📼 Անալոգ գրանցիչներ (DVR)'],['📦 Այլ ապրանքներ']];
+function grpOf(it){const a=camAttr(it);if(a.cam)return a.tech==='IP'?0:a.tech==='Անալոգ'?1:a.tech==='Wi-Fi'?2:3;if(a.rec)return a.tech==='Անալոգ'?5:4;return 6}
+function grouped(items){return items.map((it,i)=>({it,i,g:grpOf(it)})).sort((a,b)=>a.g-b.g||a.i-b.i)}
+function putGrouped(box,items,mk){let last=-1;const G=grouped(items);const many=new Set(G.map(x=>x.g)).size>1;
+  G.forEach(({it,g})=>{if(many&&g!==last){last=g;const h=document.createElement('div');h.className='grp-h';h.textContent=`${GRP[g][0]} · ${G.filter(x=>x.g===g).length}`;box.appendChild(h)}box.appendChild(mk(it))})}
 let camF=LS.get('camF',{t:'',p:''});
 function camPass(it){if(!camF.t&&!camF.p)return true;const a=camAttr(it);if(!a.cam&&!a.rec)return false;
   if(camF.t&&a.tech!==camF.t)return false;if(camF.p){if(!a.cam)return false;if(camF.p==='out'&&!(a.place==='out'||a.place==='both'))return false;if(camF.p==='in'&&!(a.place==='in'||a.place==='both'))return false}return true}
@@ -923,12 +930,12 @@ function renderQTypes(){
 function renderResults(){
   renderQTypes();renderCamF($('camF'));
   const q=norm($('search').value), box=$('results');box.innerHTML='';
-  if(!q&&(qType||camF.t||camF.p)){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it)).sort((a,b)=>a.p-b.p).slice(0,80);if(!hits.length)box.innerHTML='<div class="note">Այս ֆիլտրով ապրանք չկա</div>';hits.forEach(it=>box.appendChild(resRow(it)));return}
+  if(!q&&(qType||camF.t||camF.p)){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it)).sort((a,b)=>a.p-b.p).slice(0,80);if(!hits.length)box.innerHTML='<div class="note">Այս ֆիլտրով ապրանք չկա</div>';putGrouped(box,hits,resRow);return}
   if(!q){box.innerHTML='<div class="note">Գրեք մոդել կամ բառեր, օր․ «1043», «hybrid 4mp», «colorvu dome», «hdd 4tb», «nvr 8 poe»</div>';return}
   const hits=searchCatalog(q).filter(it=>(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it));
   if(!hits.length){box.innerHTML='<div class="note">Չի գտնվել։ Փորձեք այլ բառ կամ մոդելի մի մասը (օր․ 1043)</div>';return}
   if(hits.fuzzy){const n=document.createElement('div');n.className='note';n.style.marginTop='0';n.textContent='Ճշգրիտ համընկնում չկա, մոտ արդյունքներ․';box.appendChild(n)}
-  hits.forEach(it=>box.appendChild(resRow(it)));
+  putGrouped(box,hits,resRow);
 }
 $('search').oninput=()=>{renderResults();cartBar()};
 $('cartBar').onclick=()=>{$('search').value='';renderResults();cartBar();$('cart').scrollIntoView({behavior:'smooth',block:'start'})};
@@ -2027,7 +2034,7 @@ function renderProd(){
   $('pCount').textContent=catalog.length?`${items.length} ապրանք`:'';
   const box=$('pList');box.innerHTML='';
   if(!catalog.length){box.innerHTML='<div class="note">Բազան դատարկ է։ Վերևում կցեք մատակարարի գնացուցակը կամ ավելացրեք ապրանք ձեռքով։</div>'}
-  items.slice(0,pLimit).forEach(it=>box.appendChild(prodRow(it)));
+  items=grouped(items).map(x=>x.it);putGrouped(box,items.slice(0,pLimit),prodRow);
   $('pMore').style.display=items.length>pLimit?'block':'none';
   $('pMore').textContent=`Ցույց տալ ավելին (${items.length-pLimit})`;
 }
