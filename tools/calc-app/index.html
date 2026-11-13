@@ -97,6 +97,12 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 .ord{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.ord .n{flex:1;min-width:0}.ord .n b{display:block}.ord .n small{display:block;color:var(--mut);margin-top:2px;overflow-wrap:anywhere}.ord .n a{color:inherit}
 .ord-ck{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:none;color:#fff;font-weight:700;flex:none;cursor:pointer}.ord.done .ord-ck{background:var(--ok);border-color:var(--ok)}.ord.done .n b{text-decoration:line-through;color:var(--mut)}
 .ord.late .n b{color:var(--bad)}.ord-t{background:var(--sel,#e6eefc);color:var(--acc2);border-radius:6px;padding:1px 6px;font-size:13px}
+.set-hide{display:none!important}
+.set-menu{padding:4px 14px}.set-row{display:flex;align-items:center;gap:12px;width:100%;padding:13px 2px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--txt);font-family:inherit;text-align:left;cursor:pointer}.set-row:last-child{border-bottom:0}
+.set-row:active{background:var(--sel)}.set-ic{width:34px;height:34px;border-radius:9px;background:var(--sel);display:grid;place-items:center;font-size:18px;flex:none}.set-t{flex:1;min-width:0}.set-t b{display:block;font-size:15px;font-weight:600}.set-t small{display:block;color:var(--mut);font-size:12.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.set-ch{color:var(--mut);font-size:22px;line-height:1}
+.set-back{background:none;border:0;color:var(--acc2);font-family:inherit;font-size:16px;font-weight:600;padding:2px 0 10px;cursor:pointer;text-align:left;grid-column:1/-1}
+#v-set.view.on{grid-template-columns:minmax(0,760px)!important}
+.cbtn{position:relative;font-family:inherit;color:var(--txt);cursor:pointer;width:100%}.cbtn i{position:absolute;right:6px;top:4px;font-style:normal;color:var(--mut);font-size:14px}.cbtn.on{border-color:var(--acc2);background:var(--sel)}.cbtn:active{transform:scale(.97)}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
 .lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
@@ -2060,11 +2066,13 @@ function renderClients(){
   const st=clients.map(c=>({c,s:cliStatus(c)}));
   const totDebt=clients.reduce((a,c)=>a+debtOf(c),0),nDebt=clients.filter(c=>debtOf(c)>0).length;
   const nFree=st.filter(x=>x.s.cls==='ok'||x.s.cls==='warn').length,nSoon=st.filter(x=>x.s.cls==='warn').length;
-  $('cliStats').innerHTML=`<div class="cstat"><b>${clients.length}</b><small>հաճախորդ</small></div><div class="cstat"><b>${clients.reduce((a,c)=>a+camsOf(c),0)}</b><small>տեսախցիկ տեղադրված</small></div><div class="cstat"><b>${nFree}</b><small>անվճար սպասարկման մեջ</small></div><div class="cstat"><b style="color:${totDebt?'var(--bad)':'inherit'};font-size:${totDebt>=100000?12.5:16}px;white-space:nowrap;line-height:24px">${totDebt?fmt(totDebt):'0'}</b><small>պարտք</small></div>`;
-  const ch=$('cliChips');ch.innerHTML='';[['','Բոլորը'],['free','🟢 Անվճար'],['soon',`🟠 Շուտով ավարտվում է${nSoon?' · '+nSoon:''}`],['paid','⚪ Վճարովի'],['debt',`🔴 Պարտք${nDebt?' · '+nDebt:''}`]].forEach(([f,l])=>{const b=document.createElement('button');b.type='button';b.className='chip'+(cliFilter===f?' on':'');b.textContent=l;b.onclick=()=>{cliFilter=f;LS.set('cliFilter',f);renderClients()};ch.appendChild(b)});
-  const list=st.filter(({c,s})=>(!cliFilter||(cliFilter==='free'&&(s.cls==='ok'||s.cls==='warn'))||(cliFilter==='soon'&&s.cls==='warn')||(cliFilter==='paid'&&s.cls==='off')||(cliFilter==='debt'&&debtOf(c)>0))
+  const SB=(f,v,l,st)=>`<button type="button" class="cstat cbtn${cliFilter===f?' on':''}" data-f="${f}"><b${st?` style="${st}"`:''}>${v}</b><small>${l}</small><i>›</i></button>`;
+  $('cliStats').innerHTML=SB('',clients.length,'հաճախորդ')+SB('cams',clients.reduce((a,c)=>a+camsOf(c),0),'տեսախցիկ տեղադրված')+SB('free',nFree,'անվճար սպասարկման մեջ')+SB('debt',totDebt?fmt(totDebt):'0','պարտք',`color:${totDebt?'var(--bad)':'inherit'};font-size:${totDebt>=100000?12.5:16}px;white-space:nowrap;line-height:24px`);
+  $('cliStats').querySelectorAll('.cbtn').forEach(x=>x.onclick=()=>{cliFilter=x.dataset.f;LS.set('cliFilter',cliFilter);renderClients();const L=$('cliChips');L&&window.scrollTo({top:L.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'})});
+  const ch=$('cliChips');ch.innerHTML='';[['','Բոլորը'],['free','🟢 Անվճար'],['soon',`🟠 Շուտով ավարտվում է${nSoon?' · '+nSoon:''}`],['paid','⚪ Վճարովի'],['cams','📹 Տեսախցիկներով'],['debt',`🔴 Պարտք${nDebt?' · '+nDebt:''}`]].forEach(([f,l])=>{const b=document.createElement('button');b.type='button';b.className='chip'+(cliFilter===f?' on':'');b.textContent=l;b.onclick=()=>{cliFilter=f;LS.set('cliFilter',f);renderClients()};ch.appendChild(b)});
+  const list=st.filter(({c,s})=>(!cliFilter||(cliFilter==='free'&&(s.cls==='ok'||s.cls==='warn'))||(cliFilter==='soon'&&s.cls==='warn')||(cliFilter==='paid'&&s.cls==='off')||(cliFilter==='debt'&&debtOf(c)>0)||(cliFilter==='cams'&&camsOf(c)>0))
     &&(!q||norm([c.name,c.phone,c.addr,c.note,...(c.inst||[]).map(i=>i.items+' '+i.work+' '+(i.sn||'')),...(c.visits||[]).map(v=>v.work)].join(' ')).includes(q)))
-    .sort((a,b)=>String(b.c.updated||'').localeCompare(String(a.c.updated||'')));
+    .sort((a,b)=>cliFilter==='cams'?camsOf(b.c)-camsOf(a.c):cliFilter==='debt'?debtOf(b.c)-debtOf(a.c):String(b.c.updated||'').localeCompare(String(a.c.updated||'')));
   const box=$('cliList');box.innerHTML='';
   if(!list.length)box.innerHTML=`<div class="note">${clients.length?'Չի գտնվել':'Դեռ հաճախորդ չկա։ Ավելացրեք «＋ Նոր հաճախորդ»-ով կամ գնահաշվարկից՝ «✅ Պատվերը ընդունվեց»։'}</div>`;
   list.forEach(({c,s})=>{const r=document.createElement('div');r.className='cli';const lv=(c.visits||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
@@ -2857,6 +2865,26 @@ $('toOrder').onclick=()=>{const L=quoteLines();const nm=$('client').value.trim()
   const t=calcQuote();const sum=Math.round((t&&t.tot)||0);
   const go=pre=>{location.hash='ord';setTimeout(()=>{show('ord');ordForm(null,pre)},60)};go({client:nm,phone:c?c.phone||'':'',addr:c?c.addr||'':'',cid:c?c.id:'',sum,note:L.filter(l=>l.kind==='prod').map(l=>`${String(l.n).split(' — ')[0]} × ${l.q}`).join(', ').slice(0,300),date:isoL(new Date(Date.now()+864e5))})};
 ordBadge();if(NATIVE){try{const LN=capPlugin('LocalNotifications');LN&&LN.addListener&&LN.addListener('localNotificationActionPerformed',()=>{location.hash='ord';ordTab='td';show('ord')})}catch(e){}}
+
+/* ---------- Settings as an iPhone-style list ---------- */
+let setSub=null;
+function setMenu(){const V=$('v-set');let M=$('setMenu');const cards=[...V.children].filter(c=>c.classList.contains('card')&&c.id!=='setMenu');
+  if(!M){M=document.createElement('div');M.id='setMenu';M.className='card set-menu';V.insertBefore(M,V.firstChild);
+    const bk=document.createElement('button');bk.type='button';bk.id='setBack';bk.className='set-back';bk.textContent='‹ Կարգավորումներ';bk.onclick=()=>setClose();V.insertBefore(bk,M.nextSibling)}
+  const ICON={'Հաշիվ':'☁️','Աշխատանքների':'💲','Գնահաշվարկի':'✍️'};
+  M.innerHTML='';cards.forEach((c,i)=>{if(c.style.display==='none')return;const h=c.querySelector('h2');if(!h)return;
+    let t=h.textContent.trim();let ic=(t.match(/^\p{Extended_Pictographic}️?/u)||[''])[0];t=t.slice(ic.length).trim();
+    let sub='';const m=t.match(/^(.*?)\s*\((.*)\)$/);if(m){t=m[1];sub=m[2].length>2?m[2]:''}
+    if(!ic)ic=Object.entries(ICON).find(([k])=>t.startsWith(k))?.[1]||'⚙️';if(!sub&&t.startsWith('Գնահաշվարկի'))sub='և ակցիայի տեքստը PDF-ում';if(!sub&&t.startsWith('Հաշիվ'))sub=CLOUD&&CLOUD.user?'մուտք է գործված':'';
+    if(t==='Գործիքներ')sub='HDD արխիվ, PoE և այլն';
+    const r=document.createElement('button');r.type='button';r.className='set-row';r.innerHTML=`<span class="set-ic">${ic}</span><span class="set-t"><b>${esc(t)}</b>${sub?`<small>${esc(sub)}</small>`:''}</span><span class="set-ch">›</span>`;
+    r.onclick=()=>setOpen(i);M.appendChild(r)});
+  setApply(cards)}
+function setApply(cards){cards=cards||[...$('v-set').children].filter(c=>c.classList.contains('card')&&c.id!=='setMenu');
+  $('setMenu').classList.toggle('set-hide',setSub!=null);$('setBack').style.display=setSub!=null?'':'none';
+  cards.forEach((c,i)=>c.classList.toggle('set-hide',setSub!==i))}
+function setOpen(i){setSub=i;setApply();window.scrollTo(0,0)}
+function setClose(){setSub=null;setMenu();window.scrollTo(0,0)}
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
@@ -2899,6 +2927,7 @@ function show(v){
   if(v==='cli')renderClients();
   if(v==='stock')stkRender();
   if(v==='ord')ordRender();
+  if(v==='set'){setSub=null;setMenu()}
   document.querySelectorAll('nav button').forEach(b=>{if(v==='tools'&&b.dataset.v==='set')b.classList.add('on')});
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   window.scrollTo(0,0);
@@ -2907,6 +2936,7 @@ function show(v){
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.v==='quote'?'':b.dataset.v;show(b.dataset.v)});
 window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
 $('backBtn').onclick=()=>{
+  if($('v-set').classList.contains('on')&&setSub!=null){setClose();return}
   if($('v-cli').classList.contains('on')&&$('cliCard').style.display!=='none'){$('cliCard').style.display='none';cliOpen=null;window.scrollTo({top:0,behavior:'smooth'});return}
   location.hash='';show('quote')};
 /* ---------- floating scroll buttons: up / to total / down ---------- */
