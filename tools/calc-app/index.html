@@ -405,7 +405,7 @@ nav .lf{display:none}nav .ls{display:block}
       <label class="note" id="mergeRow" style="display:none;align-items:center;gap:8px"><input type="checkbox" id="m_merge" style="width:auto"> Ավելացնել/թարմացնել (եղած ապրանքները չջնջել)</label>
       <div class="note">Յուրաքանչյուր խանութի համար՝ իր անունը (օր․ AMS, GSC)։ Նույն Hikvision ապրանքը երկու խանութից կերևա երկու տողով՝ իր գնով։</div>
       <div class="grid2" style="margin-top:10px">
-        <div class="f"><label>Փոխարժեք (եթե գինը $ է)</label><input type="number" id="m_rate" inputmode="decimal" value="1" step="any"></div>
+        <div class="f"><label>Փոխարժեք (եթե գինը $ է)</label><div style="display:flex;gap:6px"><input type="number" id="m_rate" inputmode="decimal" value="1" step="any" style="flex:1;min-width:0"><button type="button" class="btn ghost sm" id="m_rateGet" title="Այսօրվա դոլարի կուրսը rate.am-ից">↻ rate.am</button></div><small id="m_rateSrc" style="color:var(--mut);font-size:11px"></small></div>
         <div class="f"><label>Իմ հավելավճարը %</label><input type="number" id="m_mk" inputmode="decimal" value="0" step="any"></div>
       </div>
       <div class="note">Եթե գինը դրամով է, փոխարժեքը թողեք 1։ Վերջնական գինը = գնացուցակի գին × փոխարժեք + հավելավճար %։</div>
@@ -1273,7 +1273,7 @@ function guessRate(){
   const hi=+$('m_head').value, pi=+$('m_price').value;
   const v=rows.slice(hi+1).map(r=>parsePrice(r[pi])).filter(x=>x>0).sort((a,b)=>a-b);
   if(!v.length)return; const med=v[v.length>>1];
-  if(med>=2000){$('m_rate').value=1}else if((+$('m_rate').value||1)===1){$('m_rate').value=LS.get('usdRate',390)}
+  if(med>=2000){$('m_rate').value=1;$('m_rateSrc').textContent=''}else if((+$('m_rate').value||1)===1){$('m_rate').value=LS.get('usdRate',390);usdRateFetch(true)}
   preview();
 }
 $('m_rate').addEventListener('input',()=>{if(+$('m_rate').value>1){LS.set('usdRate',+$('m_rate').value);pushSettingsSoon()}});
@@ -2965,6 +2965,16 @@ function moreOpen(){const L=$('moreList');L.innerHTML=MORE.map(([g,rows],gi)=>`<
 function moreClose(){document.body.classList.remove('sheet-on');const S=$('moreSheet');S.classList.remove('open');setTimeout(()=>S.style.display='none',200)}
 $('moreBtn').onclick=()=>{$('moreSheet').classList.contains('open')?moreClose():moreOpen()};
 document.querySelector('#moreSheet .sheet-bg').onclick=moreClose;
+
+/* ---------- USD rate: rate.am (fallback: Central Bank) via smarteye.am/pm-rate.php ---------- */
+async function usdRateFetch(auto){const src=$('m_rateSrc');const old=LS.get('usdRateInfo',null);
+  if(auto&&old&&Date.now()-old.t<6*36e5&&old.rate){$('m_rate').value=old.rate;src.textContent=`${old.src} · ${new Date(old.t).toLocaleDateString('ru-RU')}`;preview();return}
+  src.textContent='Բեռնվում է կուրսը…';
+  try{const r=await fetch('https://smarteye.am/pm-rate.php'+(auto?'':'?fresh=1'),{cache:'no-store'});const j=await r.json();if(!j.ok)throw 0;
+    const info={rate:j.rate,src:j.src,t:Date.now(),cba:j.cba,best:j.bestSell};LS.set('usdRateInfo',info);LS.set('usdRate',j.rate);pushSettingsSoon();
+    $('m_rate').value=j.rate;src.textContent=`${j.src}${j.cba&&j.src.indexOf('ԿԲ')<0?' · ԿԲ '+j.cba:''}${j.bestSell?' · ամենաէժանը '+j.bestSell:''}`;preview();if(!auto)toast('$1 = '+j.rate+' ֏')}
+  catch(e){src.textContent='Կուրսը չբեռնվեց (ինտերնետ)՝ օգտագործվում է վերջինը՝ '+LS.get('usdRate',390);}}
+$('m_rateGet').onclick=()=>usdRateFetch(false);
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
