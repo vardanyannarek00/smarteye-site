@@ -1107,6 +1107,7 @@ def build():
     shutil.copy(os.path.join(os.path.dirname(__file__), "send.php"), os.path.join(OUT, "send.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "pm-archive.php"), os.path.join(OUT, "pm-archive.php"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "pm-rate.php"), os.path.join(OUT, "pm-rate.php"))
+    shutil.copy(os.path.join(os.path.dirname(__file__), "pm-leads.php"), os.path.join(OUT, "pm-leads.php"))
     shutil.copytree(os.path.join(os.path.dirname(os.path.abspath(__file__)), "brand"), os.path.join(OUT, "img", "brand"), dirs_exist_ok=True)
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye-presentation.pdf"), os.path.join(OUT, "smarteye-presentation.pdf"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "smarteye.css"), os.path.join(OUT, "css", "smarteye.css"))
@@ -1408,7 +1409,7 @@ def seo_files():
             f.write(f"  <url><loc>{loc}</loc><lastmod>{datetime.date.today().isoformat()}</lastmod></url>\n")
         f.write("</urlset>\n")
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
-        f.write("User-agent: *\nDisallow: /send.php\nDisallow: /pm-archive.php\nDisallow: /pm-rate.php\nDisallow: /tg-test.php\nDisallow: /calc/\nSitemap: https://smarteye.am/sitemap.xml\n")
+        f.write("User-agent: *\nDisallow: /send.php\nDisallow: /pm-archive.php\nDisallow: /pm-rate.php\nDisallow: /pm-leads.php\nDisallow: /tg-test.php\nDisallow: /calc/\nSitemap: https://smarteye.am/sitemap.xml\n")
     shutil.copy(os.path.join(os.path.dirname(__file__), "brand", "logo-icon.svg"), os.path.join(OUT, "img", "favicon.svg"))
     shutil.copy(os.path.join(os.path.dirname(__file__), "favicon.png"), os.path.join(OUT, "img", "favicon.png"))
 

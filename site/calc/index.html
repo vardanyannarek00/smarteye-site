@@ -120,6 +120,9 @@ html,body{max-width:100%;overflow-x:hidden}main{overflow-x:clip}.card{max-width:
 @media(max-width:999px){input,select,textarea{font-size:16px!important}}
 .msg-box{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px;background:var(--card)}.msg-box .chips{flex-wrap:wrap}.msg-tx{width:100%;font-size:14px;line-height:1.4}
 .msg-go{display:flex;flex-wrap:wrap;gap:6px}.msg-go .btn{margin:0;color:#fff;text-decoration:none;text-align:center;flex:1;min-width:80px}.msg-go .m-cp{color:var(--txt)}
+.ld{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.ld .n{flex:1;min-width:0}.ld .n b{display:block}.ld .n small{display:block;color:var(--mut);margin-top:2px;overflow-wrap:anywhere}.ld .ld-t{color:var(--txt);white-space:pre-wrap}
+.ld-b{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:150px}.ld-b .btn{margin:0;text-decoration:none}.ld.done{opacity:.55}.bdg2{background:var(--bad);color:#fff;border-radius:9px;font-size:12px;padding:1px 7px;vertical-align:middle}
+.today-box .tb-lead{background:#ffffff26;border-radius:9px;padding:6px 10px;font-weight:700}
 .sn-row{display:flex;gap:6px;align-items:center}.sn-row input{flex:1;min-width:0}.sn-cam{margin:0!important;flex:none;padding:6px 10px!important}
 .sn-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.sn-pick small{width:100%;color:var(--mut)}
 .dev .sn-row{grid-column:1/-1}
@@ -457,6 +460,7 @@ nav .lf{display:none}nav .ls{display:block}
 
 <!-- ============ ՀԱՃԱԽՈՐԴՆԵՐ ============ -->
 <section class="view" id="v-cli">
+  <div class="card" id="leadsBox" style="display:none"></div>
   <div class="card">
     <h2>👥 Հաճախորդներ և տեղադրումներ</h2>
     <div id="cliStats" class="cstats"></div>
@@ -2330,7 +2334,7 @@ async function pullAll(){
     if(local.length){const {count}=await sb.from('quotes').select('id',{count:'exact',head:true});
       if(!count){const {error}=await sb.from('quotes').insert(local.map(q=>({client:q.client,total:q.total,data:q.data,created_at:q.created_at,updated_at:q.updated_at})));if(!error)LS.set('quotes',[])}}
     await pullClients();
-    await stkPull();await tkPull();
+    await stkPull();await tkPull();leadsPull(true);
     cst('ok','Ամպ');
   }catch(e){cloudErr(e,'pull')}
   renderHistory();
@@ -2909,9 +2913,10 @@ function tkResync(){if(NATIVE)tasks.forEach(t=>tkNotify(t))}
 function ordBadge(){const n=tasks.filter(t=>t.st!=='done'&&t.date<=today()).length;const b=document.querySelector('nav button[data-v="ord"]');if(!b)return;
   let s=b.querySelector('.bdg');if(!s){s=document.createElement('span');s.className='bdg';b.appendChild(s)}s.textContent=n||'';s.style.display=n?'':'none';todayBox()}
 function todayBox(){const B=$('todayBox');if(!B)return;const td=today();const L=tasks.filter(t=>t.st!=='done'&&t.date<=td).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
-  if(!L.length){B.style.display='none';return}B.style.display='';
-  B.innerHTML=`<b>📅 Այսօր${L.some(t=>t.date<td)?' և ուշացած':''}՝ ${L.length}</b>`+L.slice(0,4).map(t=>`<div class="tb-r${t.date<td?' late':''}"><span>${t.date<td?dfmt(t.date):(t.time||'—')}</span><span>${esc(t.kind||'')}${t.client?' · '+esc(t.client):''}</span></div>`).join('')+(L.length>4?`<small>… և ևս ${L.length-4}</small>`:'');
-  B.onclick=()=>{location.hash='ord';ordTab='td';show('ord')}}
+  let nL=0;try{nL=LS.get('leads',[]).filter(l=>!l.done).length}catch(e){}
+  if(!L.length&&!nL){B.style.display='none';return}B.style.display='';
+  B.innerHTML=(nL?`<div class="tb-lead">📨 ${nL} նոր հայտ կայքից ›</div>`:'')+(L.length?`<b>📅 Այսօր${L.some(t=>t.date<td)?' և ուշացած':''}՝ ${L.length}</b>`:'')+L.slice(0,4).map(t=>`<div class="tb-r${t.date<td?' late':''}"><span>${t.date<td?dfmt(t.date):(t.time||'—')}</span><span>${esc(t.kind||'')}${t.client?' · '+esc(t.client):''}</span></div>`).join('')+(L.length>4?`<small>… և ևս ${L.length-4}</small>`:'');
+  B.onclick=e=>{if(e.target.closest('.tb-lead')){location.hash='cli';show('cli');return}location.hash='ord';ordTab='td';show('ord')}}
 function icsFor(t){const p=n=>String(n).padStart(2,'0');const z=d=>`${d.getUTCFullYear()}${p(d.getUTCMonth()+1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}00Z`;
   const e=s=>String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/[,;]/g,m=>'\\'+m);const d=t.date.replace(/-/g,'');
   const st=t.time?`DTSTART:${z(tkWhen(t))}\r\nDURATION:PT${Math.max(15,+t.dur||60)}M`:`DTSTART;VALUE=DATE:${d}`;
@@ -3063,6 +3068,31 @@ function clientMsgCtx(c){const s=cliStatus(c);const p=payOf(c);const last=(c.ins
   const task=tasks.filter(t=>t.st!=='done'&&(t.cid===c.id||norm(t.client)===norm(c.name))&&t.date>=today()).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')))[0];
   const brand=((last&&last.items)||'')+' '+((last&&last.devs||[]).map(d=>d.m).join(' '));
   return {name:c.name,phone:c.phone,debt:p.d,freeEnd:s.end,task,sale:last&&last.sale,app:/DS-|Hik|HiLook/i.test(brand)?'Hik-Connect':/IPC-A|IPC-S|IPC-C|IPC-F|Imou/i.test(brand)?'Imou Life':/IPC-H|HAC|Dahua|NVR\d|XVR/i.test(brand)?'DMSS':''}}
+/* ---------- 📨 Website requests → Price Manager ---------- */
+const LEADS_URL='https://smarteye.am/pm-leads.php';let leads=LS.get('leads',[]),leadsAll=false,_leadsT=0;
+async function pmToken(){if(!cloudOn())return '';const {data}=await CLOUD.sb.auth.getSession();return data&&data.session&&data.session.access_token||''}
+async function leadsPull(force){if(!cloudOn())return;if(!force&&Date.now()-_leadsT<120000)return;_leadsT=Date.now();
+  try{const token=await pmToken();if(!token)return;const r=await fetch(LEADS_URL,{method:'POST',body:new URLSearchParams({token})});const j=await r.json();if(!j.ok)return;
+    leads=j.leads||[];LS.set('leads',leads);leadsUI();todayBox()}catch(e){}}
+async function leadDone(l){l.done=true;LS.set('leads',leads);leadsUI();todayBox();try{const token=await pmToken();await fetch(LEADS_URL,{method:'POST',body:new URLSearchParams({token,done:l.id})})}catch(e){}}
+function leadsNew(){return (typeof leads!=='undefined'&&Array.isArray(leads)?leads:LS.get('leads',[])).filter(l=>!l.done)}
+todayBox();
+function leadsUI(){const B=$('leadsBox');if(!B)return;const L=leadsAll?leads.slice(0,40):leadsNew();
+  if(!leads.length){B.style.display='none';return}B.style.display='';
+  B.innerHTML=`<h2>📨 Հայտեր կայքից${leadsNew().length?` <span class="bdg2">${leadsNew().length}</span>`:''}</h2>${L.length?'':'<div class="note">Նոր հայտ չկա ✓</div>'}<div class="ld-list"></div>
+    <button type="button" class="btn ghost sm ld-all">${leadsAll?'Միայն նորերը':'Ցույց տալ մշակվածներն էլ'}</button>`;
+  B.querySelector('.ld-all').onclick=()=>{leadsAll=!leadsAll;leadsUI()};const box=B.querySelector('.ld-list');
+  L.forEach(l=>{const d=document.createElement('div');d.className='ld'+(l.done?' done':'');const dt=new Date(l.at);const ph=telDigits(l.phone||'');
+    d.innerHTML=`<div class="n"><b>${esc(l.name||'—')}</b><small>${dt.toLocaleDateString('ru-RU')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')} · ${esc(l.service||l.subject||(l.form==='contact'?'Նամակ':'Խորհրդատվություն'))}</small>
+      ${l.text?`<small class="ld-t">${esc(l.text)}</small>`:''}${l.loc?`<small>📍 <a href="${esc(l.loc)}" target="_blank" rel="noopener">Տեղադրություն քարտեզում</a></small>`:''}${l.photos?`<small>📷 ${l.photos} նկար՝ Telegram-ում</small>`:''}</div>
+      <div class="ld-b">${ph?`<a class="btn ghost sm" href="tel:+${ph}">📞</a><button type="button" class="btn ghost sm l-m">💬</button>`:''}${l.done?'':'<button type="button" class="btn sm l-o">➕ Պատվեր</button><button type="button" class="btn ghost sm l-d" title="Մշակված է">✓</button>'}</div>`;
+    const m=d.querySelector('.l-m');if(m)m.onclick=()=>msgPanel(d.querySelector('.n'),{name:l.name,phone:l.phone});
+    const dn=d.querySelector('.l-d');if(dn)dn.onclick=()=>leadDone(l);
+    const o=d.querySelector('.l-o');if(o)o.onclick=async()=>{let c=clients.find(x=>telDigits(x.phone||'')===ph&&ph)||clients.find(x=>norm(x.name)===norm(l.name));
+      if(!c){c={id:uid(),name:l.name||'Հաճախորդ',phone:l.phone||'',addr:'',note:[l.service,l.text].filter(Boolean).join(' · ').slice(0,300),inst:[],visits:[],created:new Date().toISOString()};await saveClient(c);renderClients()}
+      await leadDone(l);location.hash='ord';setTimeout(()=>{show('ord');ordForm(null,{kind:/տեսախց|տեսահսկ|cctv/i.test(l.service||'')?'Զննում / չափագրում':(l.service||'Զննում / չափագրում').slice(0,60),client:c.name,cid:c.id,phone:c.phone,addr:c.addr||'',note:(l.text||'').slice(0,300)+(l.loc?' · '+l.loc:''),date:isoL(new Date(Date.now()+864e5))})},60);
+      toast('Հաճախորդը ավելացվեց․ ընտրեք օրն ու ժամը')};
+    box.appendChild(d)})}
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
@@ -3105,6 +3135,7 @@ function show(v){
   if(v==='cli')renderClients();
   if(v==='stock')stkRender();
   if(v==='ord')ordRender();
+  if(v==='cli'||v==='quote')leadsPull();if(v==='cli')leadsUI();
   if(v==='set'){setSub=null;setMenu()}
   document.querySelectorAll('nav button').forEach(b=>{if(v==='tools'&&b.dataset.v==='set')b.classList.add('on')});
   document.querySelectorAll('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));

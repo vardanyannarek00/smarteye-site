@@ -2,6 +2,7 @@ User-agent: *
 Disallow: /send.php
 Disallow: /pm-archive.php
 Disallow: /pm-rate.php
+Disallow: /pm-leads.php
 Disallow: /tg-test.php
 Disallow: /calc/
 Sitemap: https://smarteye.am/sitemap.xml

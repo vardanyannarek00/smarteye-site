@@ -143,4 +143,9 @@ $sent = mail(
     '-f' . FROM_EMAIL
 );
 
+// Keep a copy for Price Manager (read by pm-leads.php after Supabase sign-in). Stored outside public_html.
+$lead = ['id' => bin2hex(random_bytes(6)), 'at' => date('c'), 'form' => $form, 'name' => $name, 'phone' => $phone,
+    'service' => $service, 'subject' => $subject, 'text' => $form === 'quote' ? $note : $message, 'loc' => $loc, 'photos' => min($nPhotos, 5)];
+@file_put_contents(__DIR__ . '/../smarteye-leads.jsonl', json_encode($lead, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+
 back(($sent || $tg) ? 'ok' : 'err');
