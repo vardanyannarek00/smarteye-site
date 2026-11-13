@@ -876,23 +876,23 @@ function resRow(it){
 }
 /* ---------- Camera attributes: IP / analog / Wi-Fi, outdoor / indoor, form, MP ---------- */
 function camAttr(it){if(it._ca!==undefined)return it._ca;
-  const ty=(it.ty||(it.ty=typeOf(it)))[0];const model=String(it.n).split(' — ')[0];const hay=[it.n,it.sp,it.c,it.k,it.b].filter(Boolean).join(' ');
+  const ty=(it.ty||(it.ty=typeOf(it)))[0];const parts=String(it.n).split(/ · | — /);const model=parts.find(x=>/[A-Z]{2,}[-\d]|DS-|IPC|HAC|NVR|XVR/.test(x)&&!/[ա-ֆԱ-Ֆ]/.test(x))||parts[0];const hay=[it.n,it.sp,it.c,it.k,it.b].filter(Boolean).join(' ');
   const isRec=/NVR|DVR|XVR/i.test(ty)||/\b(NVR|DVR|XVR)\b|DS-7[0-9]{3}|DS-9[0-9]{3}|iDS-7|\bNVR\d|\bXVR\d/i.test(model);
   const isCam=!isRec&&(/տեսախց|PTZ|Wi-Fi|Տեսախց/i.test(ty)||/DS-2C[DE]|DS-2[ADX][EF]|IPC-|HAC-|THC-|\bSD\d|camera|камер|տեսախց/i.test(model+' '+hay));
   const a={cam:isCam,rec:isRec,tech:'',place:'',form:'',mp:''};
   if(!isCam&&!isRec){it._ca=a;return a}
   if(isRec){a.tech=/\bNVR|DS-7[67]\d|DS-96|NVR\d/i.test(model+' '+ty)?'IP':/DVR|XVR|DS-72|iDS-72/i.test(model+' '+ty)?'Անալոգ':'';it._ca=a;return a}
   if(/wi-?fi|\b4G\b|imou|ezviz|wireless|անլար/i.test(hay)||/Wi-Fi/.test(ty))a.tech='Wi-Fi';
-  else if(/անալոգ|analog|turbo ?hd|hd-?tvi|hd-?cvi|\bAHD\b|\bTVI\b|DS-2CE|DS-2AE|\bHAC-|\bTHC-/i.test(hay)||/Անալոգ/.test(ty))a.tech='Անալոգ';
-  else if(/DS-2CD|DS-2DE|DS-2DF|DS-2XS|\bIPC-|\bIP(?![0-9])|IP տեսախց|network|PoE/i.test(hay)||/^IP/.test(ty))a.tech='IP';
+  else if(/անալոգ|analog|turbo ?hd|hd-?tvi|hd-?cvi|HDCVI|\bAHD\b|\bTVI\b|DS-2CE|DS-2AE|\bHAC-|\bTHC-/i.test(hay)||/Անալոգ/.test(ty))a.tech='Անալոգ';
+  else if(/DS-2CD|DS-2DE|DS-2DF|DS-2XS|\bIPC-|\bIP(?![0-9])|IP տեսախց|ցանցային|network|PoE/i.test(hay)||/^IP/.test(ty))a.tech='IP';
   // form factor
   let m;
-  if(/PTZ|speed ?dome|\bSD\d|DS-2DE|DS-2DF|DS-2AE|\bPT\b|pan.?tilt|cruiser/i.test(hay))a.form='PTZ';
+  if(/PTZ|speed ?dome|\bSD\d|DS-2DE|DS-2DF|DS-2AE|\bPT\b|pan.?tilt|cruiser|պտտվող/i.test(hay))a.form='PTZ';
   else if(/fish.?eye/i.test(hay))a.form='Fisheye';
   else if(/\bcube\b|կուբ/i.test(hay))a.form='Cube';
-  else if(/bullet|ցիլինդր|цилиндр/i.test(hay))a.form='Bullet';
-  else if(/turret|eyeball|турель/i.test(hay))a.form='Turret';
-  else if(/\bdome\b|կուպոլ|купол/i.test(hay))a.form='Dome';
+  else if(/bullet|ցիլինդր|գլանաձև|цилиндр/i.test(hay))a.form='Bullet';
+  else if(/turret|eyeball|турель|աչքաձև/i.test(hay))a.form='Turret';
+  else if(/\bdome\b|կուպոլ|գմբեթաձև|купол/i.test(hay))a.form='Dome';
   else if((m=model.match(/DS-2CD\d([0-9A-Z])/i))){a.form={'0':'Bullet','2':'Bullet','6':'Bullet','T':'Bullet','1':'Dome','7':'Dome','5':'Dome','D':'Dome','3':'Turret','4':'Cube'}[m[1].toUpperCase()]||''}
   else if((m=model.match(/DS-2CE(\d)/i))){a.form={'1':'Bullet','5':'Turret','7':'Turret'}[m[1]]||''}
   else if((m=model.match(/\b(?:IPC|HAC)-(HFW|HDBW|HDW|HDPW|PFW|EW)/i))){a.form={HFW:'Bullet',HDBW:'Dome',HDW:'Turret',HDPW:'Turret',PFW:'Bullet',EW:'Fisheye'}[m[1].toUpperCase()]||''}
@@ -902,7 +902,7 @@ function camAttr(it){if(it._ca!==undefined)return it._ca;
   else if(/outdoor|արտաք|դրս|наруж|улич|\bIP ?6[5-9]\b|IK10|bullet|cruiser|knight|\bcell\b|ColorVu.*(bullet|turret)/i.test(hay)||a.form==='Bullet'||a.form==='PTZ'&&!/indoor/i.test(hay))a.place='out';
   else if(a.form==='Turret'||a.form==='Dome')a.place='both';
   // megapixels
-  if((m=hay.match(/(\d{1,2}(?:[.,]\d)?)\s?(?:MP|Մպ|Мп)/i)))a.mp=m[1].replace(',','.')+'MP';
+  if((m=hay.match(/(\d{1,2}(?:[.,]\d)?)\s?(?:MP|Մպ|ՄՊ|Мп)/i)))a.mp=m[1].replace(',','.')+'MP';
   else if((m=model.match(/DS-2C[DE]\d[0-9A-Z](\d)/i))&&+m[1]>=1)a.mp=m[1]+'MP';
   else if((m=model.match(/\b(?:IPC|HAC)-[A-Z]+(\d)\d{2,3}/i))&&+m[1]>=1)a.mp=m[1]+'MP';
   it._ca=a;return a}
