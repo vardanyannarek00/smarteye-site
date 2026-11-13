@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Price Manager">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>SmartEye Price Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script src="vendor/supabase.js"></script>
@@ -88,6 +89,7 @@ body.pfon .prow{display:flex}
 .refbtn{flex:none;margin-left:auto;background:var(--btn2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:50%;font-size:22px;line-height:1;padding:0;cursor:pointer}
 .cst+.refbtn{margin-left:6px}.cst:empty+.refbtn{margin-left:auto}
 .refbtn.spin{animation:refspin .8s linear infinite}@keyframes refspin{to{transform:rotate(360deg)}}
+.ios-hint{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:40;background:#16233d;color:#fff;border-radius:14px;padding:12px 14px;display:grid;gap:6px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}.ios-hint button{justify-self:end;background:#fff;color:#16233d;border:0;border-radius:9px;padding:6px 14px;font-weight:700}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
 .lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
@@ -2762,6 +2764,14 @@ async function lockUI(){const B=$('lockSet');if(!B)return;const kind=await bioKi
   if(q('lkOff'))q('lkOff').onclick=async()=>{const a=prompt('Մուտքագրեք ընթացիկ PIN-ը');if(a===null)return;if(await pinHash(a,LOCK.s)!==LOCK.h){toast('Սխալ PIN');return}LOCK=null;LS.set('lock',null);toast('Կողպեքն անջատված է');lockUI()};
   if(q('lkBioOn'))q('lkBioOn').onclick=async()=>{const r=await bioRegister(kind);if(!r){toast('Չհաջողվեց');return}Object.assign(LOCK,r);LS.set('lock',LOCK);toast('Միացված է ✓');lockUI()};
   if(q('lkBioOff'))q('lkBioOff').onclick=()=>{LOCK.bio='';delete LOCK.cid;LS.set('lock',LOCK);lockUI()}}
+
+/* ---------- iPhone: add to Home Screen hint ---------- */
+(function(){const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const sa=window.navigator.standalone||matchMedia('(display-mode: standalone)').matches;if(!ios||sa||NATIVE)return;
+  const show=()=>{if(LS.get('iosHint',0)>=3)return;const d=document.createElement('div');d.className='ios-hint';
+    d.innerHTML=`<b>📲 Տեղադրեք iPhone-ի էկրանին</b><span>Safari-ում սեղմեք <b>Կիսվել</b> <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v8h14v-8"/></svg> → <b>«Add to Home Screen» / «На экран Домой»</b>։ Կբացվի որպես առանձին ծրագիր, մուտքը կպահվի, Face ID-ն կաշխատի։</span><button type="button">Լավ</button>`;
+    d.querySelector('button').onclick=()=>{LS.set('iosHint',3);d.remove()};document.body.appendChild(d);LS.set('iosHint',LS.get('iosHint',0)+1)};
+  setTimeout(show,1500)})();
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
