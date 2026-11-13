@@ -118,6 +118,9 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 /* no sideways page on phones; iOS zooms into inputs smaller than 16px */
 html,body{max-width:100%;overflow-x:hidden}main{overflow-x:clip}.card{max-width:100%;box-sizing:border-box;min-width:0}input,select,textarea{max-width:100%;min-width:0}
 @media(max-width:999px){input,select,textarea{font-size:16px!important}}
+.sn-row{display:flex;gap:6px;align-items:center}.sn-row input{flex:1;min-width:0}.sn-cam{margin:0!important;flex:none;padding:6px 10px!important}
+.sn-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.sn-pick small{width:100%;color:var(--mut)}
+.dev .sn-row{grid-column:1/-1}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
 .lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
@@ -2247,7 +2250,7 @@ function instForm(c,it){
       dm.oninput=()=>{d.m=dm.value;if(d.t==='Այլ'||!d._t){const g=guessDev(dm.value);if(g!=='Այլ'&&g!==d.t){d.t=g;dt.value=g;upCams()}}};dm.onfocus=()=>{d._t=d.t==='Այլ'?0:d._t};
       dsn.oninput=()=>{d.sn=dsn.value};
       dx.onclick=()=>{devs.splice(ix,1);drawDevs();upCams()};
-      box.appendChild(r)});
+      snWrap(dsn,v=>{d.sn=v});box.appendChild(r)});
     let dl=$('devModels');if(!dl){dl=document.createElement('datalist');dl.id='devModels';document.body.appendChild(dl)}
     if(!dl.children.length)dl.innerHTML=[...new Set(catalog.map(x=>String(x.n).split(' — ')[0]))].slice(0,3000).map(m=>`<option value="${esc(m)}">`).join('')};
   drawDevs();
@@ -2495,6 +2498,7 @@ function stockForm(x){
    <button type="button" class="btn f_save">Պահպանել</button>
    <div class="grid2">${isNew?'':'<button type="button" class="btn ghost f_del" style="color:var(--bad)">Ջնջել</button>'}<button type="button" class="btn ghost f_x">Փակել</button></div></div>`;
   const q=c=>P.querySelector(c);fillShopNames&&fillShopNames();
+  {const fs=q('.f_sns')||q('.f_sn');fs&&snWrap(fs)}
   q('.f_m').value=x.model||'';q('.f_n').value=x.name||'';q('.f_s').value=x.sup||'';q('.f_d').value=x.date||today();q('.f_c').value=x.cost||'';q('.f_p').value=x.price||'';q('.f_o').value=x.note||'';q('.f_q').value=x.qty??1;if(!isNew)q('.f_sn').value=x.sn||'';
   q('.f_m').oninput=()=>{const v=q('.f_m').value.trim();const sg=q('.f_sg');sg.innerHTML='';if(v.length<3||!catalog.length)return;
     searchCatalog(v,'').slice(0,6).forEach(c=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<b>${esc(String(c.n).split(' — ')[0])}</b> · ${fmt(c.p)}${c.cost?' (ինքն. '+fmt(c.cost)+')':''}<br><small>${esc(c.s||'')}</small>`;
@@ -2540,7 +2544,7 @@ function saleForm(){
    <b style="font-size:14px;display:block;margin-top:12px">Ապրանքներ պահեստից</b>
    <input type="search" class="s_q" placeholder="🔍 Գրեք մոդելը կամ SN-ը՝ պահեստից ավելացնելու համար" style="margin-top:6px"><div class="sugg s_sg"></div>
    <div class="s_lines" style="margin-top:6px"></div>
-   <button type="button" class="btn ghost sm s_man" style="margin-top:8px">＋ Աշխատանք / այլ տող</button>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button type="button" class="btn ghost sm s_prod">＋ Ապրանք (SN-ով)</button><button type="button" class="btn ghost sm s_man">＋ Աշխատանք / ծառայություն</button></div>
    <div class="grid2" style="margin-top:6px"><label>Երաշխիք (ամիս)<input type="number" inputmode="numeric" class="s_w" min="0"></label><label>Վճարված ֏<input type="number" inputmode="numeric" class="s_g"></label></div>
    <label>Նշում<input type="text" class="s_o" placeholder="օր․ տեղադրումը ներառված է"></label>
    <div class="card total" style="margin:12px 0 0"><div class="stk-sum"><span>Ընդամենը</span><b class="s_t"></b></div><div class="stk-sum" style="font-size:13px;color:var(--mut)"><span>Ինքնարժեք / շահույթ</span><span class="s_pr"></span></div></div>
@@ -2554,15 +2558,16 @@ function saleForm(){
   const tot=()=>{const t=slTotals();q('.s_t').textContent=fmt(t.total);q('.s_pr').textContent=`${fmt(t.costT)} / ${fmt(t.total-t.costT)}`};
   const lines=()=>{const B=q('.s_lines');B.innerHTML=D.lines.length?'':'<div class="note">Ավելացրեք ապրանք պահեստից կամ ձեռքով տող</div>';
     D.lines.forEach((l,i)=>{const r=document.createElement('div');r.className='sl-line'+(l.sid?'':' man');const st=l.sid?stock.find(x=>x.id===l.sid):null;const max=st&&!st.sn?(+st.qty||0)+slHeld(st.id):(l.sid?1:999);
-      r.innerHTML=`<div class="n">${l.sid?'':'<input type="text" class="ln" placeholder="Աշխատանք / ապրանք">'}${l.sid?`<b>${esc(l.model||l.name)}</b><small>${esc([l.model&&l.name!==l.model?l.name:'',l.sn?'SN: '+l.sn:''].filter(Boolean).join(' · '))}</small>`:''}</div>
+      r.innerHTML=`<div class="n">${l.sid?'':`<input type="text" class="ln" placeholder="${l.kind==='prod'?'Ապրանք / մոդել':'Աշխատանք / ծառայություն'}">${l.kind==='prod'?'<input type="text" class="lsn" placeholder="SN (մի քանիսը՝ ստորակետով)" autocapitalize="characters" style="margin-top:5px">':''}`}${l.sid?`<b>${esc(l.model||l.name)}</b><small>${esc([l.model&&l.name!==l.model?l.name:'',l.sn?'SN: '+l.sn:''].filter(Boolean).join(' · '))}</small>`:''}</div>
        <input type="number" inputmode="numeric" class="lq" min="1" ${l.sn?'disabled':''} title="Քանակ" placeholder="Քանակ"><input type="number" inputmode="numeric" class="lp" title="Գին 1 հատ" placeholder="Գին ֏"><button type="button" class="ib red">✕</button>`;
-      const lq=r.querySelector('.lq'),lp=r.querySelector('.lp');lq.value=l.q;lp.value=l.price;if(!l.sid){const ln=r.querySelector('.ln');ln.value=l.name||'';ln.oninput=()=>{l.name=ln.value;l.model=''}}
+      const lq=r.querySelector('.lq'),lp=r.querySelector('.lp');lq.value=l.q;lp.value=l.price;if(!l.sid){const ln=r.querySelector('.ln');ln.value=l.kind==='prod'?(l.model&&!String(l.name).startsWith(l.model)?l.model+' — '+l.name:l.name||l.model||''):(l.name||'');ln.oninput=()=>{l.name=ln.value;l.model=l.kind==='prod'?String(ln.value).split(' — ')[0].trim():''};const sn=r.querySelector('.lsn');if(sn){sn.value=l.sn||'';sn.oninput=()=>{l.sn=sn.value.trim()};snWrap(sn,v=>{l.sn=v})}}
       lq.oninput=()=>{l.q=Math.min(max,Math.max(1,+lq.value||1));tot()};lq.onchange=()=>{lq.value=l.q};lp.oninput=()=>{l.price=+lp.value||0;tot()};if(l.price<0)lp.min='';
-      r.querySelector('button').onclick=()=>{D.lines.splice(i,1);lines()};B.appendChild(r)});tot()};
+      r.querySelector('button.ib').onclick=()=>{D.lines.splice(i,1);lines()};B.appendChild(r)});tot()};
   q('.s_q').oninput=()=>{const v=norm(q('.s_q').value);const sg=q('.s_sg');sg.innerHTML='';if(v.length<2)return;
     stkAvail().filter(x=>norm([x.model,x.name,x.sn].join(' ')).includes(v)&&!D.lines.some(l=>l.sid===x.id&&x.sn)).slice(0,8).forEach(x=>{const b=document.createElement('button');b.type='button';
       b.innerHTML=`<b>${esc(x.model||x.name)}</b>${x.sn?' · SN '+esc(x.sn):' · '+x.qty+' հատ'} · ${fmt(x.price||x.cost)}`;b.onclick=()=>{slAddStock(x);q('.s_q').value='';sg.innerHTML='';lines()};sg.appendChild(b)});
     if(!sg.children.length)sg.innerHTML='<span class="note" style="margin:0">Պահեստում չգտնվեց</span>'};
+  q('.s_prod').onclick=()=>{D.lines.push({sid:'',kind:'prod',model:'',name:'',sn:'',q:1,price:0,cost:0});lines();const ins=P.querySelectorAll('.ln');ins.length&&ins[ins.length-1].focus()};
   q('.s_man').onclick=()=>{D.lines.push({sid:'',model:'',name:'',sn:'',q:1,price:0,cost:0});lines();const ins=P.querySelectorAll('.ln');ins.length&&ins[ins.length-1].focus()};
   q('.s_x').onclick=()=>{sync();if(D._edit)slDraft=null;P.style.display='none'};
   q('.s_clear').onclick=()=>{slDraft=null;P.style.display='none';toast('Մաքրվեց')};
@@ -2580,9 +2585,9 @@ function saleForm(){
     let c=sl.cid?clients.find(x=>x.id===sl.cid):clients.find(x=>norm(x.name)===norm(sl.client));
     if(!c)c={id:uid(),name:sl.client,phone:sl.phone,addr:sl.addr,note:'',inst:[],visits:[],created:new Date().toISOString()};
     if(!c.phone&&sl.phone)c.phone=sl.phone;if(!c.addr&&sl.addr)c.addr=sl.addr;sl.cid=c.id;
-    const devs=L.filter(l=>l.sid).map(l=>({t:guessDev((l.name||'')+' '+(l.model||'')),m:l.model||l.name,q:+l.q||1,sn:l.sn||''}));
+    const devs=L.filter(l=>l.sid||l.kind==='prod'||l.sn).map(l=>({t:guessDev((l.name||'')+' '+(l.model||'')),m:l.model||l.name,q:+l.q||1,sn:l.sn||''}));
     c.inst=c.inst||[];c.inst.push({id:sl.id,date:sl.date,sale:sl.no,war:sl.war,cams:devs.filter(d=>/տեսախց/i.test(d.t)).reduce((a,d)=>a+d.q,0),devs,items:devsText(devs),
-      work:['Վաճառք '+sl.no,...L.filter(l=>!l.sid).map(l=>`${l.name} × ${l.q}`)].join(', '),price:sl.total,got:sl.got});
+      work:['Վաճառք '+sl.no,...L.filter(l=>!l.sid&&l.kind!=='prod'&&!l.sn).map(l=>`${l.name} × ${l.q}`)].join(', '),price:sl.total,got:sl.got});
     const touched=new Set();for(const l of L){if(!l.sid)continue;const st=stock.find(x=>x.id===l.sid);st.qty=(+st.qty||0)-(+l.q||1);if(!(st.soldIn||[]).includes(sl.no))st.soldIn=(st.soldIn||[]).concat(sl.no);touched.add(st)}
     for(const l of orig){if(l.sid){const st=stock.find(x=>x.id===l.sid);if(st)touched.add(st)}}for(const st of touched)await stkSave(st);
     await saveClient(c);await slSave(sl);slDraft=null;P.style.display='none';stkTab='sl';stkRender();saleView(sl);toast(ed?`Վաճառքը թարմացվեց ✓ ${sl.no}`:`Վաճառքը պահպանվեց ✓ ${sl.no}`)};
@@ -2700,7 +2705,7 @@ function drawWar(doc,sl,y,full){const {dark,red,grey,W,M}=PD;const end=warEnd(sl
   doc.setFontSize(10);doc.setTextColor(255,90,105);doc.text(sl.war?`${sl.war} ամիս · վավեր է մինչև ${dfmt(end)}`:'Երաշխիք չի տրամադրվում',M+5,y+13);
   doc.setTextColor(255,255,255);doc.setFont('Arm','normal');doc.setFontSize(9);doc.text(sl.no,W-M-5,y+7,{align:'right'});doc.text(dfmt(sl.date),W-M-5,y+13,{align:'right'});y+=23;
   if(full&&(sl.phone||sl.addr)){doc.setFontSize(9);doc.setTextColor(...grey);doc.text([sl.phone,sl.addr].filter(Boolean).join('   ·   '),M,y);y+=7}
-  const devs=sl.lines.filter(l=>l.sid||l.sn);
+  const devs=sl.lines.filter(l=>l.sid||l.sn||l.kind==='prod');
   if(devs.length){if(full){y=pdfTable(doc,y,[{h:'#',w:8},{h:'Սարքավորում',w:84},{h:'Սերիական համար',w:52,g:1},{h:'Քան.',w:14,al:'r'},{h:'Երաշխիք',w:20,al:'r'}],devs.map((l,i)=>[i+1,[l.model,l.name&&l.name!==l.model?l.name:''].filter(Boolean).join(' — '),l.sn||'—',l.q,sl.war?sl.war+' ամիս':'—']))+3}
     else{doc.setFont('Arm','bold');doc.setFontSize(9.5);doc.setTextColor(...dark);doc.text('Երաշխիքը տարածվում է՝',M,y);y+=5;doc.setFont('Arm','normal');doc.setFontSize(9);
       devs.forEach(l=>{const t=doc.splitTextToSize(`• ${l.model||l.name}${l.q>1?' × '+l.q:''}${l.sn?'   SN: '+l.sn:''}`,W-2*M);if(y>265){doc.addPage();y=20}doc.text(t,M+2,y);y+=t.length*4.3});y+=2}}
@@ -2758,7 +2763,7 @@ function rpData(){const inP=s=>(!RP.f||s.date>=RP.f)&&(!RP.t||s.date<=RP.t);cons
     return {title:'ՎԱՃԱՌՔՆԵՐԻ ՀԱՇՎԵՏՎՈՒԹՅՈՒՆ',per,cols:[{h:'Ամսաթիվ',w:22},{h:'Համար',w:24},{h:'Հաճախորդ',w:46},{h:'Գումար',w:23,al:'r'},{h:'Շահույթ',w:22,al:'r'},{h:'Վճարված',w:22,al:'r'},{h:'Պարտք',w:19,al:'r'}],rows,
       csv:[['Ամսաթիվ','Համար','Հաճախորդ','Հեռախոս','Գումար','Ինքնարժեք','Շահույթ','Վճարված','Պարտք']].concat(S.map(s=>[s.date,s.no,s.client,s.phone,s.total,+s.costT||0,s.total-(+s.costT||0),+s.got||0,Math.max(0,s.total-(+s.got||0))])),
       sum:[['Վաճառքների քանակ',S.length],['Շրջանառություն',PM(T[0])],['Շահույթ',PM(T[1])],['Վճարված',PM(T[2])],['Պարտք',PM(Math.max(0,T[0]-T[2]))]]}}
-  if(RP.k==='items'){const M={};S.forEach(s=>s.lines.forEach(l=>{const k=(l.model||l.name||'').trim()||'—';const m=M[k]||(M[k]={n:k,q:0,r:0,c:0,w:!l.sid&&!l.sn});m.q+=+l.q||0;m.r+=(+l.q||0)*(+l.price||0);m.c+=(+l.q||0)*(+l.cost||0)}));
+  if(RP.k==='items'){const M={};S.forEach(s=>s.lines.forEach(l=>{const k=(l.model||l.name||'').trim()||'—';const m=M[k]||(M[k]={n:k,q:0,r:0,c:0,w:!l.sid&&!l.sn&&l.kind!=='prod'});m.q+=+l.q||0;m.r+=(+l.q||0)*(+l.price||0);m.c+=(+l.q||0)*(+l.cost||0)}));
     const A=Object.values(M).sort((a,b)=>b.r-a.r);return {title:'ՎԱՃԱՌՎԱԾ ԱՊՐԱՆՔՆԵՐ ԵՎ ԱՇԽԱՏԱՆՔՆԵՐ',per,cols:[{h:'Անվանում / մոդել',w:80},{h:'Քան.',w:16,al:'r'},{h:'Գումար',w:28,al:'r'},{h:'Ինքնարժեք',w:27,al:'r'},{h:'Շահույթ',w:27,al:'r'}],
       rows:A.map(m=>[m.n,m.q,PM(m.r),PM(m.c),PM(m.r-m.c)]),csv:[['Անվանում','Քանակ','Գումար','Ինքնարժեք','Շահույթ']].concat(A.map(m=>[m.n,m.q,m.r,m.c,m.r-m.c])),
       sum:[['Դիրքեր',A.length],['Գումար',PM(A.reduce((a,m)=>a+m.r,0))],['Շահույթ',PM(A.reduce((a,m)=>a+m.r-m.c,0))]]}}
@@ -2771,7 +2776,7 @@ function rpData(){const inP=s=>(!RP.f||s.date>=RP.f)&&(!RP.t||s.date<=RP.t);cons
     return {title:'ՊԱՐՏՔԵՐ (ԴԵԲԻՏՈՐՆԵՐ)',per:'առ '+dfmt(today()),cols:[{h:'Ամսաթիվ',w:22},{h:'Համար',w:24},{h:'Հաճախորդ',w:48},{h:'Հեռախոս',w:28},{h:'Գումար',w:20,al:'r'},{h:'Պարտք',w:36,al:'r'}],
       rows:A.map(s=>[dfmt(s.date),s.no,s.client,s.phone||'',PM(s.total),PM(s.total-(+s.got||0))]),csv:[['Ամսաթիվ','Համար','Հաճախորդ','Հեռախոս','Գումար','Վճարված','Պարտք']].concat(A.map(s=>[s.date,s.no,s.client,s.phone,s.total,+s.got||0,s.total-(+s.got||0)])),
       sum:[['Պարտապաններ',A.length],['Ընդհանուր պարտք',PM(T)]]}}
-  const now=new Date(),R=[];sales.forEach(s=>{if(!+s.war)return;const e=warEnd(s);if(e<now)return;s.lines.filter(l=>l.sid||l.sn).forEach(l=>R.push([s.client,s.phone||'',l.model||l.name,l.sn||'—',dfmt(e),e]))});R.sort((a,b)=>a[5]-b[5]);
+  const now=new Date(),R=[];sales.forEach(s=>{if(!+s.war)return;const e=warEnd(s);if(e<now)return;s.lines.filter(l=>l.sid||l.sn||l.kind==='prod').forEach(l=>R.push([s.client,s.phone||'',l.model||l.name,l.sn||'—',dfmt(e),e]))});R.sort((a,b)=>a[5]-b[5]);
   return {title:'ԳՈՐԾՈՂ ԵՐԱՇԽԻՔՆԵՐ',per:'առ '+dfmt(today()),cols:[{h:'Հաճախորդ',w:42},{h:'Հեռախոս',w:26},{h:'Սարքավորում',w:46},{h:'SN',w:38,g:1},{h:'Մինչև',w:26,al:'r'}],rows:R.map(r=>r.slice(0,5)),
     csv:[['Հաճախորդ','Հեռախոս','Սարքավորում','SN','Մինչև']].concat(R.map(r=>r.slice(0,5))),sum:[['Գործող երաշխիքներ',R.length]]}}
 function renderReport(){const P=$('stkPane');if(!RP.f&&!RP.t&&RP.p!=='all'){[RP.f,RP.t]=rpPeriod(RP.p)}
@@ -2995,6 +3000,38 @@ async function usdRateFetch(auto){const src=$('m_rateSrc');const old=LS.get('usd
     $('m_rate').value=j.rate;src.textContent=`${j.src}${j.cba&&j.src.indexOf('ԿԲ')<0?' · ԿԲ '+j.cba:''}${j.bestSell?' · ամենաէժանը '+j.bestSell:''}`;preview();if(!auto)toast('$1 = '+j.rate+' ֏')}
   catch(e){src.textContent='Կուրսը չբեռնվեց (ինտերնետ)՝ օգտագործվում է վերջինը՝ '+LS.get('usdRate',390);}}
 $('m_rateGet').onclick=()=>usdRateFetch(false);
+/* ---------- 📷 SN from a photo of the box label (barcode / QR) ---------- */
+function pickPhoto(){return new Promise(ok=>{const i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.style.display='none';
+  i.onchange=()=>{ok(i.files&&i.files[0]||null);i.remove()};document.body.appendChild(i);i.click()})}
+function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f);const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=u})}
+function snClean(t){t=String(t||'').trim();const m=t.match(/(?:S\/?N|Serial(?:\s*No\.?)?)\s*[:：]?\s*([A-Z0-9-]{6,30})/i);if(m)return m[1].toUpperCase();
+  t=t.replace(/\s+/g,'');return /^[A-Z0-9-]{6,30}$/i.test(t)?t.toUpperCase():''}
+async function snFromPhoto(){const f=await pickPhoto();if(!f)return null;toast('Կարդում եմ նկարը…');const im=await loadImg(f);const found=[];const add=t=>{const c=snClean(t);if(c&&!found.includes(c))found.push(c)};
+  if('BarcodeDetector' in window){try{const bd=new BarcodeDetector();(await bd.detect(im)).forEach(r=>add(r.rawValue))}catch(e){}}
+  if(!found.length){try{if(!window.ZXing)await loadScript('vendor/zxing.min.js');const Z=window.ZXing;
+    const hints=new Map();hints.set(Z.DecodeHintType.TRY_HARDER,true);hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.ITF]);
+    const rd=new Z.MultiFormatReader();rd.setHints(hints);
+    const sc=Math.min(1,1800/Math.max(im.width,im.height));const W=Math.round(im.width*sc),H=Math.round(im.height*sc);
+    const cv=document.createElement('canvas');const cx=cv.getContext('2d',{willReadFrequently:true});
+    const tryRegion=(x,y,w,h,rot)=>{cv.width=rot?h:w;cv.height=rot?w:h;cx.save();if(rot){cx.translate(h,0);cx.rotate(Math.PI/2)}cx.drawImage(im,x/sc,y/sc,w/sc,h/sc,0,0,w,h);cx.restore();
+      const d=cx.getImageData(0,0,cv.width,cv.height).data;const lum=new Uint8ClampedArray(cv.width*cv.height);for(let i=0,j=0;i<d.length;i+=4,j++)lum[j]=(d[i]*306+d[i+1]*601+d[i+2]*117)>>10;
+      try{const r=rd.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,cv.width,cv.height))));add(r.getText())}catch(e){}};
+    const regs=[[0,0,W,H]];const bh=Math.round(H*.3);for(let y=0;y+bh<=H+1;y+=Math.round(H*.15))regs.push([0,Math.min(y,H-bh),W,bh]);
+    for(const [x,y,w,h] of regs){tryRegion(x,y,w,h,false);if(found.length>=4)break}
+    if(!found.length)for(const [x,y,w,h] of regs.slice(0,1)){tryRegion(x,y,w,h,true)}
+  }catch(e){}}
+  URL.revokeObjectURL(im.src);const notEan=found.filter(x=>!/^\d{8}$|^\d{12,14}$/.test(x));return notEan.length?notEan:found}
+// a 📷 button next to an SN field: fills it (several codes → tap to choose)
+function snWrap(input,onSet){const w=document.createElement('div');w.className='sn-row';input.parentNode.insertBefore(w,input);w.appendChild(input);w.appendChild(snCamBtn(input,onSet));return w}
+function snCamBtn(input,onSet){const b=document.createElement('button');b.type='button';b.className='btn ghost sm sn-cam';b.textContent='📷';b.title='Նկարել տուփի պիտակը՝ SN-ը կկարդամ';
+  b.onclick=async()=>{const r=await snFromPhoto();if(r===null)return;let box=input.parentNode.querySelector('.sn-pick');if(box)box.remove();
+    if(!r.length){toast('Շտրիխ-կոդ չգտնվեց․ նկարեք ավելի մոտիկից, լավ լույսով, կամ գրեք ձեռքով');return}
+    const put=v=>{const cur=input.value.split(/[,\s]+/).filter(Boolean);if(!cur.includes(v))cur.push(v);input.value=cur.join(', ');onSet&&onSet(input.value)};
+    if(r.length===1){put(r[0]);toast('SN՝ '+r[0]);return}
+    box=document.createElement('div');box.className='sn-pick';box.innerHTML='<small>Գտնվեց մի քանի կոդ․ ընտրեք SN-ը՝</small>';
+    r.forEach(v=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=v;c.onclick=()=>{put(v);c.classList.add('on')};box.appendChild(c)});
+    input.insertAdjacentElement('afterend',box)};
+  return b}
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
@@ -3019,12 +3056,12 @@ $('toSale').onclick=()=>{markQuoteDone();
     stkAvail().filter(x=>cmp(x.model)===key||(key.length>5&&cmp(x.model).includes(key))).forEach(x=>{if(need<=0)return;
       const free=(+x.qty||0)-(used[x.id]||0);if(free<=0)return;const take=x.sn?1:Math.min(free,need);used[x.id]=(used[x.id]||0)+take;need-=take;fromStock+=take;
       D.lines.push({sid:x.id,model:x.model,name:x.name,sn:x.sn||'',q:take,price:+it.p||+x.price||0,cost:+x.cost||(+it.cost||0)})});
-    if(need>0){missing+=need;D.lines.push({sid:'',model:'',name:shortName(it),sn:'',q:need,price:+it.p||0,cost:+it.cost||0})}});
+    if(need>0){missing+=need;D.lines.push({sid:'',kind:'prod',model,name:shortName(it),sn:'',q:need,price:+it.p||0,cost:+it.cost||0,src:it.s||''})}});
   DEFAULT_ITEMS.forEach(it=>{const q=qty[it.id]||0;if(q>0)D.lines.push({sid:'',model:'',name:it.name,sn:'',q,price:priceOf(it),cost:0})});
   customs.forEach(x=>{if(x.q>0&&x.name)D.lines.push({sid:'',model:'',name:x.name,sn:'',q:x.q,price:x.p,cost:0})});
   const d=Math.min(100,Math.max(0,+$('disc').value||0));if(d>0){const sub=D.lines.reduce((a,l)=>a+l.q*l.price,0);D.lines.push({sid:'',model:'',name:`Զեղչ ${d}%`,sn:'',q:1,price:-Math.round(sub*d/100),cost:0})}
   location.hash='stock';stkTab='sl';setTimeout(()=>{show('stock');saleForm()},60);
-  toast(fromStock?`Պահեստից վերցվեց ${fromStock} հատ${missing?` · ${missing} հատ պահեստում չկա՝ ավելացվեց ձեռքով տողով`:''}`:'Ապրանքները պահեստում չեն գտնվել՝ ավելացվեցին ձեռքով տողերով')};
+  toast(fromStock?`Պահեստից՝ ${fromStock} հատ, մնացածը՝ գնահաշվարկից։ Գրեք SN-ները`:'Ապրանքները ավելացվեցին գնահաշվարկից․ գրեք SN-ները երաշխիքի համար')};
 /* ---------- Tabs ---------- */
 const views=['quote','prod','cli','hist','tools','set','hdd','poe','stock','ord'];
 function show(v){
