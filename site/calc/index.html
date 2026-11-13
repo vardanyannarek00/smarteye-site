@@ -103,6 +103,13 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 .set-back{background:none;border:0;color:var(--acc2);font-family:inherit;font-size:16px;font-weight:600;padding:2px 0 10px;cursor:pointer;text-align:left;grid-column:1/-1}
 #v-set.view.on{grid-template-columns:minmax(0,760px)!important}
 .cbtn{position:relative;font-family:inherit;color:var(--txt);cursor:pointer;width:100%}.cbtn i{position:absolute;right:6px;top:4px;font-style:normal;color:var(--mut);font-size:14px}.cbtn.on{border-color:var(--acc2);background:var(--sel)}.cbtn:active{transform:scale(.97)}
+.nav-more{display:none!important}#moreBtn{display:flex}
+@media(min-width:1000px){.nav-more{display:flex!important}#moreBtn{display:none!important}}
+.sheet{position:fixed;inset:0;z-index:4}.sheet-bg{position:absolute;inset:0;background:rgba(10,16,30,.35);opacity:0;transition:opacity .2s}
+.sheet-box{position:absolute;left:0;right:0;bottom:0;max-height:82vh;overflow:auto;background:var(--bg);border-radius:18px 18px 0 0;padding:6px 14px calc(76px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .22s ease}
+.sheet.open .sheet-bg{opacity:1}.sheet.open .sheet-box{transform:none}.sheet-grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 6px}
+.sheet-on #fabSum,.sheet-on #fabUp,.sheet-on #fabDown,.sheet-on #cartBar,.sheet-on .fab{display:none!important}
+.sh-g{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:12px 4px 6px}.sh-card{background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;padding:0 12px}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
 .lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
@@ -566,10 +573,12 @@ nav .lf{display:none}nav .ls{display:block}
   <button data-v="prod"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><span class="lf">Ապրանքներ</span><span class="ls">Ապրանք</span></button>
   <button data-v="cli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c3 .2 5.5 2 5.5 4.8"/></svg><span class="lf">Հաճախորդներ</span><span class="ls">Հաճախ.</span></button>
   <button data-v="ord"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 15l2.5 2.5L16 13"/></svg><span class="lf">Պատվերներ</span><span class="ls">Պատվեր</span></button>
-  <button data-v="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="lf">Պատմություն</span><span class="ls">Պատմ.</span></button>
-  <button data-v="stock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-5 9 5v11H3z"/><path d="M8 20v-6h8v6"/><path d="M8 11h8"/></svg><span class="lf">Պահեստ</span><span class="ls">Պահեստ</span></button>
-  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span class="lf">Կարգավորումներ</span><span class="ls">Կարգ.</span></button>
+  <button data-v="hist" class="nav-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="lf">Պատմություն</span><span class="ls">Պատմ.</span></button>
+  <button data-v="stock" class="nav-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-5 9 5v11H3z"/><path d="M8 20v-6h8v6"/><path d="M8 11h8"/></svg><span class="lf">Պահեստ</span><span class="ls">Պահեստ</span></button>
+  <button data-v="set" class="nav-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span class="lf">Կարգավորումներ</span><span class="ls">Կարգ.</span></button>
+  <button type="button" id="moreBtn" data-m="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lf">Մենյու</span><span class="ls">Մենյու</span></button>
 </nav>
+<div id="moreSheet" class="sheet" style="display:none"><div class="sheet-bg"></div><div class="sheet-box"><div class="sheet-grab"></div><div id="moreList"></div></div></div>
 <div class="toast" id="toast"></div>
 <button type="button" id="cartBar" class="cartbar"></button>
 <div id="login" class="login" style="display:none">
@@ -2885,6 +2894,21 @@ function setApply(cards){cards=cards||[...$('v-set').children].filter(c=>c.class
   cards.forEach((c,i)=>c.classList.toggle('set-hide',setSub!==i))}
 function setOpen(i){setSub=i;setApply();window.scrollTo(0,0)}
 function setClose(){setSub=null;setMenu();window.scrollTo(0,0)}
+
+/* ---------- ☰ Menu sheet (mobile) ---------- */
+const MORE=[['Պահեստ և վաճառք',[['🏬','Պահեստ','ապրանքներ, SN, մնացորդ',()=>goStk('st')],['🧾','Վաճառք','ակտ, հաշիվ, տալոն',()=>goStk('sl')],['🛡','Երաշխիք','որոնում ըստ SN-ի',()=>goStk('wr')],['📊','Հաշվետվություններ','վաճառք, շահույթ, պարտքեր',()=>goStk('rp')]]],
+  ['Աշխատանք',[['🕘','Պատմություն','պահված գնահաշվարկներ',()=>goV('hist')],['🛠','Գործիքներ','HDD արխիվ, PoE',()=>goV('tools')]]],
+  ['Կարգավորումներ',[['⚙️','Բոլոր կարգավորումները','',()=>goSet('')],['🏢','Ռեկվիզիտներ','ակտ, հաշիվ, տալոն',()=>goSet('Ռեկվիզիտներ')],['🔒','Կողպեք','PIN / Face ID',()=>goSet('Կողպեք')],['💲','Աշխատանքների գները','',()=>goSet('Աշխատանքների')],['🗄','Հին գնահաշվարկներ','10 օր հետո արխիվ',()=>goSet('Հին')],['✍️','Ստորագրություն և ակցիա','PDF-ի ներքևում',()=>goSet('Գնահաշվարկի')]]]];
+function goV(v){location.hash=v;setTimeout(()=>show(v),40)}
+function goStk(t){stkTab=t;goV('stock')}
+function goSet(t){location.hash='set';setTimeout(()=>{show('set');if(!t)return;const cards=[...$('v-set').children].filter(c=>c.classList.contains('card')&&c.id!=='setMenu');
+  const i=cards.findIndex(c=>{const h=c.querySelector('h2');return h&&h.textContent.includes(t)});if(i>=0)setOpen(i)},40)}
+function moreOpen(){const L=$('moreList');L.innerHTML=MORE.map(([g,rows],gi)=>`<div class="sh-g">${g}</div><div class="sh-card">${rows.map(([ic,t,sub],ri)=>`<button type="button" class="set-row" data-g="${gi}" data-r="${ri}"><span class="set-ic">${ic}</span><span class="set-t"><b>${t}</b>${sub?`<small>${sub}</small>`:''}</span><span class="set-ch">›</span></button>`).join('')}</div>`).join('');
+  L.querySelectorAll('.set-row').forEach(b=>b.onclick=()=>{moreClose();MORE[b.dataset.g][1][b.dataset.r][3]()});
+  document.body.classList.add('sheet-on');const S=$('moreSheet');S.style.display='block';requestAnimationFrame(()=>S.classList.add('open'))}
+function moreClose(){document.body.classList.remove('sheet-on');const S=$('moreSheet');S.classList.remove('open');setTimeout(()=>S.style.display='none',200)}
+$('moreBtn').onclick=()=>{$('moreSheet').classList.contains('open')?moreClose():moreOpen()};
+document.querySelector('#moreSheet .sheet-bg').onclick=moreClose;
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
@@ -2929,11 +2953,12 @@ function show(v){
   if(v==='ord')ordRender();
   if(v==='set'){setSub=null;setMenu()}
   document.querySelectorAll('nav button').forEach(b=>{if(v==='tools'&&b.dataset.v==='set')b.classList.add('on')});
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  {const mb=$('moreBtn');if(mb)mb.classList.toggle('on',['hist','stock','set','tools','hdd','poe'].includes(v))}
   window.scrollTo(0,0);
   if(typeof fabUpd==='function')setTimeout(fabUpd,50);
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.v==='quote'?'':b.dataset.v;show(b.dataset.v)});
+document.querySelectorAll('nav button[data-v]').forEach(b=>b.onclick=()=>{location.hash=b.dataset.v==='quote'?'':b.dataset.v;show(b.dataset.v)});
 window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
 $('backBtn').onclick=()=>{
   if($('v-set').classList.contains('on')&&setSub!=null){setClose();return}
