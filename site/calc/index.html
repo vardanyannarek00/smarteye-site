@@ -118,6 +118,8 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 /* no sideways page on phones; iOS zooms into inputs smaller than 16px */
 html,body{max-width:100%;overflow-x:hidden}main{overflow-x:clip}.card{max-width:100%;box-sizing:border-box;min-width:0}input,select,textarea{max-width:100%;min-width:0}
 @media(max-width:999px){input,select,textarea{font-size:16px!important}}
+.msg-box{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px;background:var(--card)}.msg-box .chips{flex-wrap:wrap}.msg-tx{width:100%;font-size:14px;line-height:1.4}
+.msg-go{display:flex;flex-wrap:wrap;gap:6px}.msg-go .btn{margin:0;color:#fff;text-decoration:none;text-align:center;flex:1;min-width:80px}.msg-go .m-cp{color:var(--txt)}
 .sn-row{display:flex;gap:6px;align-items:center}.sn-row input{flex:1;min-width:0}.sn-cam{margin:0!important;flex:none;padding:6px 10px!important}
 .sn-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.sn-pick small{width:100%;color:var(--mut)}
 .dev .sn-row{grid-column:1/-1}
@@ -2167,7 +2169,7 @@ function openClient(id){
    <div class="grid2"><label>Հեռախոս<input type="tel" class="c_p" placeholder="0XX XXXXXX"></label><label>Հասցե<input type="text" class="c_a" placeholder="Աշտարակ, …"></label></div>
    <label>Նշումներ (NVR գաղտնաբառ չգրել)<textarea class="c_o" rows="2"></textarea></label>
    <div class="grid2" style="margin-top:8px"><button type="button" class="btn c_save" style="margin:0">💾 Պահպանել</button><button type="button" class="btn ghost c_close" style="margin:0">Փակել</button></div>
-   ${ph?`<div class="grid3"><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" href="tel:+${ph}">📞 Զանգ</a><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" target="_blank" href="viber://chat?number=%2B${ph}">Viber</a><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" target="_blank" href="https://wa.me/${ph}">WhatsApp</a></div>`:''}</div>
+   ${ph?`<div class="grid3"><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" href="tel:+${ph}">📞 Զանգ</a><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" target="_blank" href="viber://chat?number=%2B${ph}">Viber</a><a class="btn ghost" style="text-align:center;text-decoration:none;font-size:13px" target="_blank" href="https://wa.me/${ph}">WhatsApp</a></div><button type="button" class="btn ghost c_msg" style="margin-top:6px">💬 Պատրաստի հաղորդագրություն</button>`:''}</div>
    ${id?`<div class="sub" style="margin-top:12px">Կարգավիճակ՝ <span class="badge2 ${s.cls}">${esc(s.txt)}</span>${s.end?` · ակցիան ${s.cls==='off'?'ավարտվել է':'մինչև'} ${dfmt(s.end)}`:''}</div>
    ${(()=>{const p=payOf(c);const nv=(c.visits||[]).length;return `<div class="paybox"><div><b>${fmt(p.b)}</b><small>ընդհանուր</small></div><div><b style="color:var(--ok)">${fmt(p.g)}</b><small>վճարված</small></div><div><b style="color:${p.d?'var(--bad)':'inherit'}">${fmt(p.d)}</b><small>պարտք</small></div></div><div class="sub" style="margin-top:6px">🔧 Այցեր՝ <b>${nv}</b> անգամ${nv?` · ${(c.visits||[]).filter(v=>v.paid).length} վճարովի, ${(c.visits||[]).filter(v=>!v.paid).length} անվճար`:''}</div>`})()}
    <h2 style="margin-top:14px">🛠 Տեղադրումներ</h2><div class="c_inst"></div><button type="button" class="pjadd c_addi">＋ Տեղադրում</button>
@@ -2175,6 +2177,7 @@ function openClient(id){
    <div class="c_form"></div>
    <button type="button" class="btn ghost c_del" style="color:var(--bad);margin-top:16px">Ջնջել հաճախորդին</button>`:''}`;
   const q=x=>card.querySelector(x);
+  {const mb=q('.c_msg');if(mb)mb.onclick=()=>msgPanel(q('.cform'),clientMsgCtx(c))}
   q('.c_n').value=c.name||'';q('.c_p').value=c.phone||'';q('.c_a').value=c.addr||'';q('.c_o').value=c.note||'';
   q('.c_save').onclick=async()=>{c.name=q('.c_n').value.trim();if(!c.name){toast('Գրեք անունը');return}c.phone=q('.c_p').value.trim();c.addr=q('.c_a').value.trim();c.note=q('.c_o').value.trim();await saveClient(c);toast('Պահպանվեց ✓');renderClients();openClient(c.id)};
   q('.c_close').onclick=()=>{card.style.display='none';cliOpen=null};
@@ -2604,10 +2607,12 @@ function saleView(sl){
    <label class="v_cpl" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" class="v_cp" style="width:auto"> 2 օրինակ (հաճախորդին + մեզ)</label>
    <div class="grid2"><button type="button" class="btn v_prn" style="background:#16233d">🖨 Տպել</button><button type="button" class="btn v_pdf">📤 PDF ուղարկել</button></div></div>
    <button type="button" class="btn v_edit" style="background:var(--ok)">✏ Ավելացնել ապրանք / ծառայություն</button>
+   ${sl.phone?'<button type="button" class="btn ghost v_msg">💬 Գրել հաճախորդին</button><div class="v_msgh"></div>':''}
    <div class="grid2"><button type="button" class="btn ghost v_pay">💰 Վճարում</button><button type="button" class="btn ghost v_del" style="color:var(--bad)">Չեղարկել</button></div>
    <button type="button" class="btn ghost v_x">Փակել</button>`;
   const q=c=>P.querySelector(c);
   q('.v_x').onclick=()=>{P.style.display='none'};
+  {const vm=q('.v_msg');if(vm)vm.onclick=()=>{const c=clients.find(x=>x.id===sl.cid);msgPanel(q('.v_msgh'),Object.assign(c?clientMsgCtx(c):{},{name:sl.client,phone:sl.phone,debt:Math.max(0,sl.total-(+sl.got||0)),sale:sl.no}))}}
   q('.v_edit').onclick=()=>{slDraft=JSON.parse(JSON.stringify(sl));slDraft._edit=true;slDraft._orig=JSON.parse(JSON.stringify(sl.lines));slDraft._cid0=sl.cid;saleForm()};
   const vk=q('.v_kind'),vc=q('.v_cp');vk.value=LS.get('docKind','act');vc.checked=!!LS.get('docCp',false);const cpv=()=>{q('.v_cpl').style.display=vk.value.startsWith('act')?'flex':'none'};cpv();
   vk.onchange=()=>{LS.set('docKind',vk.value);cpv()};vc.onchange=()=>LS.set('docCp',vc.checked);
@@ -2928,9 +2933,10 @@ function ordRender(){const P=$('ordPane');const td=today();
       h.textContent=`${t.date===td?'Այսօր · ':''}${['Կիրակի','Երկուշաբթի','Երեքշաբթի','Չորեքշաբթի','Հինգշաբթի','Ուրբաթ','Շաբաթ'][dd.getDay()]}, ${dfmt(t.date)}`;B.appendChild(h)}
     const d=document.createElement('div');d.className='ord'+(t.st==='done'?' done':t.date<td?' late':'');
     d.innerHTML=`<button type="button" class="ord-ck" title="Կատարված է">${t.st==='done'?'✓':''}</button><div class="n"><b>${t.time?`<span class="ord-t">${esc(t.time)}</span> `:''}${esc(t.kind||'Պատվեր')}${t.client?' · '+esc(t.client):''}</b>
-      <small>${[t.addr&&`📍 <a href="https://maps.google.com/?q=${encodeURIComponent(t.addr)}" target="_blank" rel="noopener">${esc(t.addr)}</a>`,t.phone&&`📞 <a href="tel:${esc(t.phone.replace(/\s/g,''))}">${esc(t.phone)}</a>`,t.sum&&fmt(t.sum)].filter(Boolean).join(' · ')}</small>${t.note?`<small>${esc(t.note)}</small>`:''}</div><button type="button" class="ib">›</button>`;
+      <small>${[t.addr&&`📍 <a href="https://maps.google.com/?q=${encodeURIComponent(t.addr)}" target="_blank" rel="noopener">${esc(t.addr)}</a>`,t.phone&&`📞 <a href="tel:${esc(t.phone.replace(/\s/g,''))}">${esc(t.phone)}</a>`,t.sum&&fmt(t.sum)].filter(Boolean).join(' · ')}</small>${t.note?`<small>${esc(t.note)}</small>`:''}</div>${t.phone?'<button type="button" class="ib om" title="Գրել հաճախորդին">💬</button>':''}<button type="button" class="ib">›</button>`;
+    {const om=d.querySelector('.om');if(om)om.onclick=()=>msgPanel(d.querySelector('.n'),{name:t.client,phone:t.phone,task:t})}
     d.querySelector('.ord-ck').onclick=async()=>{t.st=t.st==='done'?'':'done';t.doneAt=t.st?today():'';await tkSave(t);ordRender();if(t.st)toast('Կատարված է ✓')};
-    d.querySelector('.ib').onclick=()=>ordForm(t);B.appendChild(d)})}
+    d.querySelector('.ib:not(.om)').onclick=()=>ordForm(t);B.appendChild(d)})}
 function ordForm(t,pre){const F=$('ordForm');const isNew=!t;t=t?Object.assign({},t):Object.assign({id:uid(),kind:'Տեղադրում',client:'',phone:'',addr:'',date:today(),time:'10:00',rem:60,note:'',sum:0,st:''},pre||{});
   F.style.display='block';F.innerHTML=`<h2>${isNew?'📅 Նոր պատվեր':'✏ Պատվեր'}</h2>
    <label>Ի՞նչ<input type="text" class="o_k" list="ordK"></label><datalist id="ordK">${ORD_KINDS.map(k=>`<option value="${k}">`).join('')}</datalist>
@@ -3032,6 +3038,31 @@ function snCamBtn(input,onSet){const b=document.createElement('button');b.type='
     r.forEach(v=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=v;c.onclick=()=>{put(v);c.classList.add('on')};box.appendChild(c)});
     input.insertAdjacentElement('afterend',box)};
   return b}
+/* ---------- 💬 Ready messages to a client (WhatsApp / Viber / SMS) ---------- */
+function msgTemplates(x){const nm=(x.name||'').split(/\s+/)[0]||'';const hi=`Բարև Ձեզ${nm?', '+nm:''}։`;const sig=`\nSmartEye System · ${REQ.phone||'043 53 53 32'}`;const L=[];
+  if(x.task)L.push(['📅 Ժամադրություն',`${hi} SmartEye System-ից ենք։ ${x.task.date===today()?'Այսօր':x.task.date===isoL(new Date(Date.now()+864e5))?'Վաղը':dfmt(x.task.date)}${x.task.time?', ժամը '+x.task.time+'-ին':''} կգանք Ձեզ մոտ${x.task.kind?'՝ '+x.task.kind.toLowerCase():''}${x.task.addr?' ('+x.task.addr+')':''}։ Եթե ժամը հարմար չէ, խնդրում ենք տեղեկացնել։${sig}`]);
+  L.push(['🚗 Ճանապարհին ենք',`${hi} Ճանապարհին ենք, մոտ 20–30 րոպեից կլինենք Ձեզ մոտ։${sig}`]);
+  if(x.debt>0)L.push(['💰 Վճարման հիշեցում',`${hi} Հիշեցնում ենք, որ${x.sale?' '+x.sale+' վաճառքից':''} մնացել է վճարել ${fmt(x.debt)}։ Վճարումը կարող եք կատարել կանխիկ կամ փոխանցումով${REQ.acc?' ('+REQ.acc+(REQ.bank?', '+REQ.bank:'')+')':''}։ Շնորհակալություն։${sig}`]);
+  if(x.freeEnd)L.push(['🛠 Սպասարկում',`${hi} Ձեր տեսահսկման համակարգի անվճար սպասարկման ժամկետը ${new Date(x.freeEnd)<new Date()?'ավարտվել է':'ավարտվում է'} ${dfmt(x.freeEnd)}-ին։ Առաջարկում ենք պրոֆիլակտիկ ստուգում՝ տեսախցիկների մաքրում, ձայնագրման և HDD-ի ստուգում, թարմացումներ։ Գրեք կամ զանգեք՝ հարմար օր ընտրելու համար։${sig}`]);
+  L.push(['🙏 Շնորհակալություն',`${hi} Շնորհակալություն, որ ընտրեցիք SmartEye System-ը։ Եթե ամեն ինչ աշխատում է լավ, շատ կուրախանանք Ձեր կարծիքով Google-ում կամ Instagram-ում (@smarteye_system)։ Ցանկացած հարցի դեպքում գրեք մեզ։${sig}`]);
+  L.push(['📱 Հավելվածի կարգավորում',`${hi} Տեսախցիկները հեռախոսից դիտելու համար տեղադրեք ${x.app||'Hik-Connect (Hikvision) / DMSS (Dahua) / Imou Life'} ծրագիրը։ Եթե դժվարություն լինի, գրեք, հեռակա կօգնենք։${sig}`]);
+  return L}
+function msgPanel(host,x){const ph=telDigits(x.phone||'');let box=host.querySelector('.msg-box');if(box){box.remove();return}
+  box=document.createElement('div');box.className='msg-box';const T=msgTemplates(x);
+  box.innerHTML=`<div class="chips msg-t">${T.map((t,i)=>`<button type="button" class="chip${i?'':' on'}" data-i="${i}">${t[0]}</button>`).join('')}</div>
+   <textarea class="msg-tx" rows="6"></textarea>
+   <div class="msg-go">${ph?`<a class="btn sm m-wa" target="_blank" rel="noopener" style="background:#25d366">WhatsApp</a><a class="btn sm m-vb" target="_blank" rel="noopener" style="background:#7360f2">Viber</a><a class="btn sm m-sms" style="background:#16233d">SMS</a>`:'<span class="note">Հեռախոսահամար չկա</span>'}<button type="button" class="btn ghost sm m-cp">Պատճենել</button></div>`;
+  host.appendChild(box);const tx=box.querySelector('.msg-tx');
+  const upd=()=>{const t=encodeURIComponent(tx.value);if(!ph)return;box.querySelector('.m-wa').href=`https://wa.me/${ph}?text=${t}`;box.querySelector('.m-vb').href=`viber://chat?number=%2B${ph}&draft=${t}`;
+    box.querySelector('.m-sms').href=`sms:+${ph}${/iPhone|iPad|Mac/.test(navigator.userAgent)?'&':'?'}body=${t}`};
+  const pick=i=>{tx.value=T[i][1];box.querySelectorAll('.msg-t .chip').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));upd()};
+  box.querySelectorAll('.msg-t .chip').forEach(b=>b.onclick=()=>pick(+b.dataset.i));tx.oninput=upd;
+  box.querySelector('.m-cp').onclick=async()=>{try{await navigator.clipboard.writeText(tx.value);toast('Պատճենվեց ✓')}catch(e){tx.select();document.execCommand('copy');toast('Պատճենվեց ✓')}};
+  pick(0);box.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function clientMsgCtx(c){const s=cliStatus(c);const p=payOf(c);const last=(c.inst||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
+  const task=tasks.filter(t=>t.st!=='done'&&(t.cid===c.id||norm(t.client)===norm(c.name))&&t.date>=today()).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')))[0];
+  const brand=((last&&last.items)||'')+' '+((last&&last.devs||[]).map(d=>d.m).join(' '));
+  return {name:c.name,phone:c.phone,debt:p.d,freeEnd:s.end,task,sale:last&&last.sale,app:/DS-|Hik|HiLook/i.test(brand)?'Hik-Connect':/IPC-A|IPC-S|IPC-C|IPC-F|Imou/i.test(brand)?'Imou Life':/IPC-H|HAC|Dahua|NVR\d|XVR/i.test(brand)?'DMSS':''}}
 /* ---------- Print (printer) ---------- */
 let PRINT_MODE=false;
 async function printWith(make){toast('Պատրաստվում է տպելու…');let r;PRINT_MODE=true;try{r=await make()}catch(e){toast('PDF-ը չստեղծվեց ('+(e&&e.message||e)+')');return}finally{PRINT_MODE=false}
