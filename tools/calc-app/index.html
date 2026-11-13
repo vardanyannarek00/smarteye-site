@@ -110,6 +110,10 @@ nav button{position:relative}nav button span{max-width:100%;overflow:hidden;text
 .sheet.open .sheet-bg{opacity:1}.sheet.open .sheet-box{transform:none}.sheet-grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 6px}
 .sheet-on #fabSum,.sheet-on #fabUp,.sheet-on #fabDown,.sheet-on #cartBar,.sheet-on .fab{display:none!important}
 .sh-g{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:12px 4px 6px}.sh-card{background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;padding:0 12px}
+.cbs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.cb{font-size:11px;font-weight:600;padding:1px 7px;border-radius:7px;background:var(--btn2,#eef1f6);color:var(--txt);white-space:nowrap}
+.cb.t-ip{background:#e3efff;color:#1f5fc4}.cb.t-an{background:#fff1dc;color:#a35a00}.cb.t-wf{background:#efe6ff;color:#6a3fc9}.cb.p-out{background:#e2f6ea;color:#17803d}.cb.p-in{background:#f0f0f3;color:#555b66}.cb.p-both{background:#e9f4f1;color:#2f6f5e}
+@media(prefers-color-scheme:dark){.cb{background:#ffffff14;color:var(--txt)}.cb.t-ip{background:#1f5fc433;color:#8db8ff}.cb.t-an{background:#a35a0033;color:#ffc27a}.cb.t-wf{background:#6a3fc933;color:#c6a9ff}.cb.p-out{background:#17803d33;color:#7fe0a3}}
+.camf{margin-top:6px}.camf:empty{display:none}
 .locked main,.locked nav,.locked #cartBar{visibility:hidden}
 .lockscr{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
 .lk-box{width:min(320px,100%);text-align:center;display:grid;gap:10px;justify-items:center}.lk-logo{font-size:38px}
@@ -307,6 +311,7 @@ nav .lf{display:none}nav .ls{display:block}
     <div id="catBox" style="display:none">
       <div id="supChips" class="chips"></div>
       <div id="qTypes" class="qtypes"></div>
+      <div id="camF" class="qtypes camf"></div>
       <input type="search" id="search" placeholder="Որոնել՝ մոդել, անուն…">
       <div id="results"></div>
     </div>
@@ -413,6 +418,7 @@ nav .lf{display:none}nav .ls{display:block}
   <div class="card">
     <h2>📦 Ապրանքների բազա</h2>
     <details id="pTypesBox" open><summary class="tsum">▾ Ըստ տեսակի</summary><div id="pTypes" class="tiles"></div></details>
+    <div id="pCamF" class="qtypes camf"></div>
     <div id="pChips" class="chips"></div>
     <input type="search" id="pSearch" placeholder="Որոնել՝ մոդել, տեսակ, բառ…">
     <div class="sub" id="pCount" style="margin:6px 0"></div>
@@ -725,7 +731,7 @@ function brandOf0(t,listName){const u=String(t||'').toUpperCase();
   const ln=String(listName||'').toUpperCase();
   if(/IMOU/.test(ln))return 'Imou';if(/EZVIZ/.test(ln))return 'EZVIZ';if(/DAHUA/.test(ln))return 'Dahua';if(/HIK/.test(ln))return 'Hikvision';
   return 'Այլ';}
-function rebuildCatalog(){catalog=[];lists.forEach(l=>l.items.forEach((it,idx)=>{const o=Object.assign({s:l.name,_l:l,_i:idx},it);if(o.cost==null&&l.disc>0&&o.p>0){o.cost=Math.round(o.p*(1-l.disc/100));o.est=1}o.b=brandOf(o.n+' '+(o.k||'')+' '+(o.c||''),l.name+' '+(l.file||''));o.sp=specOf(o.n+' '+(o.k||'')+' '+(o.c||''));o.h=norm(o.n+' '+(o.k||'')+' '+(o.c||'')+' '+o.sp)+' ';o.hc=o.h.replace(/[^a-z0-9а-яա-ֆ]/g,'');catalog.push(o)}));if(supFilter&&!catalog.some(it=>fMatch(it,supFilter)))supFilter=''}
+function rebuildCatalog(){catalog=[];/* camAttr cache lives on new objects */lists.forEach(l=>l.items.forEach((it,idx)=>{const o=Object.assign({s:l.name,_l:l,_i:idx},it);if(o.cost==null&&l.disc>0&&o.p>0){o.cost=Math.round(o.p*(1-l.disc/100));o.est=1}o.b=brandOf(o.n+' '+(o.k||'')+' '+(o.c||''),l.name+' '+(l.file||''));o.sp=specOf(o.n+' '+(o.k||'')+' '+(o.c||''));o.h=norm(o.n+' '+(o.k||'')+' '+(o.c||'')+' '+o.sp)+' ';o.hc=o.h.replace(/[^a-z0-9а-яա-ֆ]/g,'');catalog.push(o)}));if(supFilter&&!catalog.some(it=>fMatch(it,supFilter)))supFilter=''}
 function fMatch(it,f){if(!f)return true;if(f.startsWith('b:'))return it.b===f.slice(2);if(f.startsWith('s:'))return it.s===f.slice(2);return it.s===f}
 let cart = LS.get('cart', []);         // [{n,p,q,c}]
 function norm(s){return String(s??'').toLowerCase().replace(/\s+/g,' ').trim()}
@@ -845,6 +851,7 @@ function resRow(it){
     {const nd=r.querySelector('.n');const parts=String(it.n).split(' — ');const mb=document.createElement('b');mb.className='mdl';mb.textContent=parts[0];nd.appendChild(mb);
       if(parts.length>1){const ar=document.createElement('button');ar.type='button';ar.className='arw';ar.textContent='▸';mb.appendChild(ar);const ds=document.createElement('span');ds.className='dsc';ds.textContent=parts.slice(1).join(' — ');nd.appendChild(ds);ar.onclick=e=>{e.stopPropagation();nd.classList.toggle('open');ar.textContent=nd.classList.contains('open')?'▾':'▸'}}}
     if(!supFilter||!supFilter.startsWith('b:')){const t=document.createElement('span');t.className='tag';t.textContent=it.b+(lists.length>1&&it.s.toLowerCase()!==it.b.toLowerCase()?' · '+it.s:'');r.querySelector('.n').prepend(t)} if(it.sp||it.k||it.c){const sm=document.createElement('small');sm.className='spc';sm.textContent=[it.sp,(it.k&&!String(it.n).includes(it.k))?it.k:'',it.c].filter(Boolean).join(' · ');r.querySelector('.n').appendChild(sm)}
+    {const cbh=camBadges(it);if(cbh)r.querySelector('.n').insertAdjacentHTML('beforeend',cbh)}
     const ab=r.querySelector('.addb');
     const inCart=()=>{const ex=cart.find(c=>c.n===it.n&&c.k===(it.k||''));return ex?ex.q:0};
     const paint=()=>{const n=inCart();ab.innerHTML=n?`+<span class="qb">${n}</span>`:'+';ab.classList.toggle('has',!!n)};paint();
@@ -858,6 +865,50 @@ function resRow(it){
     };
     return r;
 }
+/* ---------- Camera attributes: IP / analog / Wi-Fi, outdoor / indoor, form, MP ---------- */
+function camAttr(it){if(it._ca!==undefined)return it._ca;
+  const ty=(it.ty||(it.ty=typeOf(it)))[0];const model=String(it.n).split(' — ')[0];const hay=[it.n,it.sp,it.c,it.k,it.b].filter(Boolean).join(' ');
+  const isRec=/NVR|DVR|XVR/i.test(ty)||/\b(NVR|DVR|XVR)\b|DS-7[0-9]{3}|DS-9[0-9]{3}|iDS-7|\bNVR\d|\bXVR\d/i.test(model);
+  const isCam=!isRec&&(/տեսախց|PTZ|Wi-Fi|Տեսախց/i.test(ty)||/DS-2C[DE]|DS-2[ADX][EF]|IPC-|HAC-|THC-|\bSD\d|camera|камер|տեսախց/i.test(model+' '+hay));
+  const a={cam:isCam,rec:isRec,tech:'',place:'',form:'',mp:''};
+  if(!isCam&&!isRec){it._ca=a;return a}
+  if(isRec){a.tech=/\bNVR|DS-7[67]\d|DS-96|NVR\d/i.test(model+' '+ty)?'IP':/DVR|XVR|DS-72|iDS-72/i.test(model+' '+ty)?'Անալոգ':'';it._ca=a;return a}
+  if(/wi-?fi|\b4G\b|imou|ezviz|wireless|անլար/i.test(hay)||/Wi-Fi/.test(ty))a.tech='Wi-Fi';
+  else if(/անալոգ|analog|turbo ?hd|hd-?tvi|hd-?cvi|\bAHD\b|\bTVI\b|DS-2CE|DS-2AE|\bHAC-|\bTHC-/i.test(hay)||/Անալոգ/.test(ty))a.tech='Անալոգ';
+  else if(/DS-2CD|DS-2DE|DS-2DF|DS-2XS|\bIPC-|\bIP(?![0-9])|IP տեսախց|network|PoE/i.test(hay)||/^IP/.test(ty))a.tech='IP';
+  // form factor
+  let m;
+  if(/PTZ|speed ?dome|\bSD\d|DS-2DE|DS-2DF|DS-2AE|\bPT\b|pan.?tilt|cruiser/i.test(hay))a.form='PTZ';
+  else if(/fish.?eye/i.test(hay))a.form='Fisheye';
+  else if(/\bcube\b|կուբ/i.test(hay))a.form='Cube';
+  else if(/bullet|ցիլինդր|цилиндр/i.test(hay))a.form='Bullet';
+  else if(/turret|eyeball|турель/i.test(hay))a.form='Turret';
+  else if(/\bdome\b|կուպոլ|купол/i.test(hay))a.form='Dome';
+  else if((m=model.match(/DS-2CD\d([0-9A-Z])/i))){a.form={'0':'Bullet','2':'Bullet','6':'Bullet','T':'Bullet','1':'Dome','7':'Dome','5':'Dome','D':'Dome','3':'Turret','4':'Cube'}[m[1].toUpperCase()]||''}
+  else if((m=model.match(/DS-2CE(\d)/i))){a.form={'1':'Bullet','5':'Turret','7':'Turret'}[m[1]]||''}
+  else if((m=model.match(/\b(?:IPC|HAC)-(HFW|HDBW|HDW|HDPW|PFW|EW)/i))){a.form={HFW:'Bullet',HDBW:'Dome',HDW:'Turret',HDPW:'Turret',PFW:'Bullet',EW:'Fisheye'}[m[1].toUpperCase()]||''}
+  else if((m=model.match(/\b(?:IPC|THC)-([BTD])\d/i))){a.form={B:'Bullet',T:'Turret',D:'Dome'}[m[1].toUpperCase()]}
+  // indoor / outdoor
+  if(/indoor|ներք|ներս|внутр|\bcue\b|ranger|\brex\b|\bIP ?(20|4[0-4])\b|baby|nanny/i.test(hay)||a.form==='Cube')a.place='in';
+  else if(/outdoor|արտաք|դրս|наруж|улич|\bIP ?6[5-9]\b|IK10|bullet|cruiser|knight|\bcell\b|ColorVu.*(bullet|turret)/i.test(hay)||a.form==='Bullet'||a.form==='PTZ'&&!/indoor/i.test(hay))a.place='out';
+  else if(a.form==='Turret'||a.form==='Dome')a.place='both';
+  // megapixels
+  if((m=hay.match(/(\d{1,2}(?:[.,]\d)?)\s?(?:MP|Մպ|Мп)/i)))a.mp=m[1].replace(',','.')+'MP';
+  else if((m=model.match(/DS-2C[DE]\d[0-9A-Z](\d)/i))&&+m[1]>=1)a.mp=m[1]+'MP';
+  else if((m=model.match(/\b(?:IPC|HAC)-[A-Z]+(\d)\d{2,3}/i))&&+m[1]>=1)a.mp=m[1]+'MP';
+  it._ca=a;return a}
+const PLACE_L={out:'🌧 Դրսի',in:'🏠 Ներսի',both:'🏠🌧 Ներսի/դրսի'};
+function camBadges(it){const a=camAttr(it);if(!a.cam&&!a.rec)return '';const b=[];
+  if(a.tech)b.push(`<span class="cb t-${a.tech==='IP'?'ip':a.tech==='Wi-Fi'?'wf':'an'}">${a.rec?(a.tech==='IP'?'IP գրանցիչ':'Անալոգ գրանցիչ'):a.tech}</span>`);
+  if(a.place)b.push(`<span class="cb p-${a.place}">${PLACE_L[a.place]}</span>`);
+  if(a.form)b.push(`<span class="cb">${a.form}</span>`);if(a.mp)b.push(`<span class="cb">${a.mp}</span>`);
+  return b.length?`<div class="cbs">${b.join('')}</div>`:''}
+let camF=LS.get('camF',{t:'',p:''});
+function camPass(it){if(!camF.t&&!camF.p)return true;const a=camAttr(it);if(!a.cam&&!a.rec)return false;
+  if(camF.t&&a.tech!==camF.t)return false;if(camF.p){if(!a.cam)return false;if(camF.p==='out'&&!(a.place==='out'||a.place==='both'))return false;if(camF.p==='in'&&!(a.place==='in'||a.place==='both'))return false}return true}
+function renderCamF(box){if(!box)return;const set=(k,v)=>{camF[k]=camF[k]===v?'':v;LS.set('camF',camF);renderResults();if(typeof renderProd==='function'&&$('v-prod').classList.contains('on'))renderProd()};
+  box.innerHTML='';[['t','IP','📡 IP'],['t','Անալոգ','📼 Անալոգ'],['t','Wi-Fi','📶 Wi-Fi'],['p','out','🌧 Դրսի'],['p','in','🏠 Ներսի']].forEach(([k,v,l])=>{const b=document.createElement('button');b.type='button';b.className='chip'+(camF[k]===v?' on':'');b.textContent=l;b.onclick=()=>set(k,v);box.appendChild(b)});
+  if(camF.t||camF.p){const x=document.createElement('button');x.type='button';x.className='chip';x.textContent='✕ Մաքրել';x.onclick=()=>{camF={t:'',p:''};LS.set('camF',camF);renderResults();if($('v-prod').classList.contains('on'))renderProd()};box.appendChild(x)}}
 let qType=LS.get('qType','');
 function renderQTypes(){
   const box=$('qTypes');if(!box)return;box.innerHTML='';
@@ -870,11 +921,11 @@ function renderQTypes(){
     b.onclick=()=>{qType=k;LS.set('qType',k);renderQTypes();renderResults()};box.appendChild(b)});
 }
 function renderResults(){
-  renderQTypes();
+  renderQTypes();renderCamF($('camF'));
   const q=norm($('search').value), box=$('results');box.innerHTML='';
-  if(!q&&qType){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(it.ty||(it.ty=typeOf(it)))[0]===qType).sort((a,b)=>a.p-b.p).slice(0,60);hits.forEach(it=>box.appendChild(resRow(it)));return}
+  if(!q&&(qType||camF.t||camF.p)){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it)).sort((a,b)=>a.p-b.p).slice(0,80);if(!hits.length)box.innerHTML='<div class="note">Այս ֆիլտրով ապրանք չկա</div>';hits.forEach(it=>box.appendChild(resRow(it)));return}
   if(!q){box.innerHTML='<div class="note">Գրեք մոդել կամ բառեր, օր․ «1043», «hybrid 4mp», «colorvu dome», «hdd 4tb», «nvr 8 poe»</div>';return}
-  const hits=searchCatalog(q).filter(it=>!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType);
+  const hits=searchCatalog(q).filter(it=>(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it));
   if(!hits.length){box.innerHTML='<div class="note">Չի գտնվել։ Փորձեք այլ բառ կամ մոդելի մի մասը (օր․ 1043)</div>';return}
   if(hits.fuzzy){const n=document.createElement('div');n.className='note';n.style.marginTop='0';n.textContent='Ճշգրիտ համընկնում չկա, մոտ արդյունքներ․';box.appendChild(n)}
   hits.forEach(it=>box.appendChild(resRow(it)));
@@ -1775,13 +1826,17 @@ function renderTrash(){
   const t=LS.get('trash',[]),b=$('trashBox');b.innerHTML='';if(!t.length)return;
   const d=document.createElement('details');d.innerHTML=`<summary class="note" style="cursor:pointer">🗑 Աղբարկղ (${t.length})՝ ջնջված/փոխարինված գնացուցակներ</summary>`;
   t.forEach((x,i)=>{const r=document.createElement('div');r.className='lst';const dt=new Date(x.at);
-    r.innerHTML='<div class="n"><b></b><small></small></div><button type="button" class="btn ghost sm">Վերականգնել</button>';
+    r.innerHTML='<div class="n"><b></b><small></small></div><button type="button" class="btn ghost sm">Վերականգնել</button><button type="button" class="btn ghost sm tdel" title="Ջնջել ընդմիշտ" style="color:var(--bad);margin-left:6px">🗑</button>';
+    r.querySelector('.tdel').onclick=e=>{const bt=e.currentTarget;if(!bt.dataset.c){bt.dataset.c=1;bt.textContent='Ջնջե՞լ';return}trashForget([x.at]);renderTrash();toast('Ջնջվեց ընդմիշտ')};
     r.querySelector('b').textContent=x.l.name;r.querySelector('small').textContent=`${x.l.items.length} ապրանք · ${x.why} ${String(dt.getDate()).padStart(2,'0')}.${String(dt.getMonth()+1).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}${x.l.file?' · '+x.l.file:''}`;
-    r.querySelector('button').onclick=()=>{let l=x.l;let nm=l.name;if(lists.some(y=>y.name.toLowerCase()===nm.toLowerCase())){let k=2;while(lists.some(y=>y.name.toLowerCase()===(nm+' ('+k+')').toLowerCase()))k++;nm=nm+' ('+k+')'}
+    r.querySelector('button:not(.tdel)').onclick=()=>{let l=x.l;let nm=l.name;if(lists.some(y=>y.name.toLowerCase()===nm.toLowerCase())){let k=2;while(lists.some(y=>y.name.toLowerCase()===(nm+' ('+k+')').toLowerCase()))k++;nm=nm+' ('+k+')'}
       l.name=nm;lists.push(l);const tt=LS.get('trash',[]);tt.splice(i,1);LS.set('trash',tt);LS.set('lists',lists);rebuildCatalog();pushList(l);pushSettingsSoon();catUI();renderResults();toast(`Վերականգնվեց՝ «${nm}»`)};
     d.appendChild(r)});
-  b.appendChild(d);
+  const clr=document.createElement('button');clr.type='button';clr.className='btn ghost';clr.style.color='var(--bad)';clr.textContent='🗑 Դատարկել աղբարկղը';
+  clr.onclick=()=>{if(!clr.dataset.c){clr.dataset.c=1;clr.textContent='Վստա՞հ եք՝ բոլորը կջնջվեն ընդմիշտ';return}trashForget(LS.get('trash',[]).map(x=>x.at));renderTrash();toast('Աղբարկղը դատարկվեց')};
+  d.appendChild(clr);b.appendChild(d);
 }
+function trashForget(ats){const g=new Set(LS.get('trashGone',[]).concat(ats));LS.set('trashGone',[...g].slice(-200));LS.set('trash',LS.get('trash',[]).filter(x=>!g.has(x.at)));pushSettingsSoon()}
 
 /* ---------- Shops & per-project offers ---------- */
 let shops=LS.get('shops',[]);
@@ -1968,7 +2023,7 @@ function renderProd(){
   // list
   const q=norm($('pSearch').value);
   const base=catalog.filter(it=>fMatch(it,pFilter));renderTypes(base);
-  let items=(q?searchCatalog(q,pFilter):base.slice().sort((a,b)=>a.b.localeCompare(b.b)||String(a.n).localeCompare(String(b.n)))).filter(it=>!pType||(it.ty||(it.ty=typeOf(it)))[0]===pType);
+  let items=(q?searchCatalog(q,pFilter):base.slice().sort((a,b)=>a.b.localeCompare(b.b)||String(a.n).localeCompare(String(b.n)))).filter(it=>(!pType||(it.ty||(it.ty=typeOf(it)))[0]===pType)&&camPass(it));renderCamF($('pCamF'));
   $('pCount').textContent=catalog.length?`${items.length} ապրանք`:'';
   const box=$('pList');box.innerHTML='';
   if(!catalog.length){box.innerHTML='<div class="note">Բազան դատարկ է։ Վերևում կցեք մատակարարի գնացուցակը կամ ավելացրեք ապրանք ձեռքով։</div>'}
@@ -1980,7 +2035,7 @@ function prodRow(it){
   const r=document.createElement('div');r.className='prod';
   const parts=String(it.n).split(' — ');
   const stk=it.stk==='ok'?'<span class="st ok">✓</span>':it.stk==='no'?'<span class="st no">✗</span>':'';
-  r.innerHTML=`<div class="ph"><div class="n"><span class="tag">${(it.ty||(it.ty=typeOf(it)))[1]} ${esc(it.b)}</span><b class="mdl">${esc(parts[0])}${parts.length>1?'<button type="button" class="arw">▸</button>':''}</b>${parts.length>1?`<span class="dsc">${esc(parts.slice(1).join(' — '))}</span>`:''}<small class="spc">${esc(it.sp||'')}</small></div>
+  r.innerHTML=`<div class="ph"><div class="n"><span class="tag">${(it.ty||(it.ty=typeOf(it)))[1]} ${esc(it.b)}</span><b class="mdl">${esc(parts[0])}${parts.length>1?'<button type="button" class="arw">▸</button>':''}</b>${parts.length>1?`<span class="dsc">${esc(parts.slice(1).join(' — '))}</span>`:''}${camBadges(it)}<small class="spc">${esc(it.sp||'')}</small></div>
     <div class="pp">${stk}<b>${fmt(it.p)}</b>${it.cost!=null?`<small>իմ գինը ${it.est?'≈':''}${fmt(it.cost)}</small>${it.p!==it.cost?`<span class="df">+${fmt(it.p-it.cost)} (${it.cost?((it.p-it.cost)/it.cost*100).toFixed(0):0}%)</span>`:''}`:''}</div></div>`;
   const key=it.s+'|'+it._i;
   const ar=r.querySelector('.arw');if(ar)ar.onclick=e=>{e.stopPropagation();const ph=r.querySelector('.ph');ph.classList.toggle('open');ar.textContent=ph.classList.contains('open')?'▾':'▸'};
@@ -2222,7 +2277,7 @@ const CLOUD={sb:null,user:null,offline:false};
 const cloudOn=()=>!!(CLOUD.sb&&CLOUD.user&&!CLOUD.offline);
 function cst(state,txt){const e=$('cloudSt');e.className='cst '+(state||'');e.textContent=txt||'';}
 function cloudErr(e,where){console.warn(where,e);cst('err','Սխալ');toast('Համաժամեցման սխալ'+(e&&e.message?': '+e.message.slice(0,60):''))}
-function settingsData(){return {promoText:$('promoText').value,prices,sign:$('sign').value,mk:$('m_mk').value,usdRate:LS.get('usdRate',390),trash:LS.get('trash',[]),shops,req:REQ,arc:ARC}}
+function settingsData(){return {promoText:$('promoText').value,prices,sign:$('sign').value,mk:$('m_mk').value,usdRate:LS.get('usdRate',390),trash:LS.get('trash',[]),trashGone:LS.get('trashGone',[]),shops,req:REQ,arc:ARC}}
 let _setT=0;
 function pushSettingsSoon(){if(!cloudOn())return;clearTimeout(_setT);_setT=setTimeout(async()=>{cst('busy','…');
   const {error}=await CLOUD.sb.from('pm_settings').upsert({user_id:CLOUD.user.id,data:settingsData(),updated_at:new Date().toISOString()});
@@ -2250,7 +2305,8 @@ async function pullAll(){
       if(Array.isArray(d.shops)){shops=d.shops;LS.set('shops',shops);renderShops()}
       if(d.req&&typeof d.req==='object'){REQ=Object.assign(REQ,d.req);LS.set('req',REQ);reqUI()}
       if(d.arc&&d.arc.mode){ARC=d.arc;LS.set('arc',ARC);arcUI()}
-      if(Array.isArray(d.trash)&&d.trash.length){const loc=LS.get('trash',[]);const all=d.trash.concat(loc.filter(x=>!d.trash.some(y=>y.at===x.at)));LS.set('trash',all.sort((a,b)=>b.at.localeCompare(a.at)).slice(0,8));catUI()}
+      if(Array.isArray(d.trashGone)){LS.set('trashGone',[...new Set(LS.get('trashGone',[]).concat(d.trashGone))].slice(-200))}
+      if(Array.isArray(d.trash)){const gone=new Set(LS.get('trashGone',[]));const loc=LS.get('trash',[]);const all=d.trash.concat(loc.filter(x=>!d.trash.some(y=>y.at===x.at))).filter(x=>!gone.has(x.at));LS.set('trash',all.sort((a,b)=>b.at.localeCompare(a.at)).slice(0,8));catUI()}
       renderPrices();renderItems();calcQuote();
     }else pushSettingsSoon();
     // first time: move locally saved quotes to the cloud
