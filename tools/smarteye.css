@@ -451,3 +451,9 @@ h1.hero-kicker { font-family: inherit; font-size: .85rem; font-weight: 500; line
 .tpl-credit { font-size: .72rem; color: rgba(255,255,255,.28); }
 .tpl-credit a { color: rgba(255,255,255,.34) !important; text-decoration: none; border: 0 !important; }
 .tpl-credit a:hover { color: rgba(255,255,255,.6) !important; }
+
+/* ===== Auto-scale on big screens: use the full width and grow text/spacing with the screen ===== */
+@media (min-width: 1400px) {
+  html { font-size: clamp(16px, calc(0.5vw + 8.5px), 21px); }
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: min(92vw, 1840px); }
+}
