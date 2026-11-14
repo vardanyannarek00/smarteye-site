@@ -924,11 +924,11 @@ function grouped(items){return items.map((it,i)=>({it,i,g:grpOf(it)})).sort((a,b
 function putGrouped(box,items,mk){let last=-1;const G=grouped(items);const many=new Set(G.map(x=>x.g)).size>1;
   G.forEach(({it,g})=>{if(many&&g!==last){last=g;const h=document.createElement('div');h.className='grp-h';h.textContent=`${GRP[g][0]} · ${G.filter(x=>x.g===g).length}`;box.appendChild(h)}box.appendChild(mk(it))})}
 let camF=LS.get('camF',{t:'',p:''});
-function camPass(it){if(!camF.t&&!camF.p)return true;const a=camAttr(it);if(!a.cam&&!a.rec)return false;
+function camPass(it){if(camF.s&&it.stk!=='ok')return false;if(!camF.t&&!camF.p)return true;const a=camAttr(it);if(!a.cam&&!a.rec)return false;
   if(camF.t&&a.tech!==camF.t)return false;if(camF.p){if(!a.cam)return false;if(camF.p==='out'&&!(a.place==='out'||a.place==='both'))return false;if(camF.p==='in'&&!(a.place==='in'||a.place==='both'))return false}return true}
 function renderCamF(box){if(!box)return;const set=(k,v)=>{camF[k]=camF[k]===v?'':v;LS.set('camF',camF);renderResults();if(typeof renderProd==='function'&&$('v-prod').classList.contains('on'))renderProd()};
-  box.innerHTML='';[['t','IP','📡 IP'],['t','Անալոգ','📼 Անալոգ'],['t','Wi-Fi','📶 Wi-Fi'],['p','out','🌧 Դրսի'],['p','in','🏠 Ներսի']].forEach(([k,v,l])=>{const b=document.createElement('button');b.type='button';b.className='chip'+(camF[k]===v?' on':'');b.textContent=l;b.onclick=()=>set(k,v);box.appendChild(b)});
-  if(camF.t||camF.p){const x=document.createElement('button');x.type='button';x.className='chip';x.textContent='✕ Մաքրել';x.onclick=()=>{camF={t:'',p:''};LS.set('camF',camF);renderResults();if($('v-prod').classList.contains('on'))renderProd()};box.appendChild(x)}}
+  box.innerHTML='';[['s','1','✓ Առկա'],['t','IP','📡 IP'],['t','Անալոգ','📼 Անալոգ'],['t','Wi-Fi','📶 Wi-Fi'],['p','out','🌧 Դրսի'],['p','in','🏠 Ներսի']].filter(([k])=>k!=='s'||catalog.some(x=>x.stk==='ok')).forEach(([k,v,l])=>{const b=document.createElement('button');b.type='button';b.className='chip'+(camF[k]===v?' on':'');b.textContent=l;b.onclick=()=>set(k,v);box.appendChild(b)});
+  if(camF.t||camF.p||camF.s){const x=document.createElement('button');x.type='button';x.className='chip';x.textContent='✕ Մաքրել';x.onclick=()=>{camF={t:'',p:'',s:''};LS.set('camF',camF);renderResults();if($('v-prod').classList.contains('on'))renderProd()};box.appendChild(x)}}
 let qType=LS.get('qType','');
 function renderQTypes(){
   const box=$('qTypes');if(!box)return;box.innerHTML='';
@@ -943,7 +943,7 @@ function renderQTypes(){
 function renderResults(){
   renderQTypes();renderCamF($('camF'));
   const q=norm($('search').value), box=$('results');box.innerHTML='';
-  if(!q&&(qType||camF.t||camF.p)){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it)).sort((a,b)=>a.p-b.p).slice(0,80);if(!hits.length)box.innerHTML='<div class="note">Այս ֆիլտրով ապրանք չկա</div>';putGrouped(box,hits,resRow);return}
+  if(!q&&(qType||camF.t||camF.p||camF.s)){const hits=catalog.filter(it=>fMatch(it,supFilter)&&(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it)).sort((a,b)=>a.p-b.p).slice(0,80);if(!hits.length)box.innerHTML='<div class="note">Այս ֆիլտրով ապրանք չկա</div>';putGrouped(box,hits,resRow);return}
   if(!q){box.innerHTML='<div class="note">Գրեք մոդել կամ բառեր, օր․ «1043», «hybrid 4mp», «colorvu dome», «hdd 4tb», «nvr 8 poe»</div>';return}
   const hits=searchCatalog(q).filter(it=>(!qType||(it.ty||(it.ty=typeOf(it)))[0]===qType)&&camPass(it));
   if(!hits.length){box.innerHTML='<div class="note">Չի գտնվել։ Փորձեք այլ բառ կամ մոդելի մի մասը (օր․ 1043)</div>';return}
