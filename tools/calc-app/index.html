@@ -656,6 +656,7 @@ const DEFAULT_ITEMS = [
   {g:'shop', id:'pos',  name:'Դրամարկղային համակարգիչ՝ տեղադրում և կարգաբերում', unit:'հատ', price:15000},
   {g:'shop', id:'pos_d',name:'Սարքի միացում (սկաներ, տպիչ, կշեռք, ՀԴՄ)', unit:'հատ', price:5000},
   {g:'pc',   id:'pc',   name:'Համակարգչի սպասարկում / Windows', unit:'հատ', price:10000},
+  {g:'other',id:'misc', name:'Այլ ծախսեր (ամրակներ, նյութեր, ճանապարհ)', unit:'համ.', price:10000},
   {g:'other',id:'road', name:'Ճանապարհ (Երևանից դուրս)',        unit:'կմ',  price:150},
   {g:'other',id:'visit',name:'Կանչ / ախտորոշում',               unit:'այց', price:10000},
 ];
@@ -1422,14 +1423,15 @@ function cartBar(){const b=$('cartBar');if(!b)return;const onQ=$('v-quote').clas
   const on=onQ&&n&&$('search').value.trim();document.body.classList.toggle('cb',!!on);
   if(!on){b.style.display='none';return}
   b.style.display='flex';b.innerHTML=`<span>🧾 Ընտրված՝ ${n} ապրանք</span><span>${fmt(calcQuote().tot)} ›</span>`}
-function quoteLines(){
+function ensureMisc(){if(qty.misc===undefined&&(cart.some(c=>c.q>0)||DEFAULT_ITEMS.some(it=>it.id!=='misc'&&(qty[it.id]||0)>0))){qty.misc=1;LS.set('qty',qty);setTimeout(()=>{try{renderItems()}catch(e){}},0)}}
+function quoteLines(){ensureMisc();
   const L=[];
   cart.forEach(c=>{if(c.q>0)L.push({n:shortName(c),d:c.d||shortDesc(c),q:c.q,u:'հատ',p:c.p,cost:c.cost==null?null:c.cost,kind:'prod'})});
   DEFAULT_ITEMS.forEach(it=>{const q=qty[it.id]||0;if(q>0)L.push({n:it.name,q,u:it.unit,p:priceOf(it),cost:0,kind:'work'})});
   customs.forEach(c=>{if(c.q>0&&c.name)L.push({n:c.name,q:c.q,u:'',p:c.p,cost:0,kind:'work'})});
   return L;
 }
-function calcQuote(){
+function calcQuote(){ensureMisc();
   const L=quoteLines();
   const sub=L.reduce((s,l)=>s+l.q*l.p,0);
   const d=Math.min(100,Math.max(0,+$('disc').value||0));
