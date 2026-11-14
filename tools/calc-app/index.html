@@ -1239,14 +1239,16 @@ function detectMap(rs){
     if(v.length>body.length/2&&v.filter(x=>/^[A-Z0-9]{1,12}-[A-Z0-9][A-Z0-9\-\/().+]{1,}$/i.test(x)&&x.length<=40).length>v.length*0.6){mi=i}}
   // currency of the price column: header says so, otherwise small numbers mean USD
   const pv=body.map(r=>parsePrice(r[pi])).filter(x=>x>0).sort((a,b)=>a-b);const med=pv.length?pv[pv.length>>1]:0;
-  const usd=pi>=0&&(cur(pi)==='usd'||(!cur(pi)&&med>0&&med<1500));
+  const frac=pv.length?pv.filter(x=>Math.abs(x-Math.round(x))>0.001).length/pv.length:0;
+  const usd=pi>=0&&(cur(pi)==='usd'||(!cur(pi)&&med>0&&med<1500&&frac>0.3));
   return {hi,ni,di,pi,qi,mi,usd,ki:find(/(^|\s)կոդ|code|арт|sku|^art/i),si:find(/առկա|մնացորդ|налич|остат|stock|availab|склад/i)};
 }
+let USD_SHEETS=[];
 function allSheetsRows(){
-  const out=[['Անվանում','Վաճառքի գին','Կոդ','Թերթ','Առկայություն','Իմ գինը (դիլերային)']];
+  USD_SHEETS=[];const out=[['Անվանում','Վաճառքի գին','Կոդ','Թերթ','Առկայություն','Իմ գինը (դիլերային)']];
   wb.SheetNames.forEach(sn=>{
     const rs=sheetRows(sn);if(rs.length<2)return;
-    const m=detectMap(rs);if(m.ni<0||m.pi<0)return;
+    const m=detectMap(rs);if(m.ni<0||m.pi<0)return;if(m.usd)USD_SHEETS.push(sn);
     rs.slice(m.hi+1).forEach(r=>{
       const clean=x=>String(x??'').replace(/\s+/g,' ').trim();const nm=clean(r[m.ni]),md=m.mi>=0?clean(r[m.mi]):'';
       const n=[nm&&md&&!nm.includes(md)?nm+' · '+md:(nm||md),m.di>=0?clean(r[m.di]):''].filter(Boolean).join(' — ');
@@ -1329,7 +1331,7 @@ function preview(){
   const cats={};c.forEach(x=>{if(x.c)cats[x.c]=(cats[x.c]||0)+1});
   const sOk=c.filter(x=>x.stk==='ok').length,sNo=c.filter(x=>x.stk==='no').length;
   const cl=Object.keys(cats).length>1?'<br>'+Object.entries(cats).map(([k,v])=>`${k.replace(/</g,'&lt;')}՝ ${v}`).join(' · ')+'<br>':'';
-  $('m_prev').innerHTML=c.length?`Գտնվեց <b style="color:var(--txt)">${c.length}</b> ապրանք։${cl} ${sOk||sNo?`<br>Առկայություն՝ ✓ ${sOk} · ✗ ${sNo}<br>`:''} ${DISC.length?`<br><span style="color:var(--ok)">✓ Գտնվեց երկու գին. վաճառքի գինը կպահվի, իսկ քո զեղչը՝ <b>${medDisc()}%</b> (${DISC.length} ապրանքից)։ 🔒 Դիլերային գները չեն պահվի, միայն %-ը։</span><br>`:(+$('m_mk').value>0?`<br><span style="color:var(--warn)">Մեկ գին՝ համարվում է քո գինը, վաճառքը = + ${$('m_mk').value}% հավելավճար։</span><br>`:`<br><span style="color:var(--acc2)">Մեկ գին՝ համարվում է խանութի վաճառքի գինը։ «Իմ գինը» կհաշվվի քո զեղչով (գնացուցակների ցուցակում «իմ զեղչ %»)։</span><br>`)} Օրինակ՝<br>`+c.slice(0,3).map(x=>`• ${x.n.replace(/</g,'&lt;').slice(0,50)} — ${fmt(x.p)}${DISC.length?` <span style="color:var(--mut)">(իմը ≈${fmt(Math.round(x.p*(1-medDisc()/100)))})</span>`:''}`).join('<br>'):'<span style="color:var(--bad)">Ապրանք չգտնվեց — փոխեք սյունակները</span>';
+  $('m_prev').innerHTML=c.length?`Գտնվեց <b style="color:var(--txt)">${c.length}</b> ապրանք։${cl}${+$('m_sheet').value===-1&&USD_SHEETS.length?`<br>💵 Դոլարով թերթեր՝ ${USD_SHEETS.map(esc).join(', ')} — փոխարկվեց դրամի (1$ = ${LS.get('usdRate',390)} ֏)<br>`:''} ${sOk||sNo?`<br>Առկայություն՝ ✓ ${sOk} · ✗ ${sNo}<br>`:''} ${DISC.length?`<br><span style="color:var(--ok)">✓ Գտնվեց երկու գին. վաճառքի գինը կպահվի, իսկ քո զեղչը՝ <b>${medDisc()}%</b> (${DISC.length} ապրանքից)։ 🔒 Դիլերային գները չեն պահվի, միայն %-ը։</span><br>`:(+$('m_mk').value>0?`<br><span style="color:var(--warn)">Մեկ գին՝ համարվում է քո գինը, վաճառքը = + ${$('m_mk').value}% հավելավճար։</span><br>`:`<br><span style="color:var(--acc2)">Մեկ գին՝ համարվում է խանութի վաճառքի գինը։ «Իմ գինը» կհաշվվի քո զեղչով (գնացուցակների ցուցակում «իմ զեղչ %»)։</span><br>`)} Օրինակ՝<br>`+c.slice(0,3).map(x=>`• ${x.n.replace(/</g,'&lt;').slice(0,50)} — ${fmt(x.p)}${DISC.length?` <span style="color:var(--mut)">(իմը ≈${fmt(Math.round(x.p*(1-medDisc()/100)))})</span>`:''}`).join('<br>'):'<span style="color:var(--bad)">Ապրանք չգտնվեց — փոխեք սյունակները</span>';
 }
 $('m_save').onclick=()=>{
   const c=buildCat();if(!c.length){toast('Ապրանք չկա');return}
