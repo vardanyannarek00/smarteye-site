@@ -292,7 +292,7 @@ nav .lf{display:none}nav .ls{display:block}
 <body>
 <script>try{if(JSON.parse(localStorage.getItem('se_lock')))document.documentElement.classList.add('locked')}catch(e){}</script>
 <div id="lock" class="lockscr" style="display:none"><div class="lk-box">
-  <div class="lk-logo">🔒</div><b>Price Manager</b><div id="lkMsg" class="note">Մուտքագրեք PIN-ը</div><div id="lkDots" class="lk-dots"></div>
+  <div class="lk-logo">🔒</div><b>Price Manager</b><div id="lkMsg" class="note">Մուտքագրեք PIN-ը</div><button type="button" id="lkFace" class="btn" style="display:none;margin:4px 0;width:100%">🔓 Բացել Face ID-ով</button><div id="lkDots" class="lk-dots"></div>
   <div class="lk-pad"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" id="lkBio" title="Մատնահետք / Face ID">👆</button><button type="button" data-k="0">0</button><button type="button" data-k="del">⌫</button></div>
   <a href="#" id="lkForgot" class="note" style="display:block;color:var(--mut)">Մոռացե՞լ եք PIN-ը</a></div></div>
 <header>
@@ -2847,7 +2847,7 @@ async function arcSweep(){if(ARC.mode==='off'||!hist.length)return;const day=tod
   LS.set('arcDay',day);if(n){drawHistory();toast(`${n} հին գնահաշվարկ ${ARC.mode==='tg'?'ուղարկվեց Telegram արխիվ և ':''}ջնջվեց`)}}
 /* ---------- App lock: PIN + fingerprint / Face ID ---------- */
 let LOCK=LS.get('lock',null);   // {s:salt,h:hash,bio:'native'|'web'|'',cid:credId,after:min}
-let _lockIn='',_hiddenAt=0,_locked=false;
+let _lockIn='',_hiddenAt=0,_locked=false,_bioErr='',_bioBusy=false;
 const b64u=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const ub64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 async function pinHash(pin,salt){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin));return b64u(d)}
@@ -2855,8 +2855,8 @@ async function bioKind(){try{if(NATIVE){const p=capPlugin('NativeBiometric');if(
   if(location.protocol==='https:'&&window.PublicKeyCredential&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())return 'web'}catch(e){}return ''}
 async function bioVerify(){try{
   if(LOCK.bio==='native'){await capPlugin('NativeBiometric').verifyIdentity({title:'Price Manager',reason:'Բացել Price Manager-ը',negativeButtonText:'PIN',maxAttempts:5});return true}
-  if(LOCK.bio==='web'&&LOCK.cid){await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:ub64(LOCK.cid)}],userVerification:'required',timeout:60000}});return true}
-}catch(e){}return false}
+  if(LOCK.bio==='web'&&LOCK.cid){await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:ub64(LOCK.cid),transports:['internal']}],userVerification:'required',timeout:60000}});return true}
+}catch(e){_bioErr=e&&e.name||'error'}return false}
 async function bioRegister(kind){if(kind==='native'){try{await capPlugin('NativeBiometric').verifyIdentity({title:'Price Manager',reason:'Միացնել մատնահետքով / դեմքով բացելը',negativeButtonText:'Չեղարկել'});return {bio:'native'}}catch(e){return null}}
   try{const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'SmartEye Price Manager'},
     user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'smarteye-pm',displayName:'SmartEye Price Manager'},
@@ -2864,14 +2864,16 @@ async function bioRegister(kind){if(kind==='native'){try{await capPlugin('Native
     return {bio:'web',cid:b64u(c.rawId)}}catch(e){return null}}
 function lockDots(){$('lkDots').innerHTML=Array.from({length:Math.max(4,_lockIn.length)},(_,i)=>`<i class="${i<_lockIn.length?'on':''}"></i>`).join('')}
 function lockShow(){if(!LOCK||_locked)return;_locked=true;document.documentElement.classList.add('locked');_lockIn='';const L=$('lock');L.style.display='flex';$('lkMsg').textContent='Մուտքագրեք PIN-ը';lockDots();
-  $('lkBio').style.visibility=LOCK.bio?'visible':'hidden';if(LOCK.bio)setTimeout(lockBio,350)}
+  $('lkBio').style.visibility=LOCK.bio?'visible':'hidden';$('lkFace').style.display=LOCK.bio?'':'none';if(LOCK.bio)setTimeout(()=>lockBio(true),450)}
 function lockOpen(){_locked=false;_lockIn='';$('lock').style.display='none';document.documentElement.classList.remove('locked')}
-async function lockBio(){if(await bioVerify())lockOpen()}
+async function lockBio(auto){if(_bioBusy||!_locked)return;_bioBusy=true;_bioErr='';const m=$('lkMsg');if(!auto)m.textContent='Սպասում եմ Face ID-ին…';
+  const ok=await bioVerify();_bioBusy=false;if(ok){lockOpen();return}if(!_locked)return;
+  m.textContent=auto?'Սեղմեք «Բացել Face ID-ով» կամ մուտքագրեք PIN-ը':(_bioErr==='NotAllowedError'?'Face ID-ն չհաստատվեց․ փորձեք նորից կամ մուտքագրեք PIN-ը':'Face ID-ն չաշխատեց ('+_bioErr+')․ մուտքագրեք PIN-ը')}
 async function lockKey(k){if(k==='del'){_lockIn=_lockIn.slice(0,-1);lockDots();return}if(_lockIn.length>=6)return;_lockIn+=k;lockDots();
   if(_lockIn.length>=4&&await pinHash(_lockIn,LOCK.s)===LOCK.h){lockOpen();return}
   if(_lockIn.length>=6||(_lockIn.length===(LOCK.n||4))){const m=$('lkMsg');m.textContent='Սխալ PIN';$('lkDots').classList.add('shake');setTimeout(()=>{$('lkDots').classList.remove('shake');_lockIn='';lockDots();m.textContent='Մուտքագրեք PIN-ը'},500)}}
 function lockInit(){const L=$('lock');if(!L)return;
-  L.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lockKey(b.dataset.k));$('lkBio').onclick=lockBio;
+  L.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lockKey(b.dataset.k));$('lkBio').onclick=()=>lockBio(false);$('lkFace').onclick=()=>lockBio(false);
   document.addEventListener('keydown',e=>{if(!_locked)return;if(/^\d$/.test(e.key))lockKey(e.key);else if(e.key==='Backspace')lockKey('del')});
   $('lkForgot').onclick=e=>{e.preventDefault();if(!window.SE_CONFIG||!CLOUD.sb){toast('PIN-ը վերականգնելու համար անհրաժեշտ է ինտերնետ');return}
     if(!confirm('PIN-ը կջնջվի։ Պետք է նորից մուտք գործեք Ձեր էլ. փոստով և գաղտնաբառով։ Շարունակե՞լ'))return;
